@@ -1,5 +1,5 @@
 export class MessageDto {
   group: string;
-  user: string
+  user: string;
   message: string;
 }

@@ -2,16 +2,15 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
-
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({default:'陈冠希'})
+  @Column({ default: '陈冠希' })
   user: string;
 
-  @Column()
+  @Column({ default: '123456' })
   password: string;
 
-  @Column({default:'chenguanxi.png'})
+  @Column({ default: 'chenguanxi.png' })
   avatar: string;
 }

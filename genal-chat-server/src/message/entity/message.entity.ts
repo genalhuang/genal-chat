@@ -2,11 +2,10 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Message {
-
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({default:'public'})
+  @Column({ default: 'public' })
   group: string;
 
   @Column()

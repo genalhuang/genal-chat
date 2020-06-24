@@ -7,8 +7,10 @@ import { MessageModule } from './message/message.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
+      // type: 'mongodb',
+      // host: 'localhost',
+      // port: 27017,
       type: 'mysql',
-      host: 'localhost',
       port: 3306,
       username: 'root',
       password: '123456',
@@ -18,7 +20,7 @@ import { MessageModule } from './message/message.module';
     }),
     UserModule,
     GroupModule,
-    MessageModule
-  ]
+    MessageModule,
+  ],
 })
 export class AppModule {}
