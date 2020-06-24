@@ -1,4 +1,4 @@
 export class ChatDto {
-  name: string
+  user: string
   message: string;
 }
