@@ -1,5 +1,5 @@
 export class UserDto {
-  name: string
+  user: string
   password: string;
   avatar: string;
 }

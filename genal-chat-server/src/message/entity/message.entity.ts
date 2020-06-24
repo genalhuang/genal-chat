@@ -1,12 +1,15 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Chat {
+export class Message {
 
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({default:'陈冠希'})
+  @Column({default:'public'})
+  group: string;
+
+  @Column()
   user: string;
 
   @Column()

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="adeed724-9c10-4354-9104-9e1a2b07c4e6" name="默认更改列表" comment="">
+      <change beforePath="$PROJECT_DIR$/genal-chat-server/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/genal-chat-server/src/app.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/genal-chat-server/src/user/user.entity.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/genal-chat-server/src/user/user.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/genal-chat-server/src/user/user.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/genal-chat-server/src/user/user.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/genal-chat-server/src/user/user.service.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1dlUjGXQq8Vi4Cpa3bzzpySVOvL" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/genal-chat-server" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="C:\Users\DM\AppData\Roaming\npm\node_modules\prettier" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="adeed724-9c10-4354-9104-9e1a2b07c4e6" name="默认更改列表" comment="" />
+      <created>1592999306157</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1592999306157</updated>
+      <workItem from="1592999307861" duration="7000" />
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1636" y="508" key="FileChooserDialogImpl" timestamp="1592999313142">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1636" y="508" key="FileChooserDialogImpl/0.0.2560.1400@0.0.2560.1400" timestamp="1592999313142" />
+  </component>
+</project>
