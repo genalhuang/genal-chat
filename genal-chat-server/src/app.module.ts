@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
-import { GroupModule } from './group/group.module';
-import { MessageModule } from './message/message.module';
+import { UserModule } from './modules/user/user.module';
+import { GroupModule } from './modules/group/group.module';
+import { MessageModule } from './modules/message/message.module';
 
 @Module({
   imports: [
@@ -24,4 +24,3 @@ import { MessageModule } from './message/message.module';
   ],
 })
 export class AppModule {}
-// mF#hHodP6KGk

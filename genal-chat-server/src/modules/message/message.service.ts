@@ -5,6 +5,8 @@ import { MessageDto } from './dto/message.dto';
 import { Repository } from 'typeorm';
 import { User } from '../user/entity/user.entity';
 import { Group } from '../group/entity/group.entity';
+import { HttpExceptionFilter } from '../../common/filters/http-exception.filter';
+
 
 @Injectable()
 export class MessageService {
@@ -15,7 +17,7 @@ export class MessageService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
-  ) {}
+  ) {} 
 
   getMessages() {
     return this.messageRepository.find();
