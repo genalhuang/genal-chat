@@ -30,14 +30,10 @@ export class MessageService {
   }
 
   async sendMessage(message: MessageDto) {
-    const groups = await this.groupRepository.find({group: message.group})
-    const users = await this.userRepository.find({user: message.user})
-    if(!groups.length) {
-      return '你这个群我没见过, 兄弟'
+    const userInGroup = await this.groupRepository.find({group: message.group,user: message.user})
+    if(userInGroup.length !== 0) {
+      return this.messageRepository.save(message)
     }
-    if(!users.length) {
-      return '你这个用户我没见过,兄弟'
-    }
-    return this.messageRepository.save(message);
+    return "兄弟你不在这个群"
   }
 }
