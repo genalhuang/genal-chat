@@ -1,12 +1,18 @@
 import { Module } from '@nestjs/common';
-import { GroupService } from './group.service';
-import { GroupController } from './group.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Group } from './entity/group.entity';
+import { Chat } from '../chat/entity/chat.entity';
+import { User } from '../user/entity/user.entity';
+import { Group } from '../group/entity/group.entity';
+import { GroupGateway } from './group.gateway';
+import { GroupController } from './group.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Group])],
-  providers: [GroupService],
+  imports: [
+    TypeOrmModule.forFeature([Chat]),
+    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Group]),
+  ],
+  providers: [GroupGateway],
   controllers: [GroupController],
 })
 export class GroupModule {}

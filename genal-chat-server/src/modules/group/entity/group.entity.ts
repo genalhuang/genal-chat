@@ -9,5 +9,5 @@ export class Group {
   group: string;
 
   @Column({ default: 'public' })
-  user: string;
+  name: string;
 }

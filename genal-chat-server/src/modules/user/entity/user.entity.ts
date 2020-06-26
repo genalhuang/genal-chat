@@ -6,7 +6,7 @@ export class User {
   id: number;
 
   @Column({ default: '陈冠希' })
-  user: string;
+  name: string;
 
   @Column({ default: '123456' })
   password: string;

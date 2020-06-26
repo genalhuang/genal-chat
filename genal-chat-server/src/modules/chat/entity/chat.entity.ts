@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Message {
+export class Chat {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -9,7 +9,7 @@ export class Message {
   group: string;
 
   @Column()
-  user: string;
+  name: string;
 
   @Column()
   message: string;

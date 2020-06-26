@@ -1,23 +1,18 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
-import { UserService } from './user.service';
+import { Controller, Post, HttpCode, Get, Body, Query } from '@nestjs/common';
+import { UserGateway } from './user.gateway';
 import { UserDto } from './dto/user.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private userGateway: UserGateway) {}
 
   @Get()
   getUsers() {
-    return this.userService.getUsers();
+    return this.userGateway.getUsers()
   }
 
   @Post()
   addUser(@Body() user: UserDto) {
-    return this.userService.addUser(user);
-  }
-
-  @Post()
-  editUser(@Body() user: UserDto) {
-    return this.userService.editUser(user);
+    return this.userGateway.addUser(user)
   }
 }

@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './modules/user/user.module';
 import { GroupModule } from './modules/group/group.module';
-import { MessageModule } from './modules/message/message.module';
-import { EventsModule } from './modules/events/events.module';
+import { UserModule } from './modules/user/user.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -19,10 +18,9 @@ import { EventsModule } from './modules/events/events.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    UserModule,
     GroupModule,
-    MessageModule,
-    EventsModule
+    UserModule,
+    ChatModule
   ],
 })
 export class AppModule {}

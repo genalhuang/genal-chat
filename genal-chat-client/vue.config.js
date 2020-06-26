@@ -8,7 +8,7 @@ module.exports = {
       '/': {
         target: Host,
         ws: true,
-        changeOrigin: true
+        changeOrigin: true,
       },
     },
   },
