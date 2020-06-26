@@ -14,6 +14,6 @@ export const sendChat = (params: Chat) => {
  * 获取消息
  * @param Chat
  */
-export const getChat = () => {
-  return fetch.get('/chat');
+export const getChat = (params: string) => {
+  return fetch.get(`/chat?group=${params}`);
 };

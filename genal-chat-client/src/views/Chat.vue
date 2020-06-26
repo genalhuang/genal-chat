@@ -69,14 +69,23 @@ export default class Chat extends Vue {
       this.chatClient.on('message', (res: any) => {
         this.messages.push(res)
       });
+      // 获取聊天消息
+      this.getMessages()
     });
   }
+
   async sendMessage() {
     let a = await api.sendChat({
       name: this.user.name,
-      group: '/public',
+      group: 'public',
       message: this.message
     })
+  }
+
+  async getMessages() {
+    let { data } = await api.getChat('public')
+    console.log(data)
+    this.messages = data
   }
 }
 </script>

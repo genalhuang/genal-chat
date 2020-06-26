@@ -15,7 +15,6 @@ import { Body } from '@nestjs/common';
 import { ChatDto } from './dto/chat.dto';
 
 @WebSocketGateway({ namespace: 'chat' })// 创建命名空间
-// @WebSocketGateway()
 export class ChatGateway {
   constructor(
     @InjectRepository(Chat)
@@ -30,12 +29,12 @@ export class ChatGateway {
   server: Server
 
   // socket连接钩子
-  handleConnection(client) {
+  handleConnection(): string {
     return '连接成功'
   }
 
   @SubscribeMessage('message')
-  async sendMessage(@Body() message: ChatDto) {
+  async sendMessage(@Body() message: ChatDto): Promise<ChatDto | string> {
     console.log(message,123412)
     const users = await this.userRepository.find({name: message.name})
     if(!users.length) {
@@ -47,7 +46,10 @@ export class ChatGateway {
     return message
   }
 
-  getMessages() {
-    return this.chatRepository.find()
+  getMessages(group?: string): Promise<Chat[]> {
+    if(!group) {
+      return this.chatRepository.find()
+    }
+    return this.chatRepository.find({group: group})
   }
 }
