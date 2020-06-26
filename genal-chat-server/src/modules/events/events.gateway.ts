@@ -9,6 +9,7 @@ import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Server } from 'socket.io';
 
+// @WebSocketGateway({ namespace: 'events' })// 创建命名空间
 @WebSocketGateway()
 export class EventsGateway {
   @WebSocketServer()
@@ -16,19 +17,19 @@ export class EventsGateway {
 
   // socket连接钩子
   handleConnection(client) {
-    client.emit('message', '连接成功')
+    return '连接成功'
   }
 
-  @SubscribeMessage('events')
-  findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
-    console.log('events ' + data)
-    return from([1, 2, 3]).pipe(map(item => ({ event: 'events', data: item })));
-  }
 
   @SubscribeMessage('message')
-  async identity(@MessageBody() data: number): Promise<number> {
-    console.log('message ' + data)
+  async identity(@MessageBody() data: any) {
     this.server.emit('message',data)
-    return data;
+  }
+
+  @SubscribeMessage('addUser')
+  addUser( @MessageBody() user:any) {
+    console.log(user)
+    this.server.emit('addUser', user)
+    return user
   }
 }
