@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
 import { GroupModule } from './modules/group/group.module';
 import { MessageModule } from './modules/message/message.module';
+import { EventsModule } from './modules/events/events.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MessageModule } from './modules/message/message.module';
     UserModule,
     GroupModule,
     MessageModule,
+    EventsModule
   ],
 })
 export class AppModule {}
