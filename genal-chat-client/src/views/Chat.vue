@@ -1,50 +1,54 @@
 <template>
   <div class="chat">
-    <GenalHeader></GenalHeader>
-    聊天窗{{ myname }}
-    <div v-if="isJoin">
-      聊天室
-      <div v-for="(item, index) in messages" :key="index">
-        <span>{{ item.name + ' : ' + item.message }}</span>
-      </div>
-      <input type="text" v-model="message" /><button @click="sendMessage">提交</button>
+    <div class='chat-group'>{{group}}</div>
+    <div v-if='user.name'>
+      <message 
+      :messages='messages'
+      @sendMessage='sendMessage'
+      ></message>
     </div>
-    <div v-else>
-      用户名: <input type="text" v-model="user.name" /><br />
-      密码: <input type="text" v-model="user.password" /><br />
-      头像: <input type="text" v-model="user.avatar" /><br />
-      <button @click="addUser">提交</button>
-    </div>
+    <login @login="addUser" v-if='!user.name'></login>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import GenalHeader from '@/components/GenalHeader.vue';
-import * as api from '@/api/apis'
+import Login from '@/components/Login.vue'
+import Message from '@/components/Message.vue'
+import * as api from '@/api/apis';
+import { mapMutations, mapGetters } from 'vuex'
 
 @Component({
   components: {
-    GenalHeader,
+    Login,
+    Message,
   },
+  computed: {
+    ...mapGetters(['userInfo'])
+  },
+  methods: {
+    ...mapMutations(['setUserInfo'])
+  }
 })
 export default class Chat extends Vue {
-  myname: string = '陈冠希';
   userClient: any = null;
   chatClient: any = null;
-  isJoin: boolean = false;
-  user: any = {
+  group: string = '小天才'
+  user: User = {
     name: '',
     password: '',
     avatar: 'aaaa.png',
   };
-  messages: any = [];
+  messages: Chat[] = [];
   message: string = '';
   // @ts-ignore
   io: any = window.io;
+
   async created() {
     this.handleUserEvents();
-    this.handleChatEvents()
+    this.handleChatEvents();
+    // @ts-ignore
+    this.user = this.userInfo
   }
 
   handleUserEvents() {
@@ -56,40 +60,55 @@ export default class Chat extends Vue {
       });
     });
   }
-  async addUser() {
-    this.isJoin = true;
-    let a = await api.addUser(this.user)
-  }
 
+  async addUser(user: User) {
+    this.user = user;
+    await api.addUser(user);
+    //@ts-ignore
+    this.setUserInfo(user);
+  }
 
   handleChatEvents() {
     this.chatClient = this.io.connect('http://localhost:3000/chat');
     this.chatClient.on('connect', (res: any) => {
       console.log('聊天socket连接成功' + res);
       this.chatClient.on('message', (res: any) => {
-        this.messages.push(res)
+        this.messages.push(res);
       });
       // 获取聊天消息
-      this.getMessages()
+      this.getMessages();
     });
   }
 
-  async sendMessage() {
-    let a = await api.sendChat({
+  async sendMessage(message: string) {
+    await api.sendChat({
       name: this.user.name,
-      group: 'public',
-      message: this.message
-    })
+      group: this.group,
+      message: message,
+    });
   }
 
   async getMessages() {
-    let { data } = await api.getChat('public')
-    console.log(data)
-    this.messages = data
+    let { data } = await api.getChat(this.group);
+    this.messages = data;
   }
 }
 </script>
 <style lang="scss" scoped>
 .chat {
+  max-width: 800px;
+  width: 800px;
+  height: 600px;
+  overflow: hidden;
+  position: relative;
+  background-color: #fff;
+  margin: auto 20px;
+  box-shadow: 1px 10px 10px #ccc;
+  .chat-group {
+    height: 50px;
+    border-bottom: 1px solid #ccc;
+    line-height: 50px;
+    font-weight: bold;
+  }
 }
 </style>

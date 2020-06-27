@@ -5,6 +5,9 @@ import store from './store';
 
 Vue.config.productionTip = false;
 
+// 引入ant-desigin
+import './ant-desigin';
+
 new Vue({
   router,
   store,
