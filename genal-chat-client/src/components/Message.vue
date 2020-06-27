@@ -2,7 +2,10 @@
   <div class="message">
     <div class='message-frame'>
       <div class='message-frame-message' v-for="(item, index) in messages" :key="index">
-        <div class='message-frame-name'>{{ item.name }}</div>
+        <div class='message-frame-name'>
+          <span class='name'>{{ item.name }}</span>
+          <span class='time'>{{ formatTime(item.time) }}</span>
+        </div>
         <div class='message-frame-text'>{{ item.message }}</div>
       </div>
     </div>
@@ -50,6 +53,14 @@ export default class Message extends Vue {
     this.$emit('sendMessage', this.message)
     this.message = ''
   }
+
+  formatTime(time: string) {
+    if(!time.length) {
+      return ''
+    }
+    //@ts-ignore
+    return this.$moment(Number(time)).format('HH:mm:ss')
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -66,8 +77,15 @@ export default class Message extends Vue {
       text-align: left;
       margin: 10px;
       .message-frame-name {
-        font-weight: bold;
-        font-size: 10px;
+        font-size: 14px;
+        .name {
+          font-weight: bold;
+        }
+        .time {
+          font-size: 10px;
+          color: rgb(139, 139, 139);
+          margin-left: 5px;
+        }
       }
       .message-frame-text {
         display: inline-block;
@@ -75,6 +93,10 @@ export default class Message extends Vue {
         padding: 5px 8px;
         font-size: 12px;
         border-radius: 10px;
+        cursor: pointer;
+        &:hover {
+          box-shadow: 1px 1px 4px skyblue;
+        }
       }
     }
   }

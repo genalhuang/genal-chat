@@ -16,7 +16,7 @@ import { ChatModule } from './modules/chat/chat.module';
       password: '123456',
       database: 'chat',
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: true
     }),
     GroupModule,
     UserModule,

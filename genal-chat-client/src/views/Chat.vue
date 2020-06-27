@@ -85,6 +85,7 @@ export default class Chat extends Vue {
       name: this.user.name,
       group: this.group,
       message: message,
+      time: new Date().getTime().toString()
     });
   }
 

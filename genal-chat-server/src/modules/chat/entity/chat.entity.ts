@@ -13,4 +13,7 @@ export class Chat {
 
   @Column()
   message: string;
+
+  @Column({ default: '' })
+  time: string;
 }
