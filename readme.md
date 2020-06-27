@@ -5,6 +5,7 @@
 
 ### 项目描述
 前端: vue+vue-router+vuex+socket.io+typescript
+
 后端: nestjs+nestjs/websocket+typescript
 
 ### 环境配置
