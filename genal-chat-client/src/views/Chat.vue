@@ -33,7 +33,7 @@ import { mapMutations, mapGetters } from 'vuex'
 export default class Chat extends Vue {
   userClient: any = null;
   chatClient: any = null;
-  group: string = '小天才'
+  group: string = '小天才聊天室'
   user: User = {
     name: '',
     password: '',
