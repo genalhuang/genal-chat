@@ -30,7 +30,7 @@ export default class Message extends Vue {
   changeMessages() {
     setTimeout(() => {
       this.scrollToBottom()
-    }, 350);
+    }, 0);
   }
 
   mounted() {

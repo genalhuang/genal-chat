@@ -12,7 +12,7 @@
   text-align: center;
   color: #2c3e50;
   height: 100%;
-  background-color: rgb(235, 235, 235);
+  background-color: rgb(53, 48, 48);
   overflow: hidden;
   display: flex;
   justify-content: center;

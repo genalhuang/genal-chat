@@ -104,7 +104,7 @@ export default class Chat extends Vue {
   position: relative;
   background-color: #fff;
   margin: auto 20px;
-  box-shadow: 1px 10px 10px #ccc;
+  box-shadow: 6px 10px 10px #000;
   .chat-group {
     height: 50px;
     border-bottom: 1px solid #ccc;
