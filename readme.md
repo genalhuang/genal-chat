@@ -1,9 +1,14 @@
-### 环境配置
-mysql 以及 chat数据库
+### 项目界面
+![](../assets/1.png)
+
+
 
 ### 项目描述
 前端: vue+vue-router+vuex+socket.io+typescript
 后端: nestjs+nestjs/websocket+typescript
+
+### 环境配置
+mysql 以及 chat数据库
 
 ### 运行
 前端项目
@@ -17,3 +22,5 @@ cd genal-chat-server
 npm run start:dev
 ```
 
+### 作者
+github: [edison](https://github.com/genaller)
