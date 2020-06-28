@@ -4,7 +4,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Chat } from '../chat/entity/chat.entity';
@@ -27,14 +27,14 @@ export class GroupGateway {
   server: Server
 
   // socket连接钩子
-  async handleConnection(client,data) {
+  async handleConnection(client: Socket) {
     // 连接默认加入public房间
     client.join('public')
     return '连接成功'
   }
 
   @SubscribeMessage('addGroupUser')
-  async addGroupUser(client, data: GroupDto) {
+  async addGroupUser(client: Socket, data: GroupDto) {
     // 让用户加入群
     await client.join(data.group, () => {
       console.log(`用户${data.name}加入群${data.group}`)

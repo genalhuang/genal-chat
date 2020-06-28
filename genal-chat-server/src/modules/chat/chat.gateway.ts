@@ -6,7 +6,7 @@ import {
   WebSocketServer,
   WsResponse,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Chat } from './entity/chat.entity';
@@ -32,14 +32,14 @@ export class ChatGateway {
   server: Server
 
   // socket连接钩子
-  async handleConnection(client: any): Promise<string> {
+  async handleConnection(client: Socket): Promise<string> {
     // 连接默认加入public房间
     await client.join('public')
     return '连接成功'
   }
 
   @SubscribeMessage('message')
-  async sendMessage(@Body() message: ChatDto): Promise<ChatDto | string> {
+  async sendMessage(@MessageBody() message: ChatDto): Promise<ChatDto | string> {
     const users = await this.groupRepository.find({
       name: message.name,
       group: message.group
@@ -53,7 +53,7 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('addGroupUser')
-  addGroupUser(client:any, data: GroupDto) {
+  addGroupUser(client:Socket, data: GroupDto) {
     client.join(data.group)
   }
 

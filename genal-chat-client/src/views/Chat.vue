@@ -87,12 +87,12 @@ export default class Chat extends Vue {
   }
 
   async sendMessage(message: string) {
-    await api.sendChat({
+    await this.chatClient.emit('message', {
       name: this.user.name,
       group: this.group,
       message: message,
       time: new Date().getTime().toString()
-    });
+    })
   }
 
   async getMessages() {
