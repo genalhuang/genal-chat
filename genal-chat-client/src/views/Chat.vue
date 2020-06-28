@@ -1,7 +1,9 @@
 <template>
   <div class="chat">
-    <a-input v-model='group'></a-input>
-    <a-button @click='addGroupUser'>加入群组</a-button>
+    <div class='chat-header'>
+      <a-input v-model='group' placeholder="输入任意id即可进入该群"></a-input>
+      <a-button @click='addGroupUser'>加入群组</a-button>
+    </div>
     <div class='chat-group'>{{group}}</div>
     <div v-if='user.name'>
       <message 
@@ -17,7 +19,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Login from '@/components/Login.vue'
 import Message from '@/components/Message.vue'
-import * as api from '@/api/apis';
+import * as api from '@/api/apis/index';
 import { mapMutations, mapGetters } from 'vuex'
 import io from 'socket.io-client'
 
@@ -125,6 +127,12 @@ export default class Chat extends Vue {
   background-color: #fff;
   margin: auto 20px;
   box-shadow: 6px 10px 10px #000;
+  .chat-header {
+    display: flex;
+    top: 50px;
+    z-index: 99;
+    position: fixed;
+  }
   .chat-group {
     height: 50px;
     border-bottom: 1px solid #ccc;

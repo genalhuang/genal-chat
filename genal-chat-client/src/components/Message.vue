@@ -11,7 +11,7 @@
     </div>
     <div class='message-input'>
       <a-input type="text" v-model="message" @keyup.enter="sendMessage"></a-input>
-      <a-button @click="sendMessage">提交</a-button>
+      <a-button @click="sendMessage">发送</a-button>
     </div>
   </div>
 </template>
@@ -67,15 +67,15 @@ export default class Message extends Vue {
 .message {
   overflow: hidden;
   height: 600px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   .message-frame {
-    height: 450px;
+    height: 490px;
     overflow: auto;
     position: relative;
     .message-frame-message {
       text-align: left;
-      margin: 10px;
       .message-frame-name {
         font-size: 14px;
         .name {
@@ -103,9 +103,10 @@ export default class Message extends Vue {
   .message-input {
     display: flex;
     flex-wrap: nowrap;
-    position: absolute;
+    position: relative;
     width: 100%;
-    bottom:0;
+    margin-top: 10px;
+    bottom: 0;
   }
 }
 </style>
