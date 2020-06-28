@@ -12,10 +12,11 @@
   text-align: center;
   color: #2c3e50;
   height: 100%;
-  background-color: rgb(53, 48, 48);
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-content: center;
+  background: url(~@/assets/2.jpg) no-repeat 50%;
+  background-size: cover;
 }
 </style>

@@ -1,17 +1,26 @@
 <template>
   <div class="chat">
-    <div class='chat-header'>
-      <a-input v-model='group' placeholder="输入任意id即可进入该群"></a-input>
-      <a-button @click='addGroupUser'>加入群组</a-button>
+    <div class='chat-part1'>
+      <my-user :user='user'></my-user>
     </div>
-    <div class='chat-group'>{{group}}</div>
-    <div v-if='user.name'>
-      <message 
-      :messages='messages'
-      @sendMessage='sendMessage'
-      ></message>
+    <div class='chat-part2'>
+
     </div>
-    <login @login="addUser" v-if='!user.name'></login>
+    <div class='chat-part3'>
+      <div class='chat-header'>
+        <a-input v-model='group' placeholder="输入任意id即可进入该群"></a-input>
+        <a-button @click='addGroupUser'>加入群组</a-button>
+      </div>
+      <div class='chat-group'>{{group}}</div>
+      <div v-if='user.name'>
+        <message 
+        :messages='messages'
+        @sendMessage='sendMessage'
+        ></message>
+      </div>
+      <login @login="addUser" v-if='!user.name'></login>
+    </div>
+
   </div>
 </template>
 
@@ -22,11 +31,12 @@ import Message from '@/components/Message.vue'
 import * as api from '@/api/apis/index';
 import { mapMutations, mapGetters } from 'vuex'
 import io from 'socket.io-client'
-
+import MyUser from '@/components/User.vue'
 @Component({
   components: {
     Login,
     Message,
+    MyUser
   },
   computed: {
     ...mapGetters(['userInfo'])
@@ -95,13 +105,11 @@ export default class Chat extends Vue {
       message: message,
       time: new Date().getTime().toString()
     })
-
   }
 
   async getMessages() {
     let { data } = await api.getChat(this.group);
     this.messages = data;
-    console.log(this.messages)
   }
 
   async addGroupUser() {
@@ -126,18 +134,32 @@ export default class Chat extends Vue {
   position: relative;
   background-color: #fff;
   margin: auto 20px;
-  box-shadow: 6px 10px 10px #000;
-  .chat-header {
-    display: flex;
-    top: 50px;
-    z-index: 99;
-    position: fixed;
+  box-shadow: 6px 10px 10px #999;
+  display: flex;
+  border-radius: 5px;
+  .chat-part1 {
+    flex: 1;
+    background-color: #151515;
   }
-  .chat-group {
-    height: 50px;
-    border-bottom: 1px solid #ccc;
-    line-height: 50px;
-    font-weight: bold;
+  .chat-part2 {
+    flex: 3;
+    background-color: rgb(233, 233, 233);
+  }
+  .chat-part3 {
+    flex: 10;
+    background-color: #fff;
+    .chat-header {
+      display: flex;
+      top: 50px;
+      z-index: 99;
+      position: fixed;
+    }
+    .chat-group {
+      height: 50px;
+      border-bottom: 1px solid #ccc;
+      line-height: 50px;
+      font-weight: bold;
+    }
   }
 }
 </style>

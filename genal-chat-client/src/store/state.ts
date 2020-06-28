@@ -4,7 +4,6 @@ export interface State {
     password: string;
     avatar?: string
   };
-
 }
 
 const state: State = {
