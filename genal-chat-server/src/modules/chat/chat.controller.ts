@@ -12,8 +12,4 @@ export class ChatController {
     return this.chatGateway.getMessages(group)
   }
 
-  @Post()
-  sendMessage(@Body() message: Chat): Promise<ChatDto | string> {
-    return this.chatGateway.sendMessage(message)
-  }
 }
