@@ -1,11 +1,11 @@
 import fetch from '@/api/fetch';
 
-/**
- * 添加群組
- * @param Group
- */
-export const addGroup = (params: Group) => {
-  return fetch.get('/group', {
-    params,
-  });
-};
+// /**
+//  * 用户加入添加群組
+//  * @param Group
+//  */
+// export const userJoinGroup = (params: Group) => {
+//   return fetch.post('/group', {
+//     ...params,
+//   });
+// };

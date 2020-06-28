@@ -1,3 +1,4 @@
+import {Query} from '@nestjs/common';
 import {
   MessageBody,
   SubscribeMessage,
@@ -13,6 +14,8 @@ import { User } from '../user/entity/user.entity';
 import { Group } from '../group/entity/group.entity';
 import { Body } from '@nestjs/common';
 import { ChatDto } from './dto/chat.dto';
+import { GroupDto } from '../group/dto/group.dto';
+import set = Reflect.set;
 
 @WebSocketGateway({ namespace: 'chat' })// 创建命名空间
 export class ChatGateway {
@@ -29,21 +32,29 @@ export class ChatGateway {
   server: Server
 
   // socket连接钩子
-  handleConnection(): string {
+  async handleConnection(client: any): Promise<string> {
+    // 连接默认加入public房间
+    await client.join('public')
     return '连接成功'
   }
 
   @SubscribeMessage('message')
   async sendMessage(@Body() message: ChatDto): Promise<ChatDto | string> {
-    console.log(message,123412)
-    const users = await this.userRepository.find({name: message.name})
+    const users = await this.groupRepository.find({
+      name: message.name,
+      group: message.group
+    })
     if(!users.length) {
-      return '兄弟, 你哪里来的, 我没有这个用户'
+      return '消息认证失败'
     }
     await this.chatRepository.save(message)
-    console.log(message)
-    this.server.emit('message',message)
+    this.server.to(message.group).emit('message',message)
     return message
+  }
+
+  @SubscribeMessage('addGroupUser')
+  addGroupUser(client:any, data: GroupDto) {
+    client.join(data.group)
   }
 
   getMessages(group?: string): Promise<Chat[]> {

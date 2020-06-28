@@ -1,5 +1,7 @@
 <template>
   <div class="chat">
+    <a-input v-model='group'></a-input>
+    <a-button @click='addGroupUser'>加入群组</a-button>
     <div class='chat-group'>{{group}}</div>
     <div v-if='user.name'>
       <message 
@@ -17,6 +19,7 @@ import Login from '@/components/Login.vue'
 import Message from '@/components/Message.vue'
 import * as api from '@/api/apis';
 import { mapMutations, mapGetters } from 'vuex'
+import io from 'socket.io-client'
 
 @Component({
   components: {
@@ -33,7 +36,8 @@ import { mapMutations, mapGetters } from 'vuex'
 export default class Chat extends Vue {
   userClient: any = null;
   chatClient: any = null;
-  group: string = '小天才聊天室'
+  groupClient: any = null;
+  group: string = 'public'
   user: User = {
     name: '',
     password: '',
@@ -41,23 +45,21 @@ export default class Chat extends Vue {
   };
   messages: Chat[] = [];
   message: string = '';
-  // @ts-ignore
-  io: any = window.io;
 
   async created() {
-    this.handleUserEvents();
     this.handleChatEvents();
+    this.handleGroupEvents();
     // @ts-ignore
     this.user = this.userInfo
   }
 
-  handleUserEvents() {
-    this.userClient = this.io.connect('http://localhost:3000/user');
-    this.userClient.on('connect', (res: any) => {
-      console.log('用户socket连接成功' + res);
-      this.userClient.on('addUser', (res: any) => {
-        console.log('addUser', res);
-      });
+  handleGroupEvents() {
+    this.groupClient = io('/group');
+    this.groupClient.on('connect', (res: any) => {
+      console.log('群组socket连接成功' + res);
+      this.groupClient.on('addGroupUser',(res: Group) => {
+        this.$message.success(`群${this.group},加入用户${res.name}`)
+      })
     });
   }
 
@@ -69,7 +71,11 @@ export default class Chat extends Vue {
   }
 
   handleChatEvents() {
-    this.chatClient = this.io.connect('http://localhost:3000/chat');
+    this.chatClient = io('/chat', {
+      query: {
+        room: this.group
+      }
+    });
     this.chatClient.on('connect', (res: any) => {
       console.log('聊天socket连接成功' + res);
       this.chatClient.on('message', (res: any) => {
@@ -92,6 +98,19 @@ export default class Chat extends Vue {
   async getMessages() {
     let { data } = await api.getChat(this.group);
     this.messages = data;
+    console.log(this.messages)
+  }
+
+  async addGroupUser() {
+    await this.chatClient.emit('addGroupUser', {
+      group: this.group,
+      name: this.user.name
+    })
+    await this.groupClient.emit('addGroupUser', {
+      group: this.group,
+      name: this.user.name
+    })
+    this.getMessages()
   }
 }
 </script>

@@ -4,3 +4,5 @@ interface Chat {
   group: string;
   time: string;
 }
+
+declare module 'socket.io-client'

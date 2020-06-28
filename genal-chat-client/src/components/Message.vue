@@ -70,7 +70,7 @@ export default class Message extends Vue {
   display: flex;
   flex-direction: column;
   .message-frame {
-    height: 515px;
+    height: 450px;
     overflow: auto;
     position: relative;
     .message-frame-message {

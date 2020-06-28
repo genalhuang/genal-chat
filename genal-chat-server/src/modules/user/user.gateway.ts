@@ -32,13 +32,15 @@ export class UserGateway {
     return '连接成功'
   }
 
-  @SubscribeMessage('addUser')
   async addUser( @Body() user: UserDto) {
     console.log(user)
-    // 保存到数据库中
+    // 保存用户信息到用户数据库中
     await this.userRepository.save(user)
-    // 广播新增用户事件
-    this.server.emit('addUser', user)
+    // 默认让用户进入public群
+    await this.groupRepository.save({
+      name: user.name,
+      group: 'public'
+    })
     return user
   }
 
