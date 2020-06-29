@@ -216,7 +216,7 @@ export default class GenalChat extends Vue {
       position: fixed;
     }
     .chat-group {
-      height: 50px;
+      height: 53px;
       border-bottom: 1px solid #ccc;
       line-height: 50px;
       font-weight: bold;
