@@ -42,7 +42,7 @@
               'remember',
               {
                 valuePropName: 'checked',
-                initialValue: true,
+                initialValue: false,
               },
             ]"
           >

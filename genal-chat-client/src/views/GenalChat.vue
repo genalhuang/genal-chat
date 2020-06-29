@@ -1,5 +1,9 @@
 <template>
   <div class="chat">
+    <div class='chat-header'>
+      <a-input v-model='group' placeholder="输入任意id作为群名称" @keyup.enter="addGroupUser(group)"></a-input>
+      <a-button @click='addGroupUser(group)'>加入群组</a-button>
+    </div>
     <div class='chat-part1'>
       <genal-tool :user='user'></genal-tool>
     </div>
@@ -11,10 +15,6 @@
       ></genal-group>
     </div>
     <div class='chat-part3'>
-      <div class='chat-header'>
-        <a-input v-model='group' placeholder="输入任意id作为群名称" @keyup.enter="addGroupUser(group)"></a-input>
-        <a-button @click='addGroupUser(group)'>加入群组</a-button>
-      </div>
       <div class='chat-group'>{{group}}</div>
       <div>
         <genal-message
@@ -212,13 +212,18 @@ export default class GenalChat extends Vue {
   max-width: 800px;
   width: 800px;
   height: 600px;
-  overflow: hidden;
   position: relative;
   background-color: #fff;
   margin: auto 20px;
   box-shadow: 6px 10px 10px #999;
   display: flex;
   border-radius: 5px;
+  .chat-header {
+    position: absolute;
+    display: flex;
+    right: 0;
+    top: -50px;
+  }
   .chat-part1 {
     width: 65px;
     background-color: #151515;
@@ -230,12 +235,6 @@ export default class GenalChat extends Vue {
   .chat-part3 {
     flex: 1;
     background-color: #fff;
-    .chat-header {
-      display: flex;
-      top: 50px;
-      z-index: 99;
-      position: fixed;
-    }
     .chat-group {
       height: 53px;
       border-bottom: 1px solid #ccc;

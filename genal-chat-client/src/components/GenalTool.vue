@@ -74,13 +74,12 @@ export default class GenalTool extends Vue {
   }
   .tool-set {
     font-size: 25px;
-    transition: all 0.2s linear;
-    cursor: pointer;
-    &:hover {
-      color: skyblue;
-    }
     .tool-set-icon {
-
+      transition: all 0.2s linear;
+      cursor: pointer;
+      &:hover {
+        color: skyblue;
+      }
     }
   }
 }
