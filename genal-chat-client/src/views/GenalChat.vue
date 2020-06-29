@@ -69,7 +69,8 @@ export default class GenalChat extends Vue {
     this.handleChatEvents();
     this.handleGroupEvents();
     // @ts-ignore
-    // this.user = this.userInfo
+    this.user = this.userInfo
+    this.getGroups();
   }
 
   handleGroupEvents() {
