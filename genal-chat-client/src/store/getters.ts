@@ -7,3 +7,7 @@ export function userInfo(state: any) {
   return JSON.parse(cookie.get('userInfo') as any); 
   // return state.userInfo; 
 }
+
+export function groups() {
+
+}

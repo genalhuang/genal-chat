@@ -42,12 +42,18 @@ export class GroupGateway {
     // 广播进群事件
     this.server.to(data.group).emit('addGroupUser', data)
     // 存群组数据库
-    await this.groupRepository.save(data);
+    const groups = await this.groupRepository.find({group: data.group,name: data.name})
+    if(!groups.length) {
+      await this.groupRepository.save(data);
+    }
   }
 
-  getGroup() {
-    return this.groupRepository.find()
+  getGroup(name: string) {
+    console.log(name)
+    if(!name) {
+      return this.groupRepository.find()
+    }
+    return this.groupRepository.find({name: name})
   }
-
 }
 

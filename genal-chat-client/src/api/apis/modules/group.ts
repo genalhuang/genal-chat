@@ -9,3 +9,10 @@ import fetch from '@/api/fetch';
 //     ...params,
 //   });
 // };
+
+/**
+ * 获取用户所有聊天群
+ */
+export const getGroups = (name: string) => {
+  return fetch.get(`/group?name=${name}`)
+}
