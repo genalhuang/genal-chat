@@ -106,7 +106,7 @@ export default class GenalMessage extends Vue {
     display: flex;
     flex-wrap: nowrap;
     position: relative;
-    width: 100%;
+    width: 99%;
     margin-top: 10px;
     bottom: 0;
   }
