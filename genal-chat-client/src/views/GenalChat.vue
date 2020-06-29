@@ -93,7 +93,13 @@ export default class GenalChat extends Vue {
 
   async addUser(user: User) {
     this.user = user;
-    await api.addUser(user);
+    let { data } = await api.addUser(user);
+    if(data === '密码错误') {
+      this.$message.error('密码错误')
+      // @ts-ignore
+      this.user = {}
+      return
+    }
     //@ts-ignore
     this.setUserInfo(user);
     this.getGroups()

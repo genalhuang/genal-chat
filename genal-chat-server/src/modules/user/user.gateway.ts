@@ -34,6 +34,12 @@ export class UserGateway {
 
   async addUser( @Body() user: UserDto) {
     console.log(user)
+    // 用户信息校验
+    const name = await this.userRepository.find({name: user.name})
+    const password = await this.userRepository.find({name: user.name, password: user.password})
+    if(name.length && !password.length) {
+      return '密码错误'
+    }
     // 保存用户信息到用户数据库中
     const users = await this.userRepository.find({name: user.name, password: user.password})
     if(!users.length) {
