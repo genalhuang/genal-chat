@@ -69,7 +69,7 @@ export default class GenalChat extends Vue {
     this.handleChatEvents();
     this.handleGroupEvents();
     // @ts-ignore
-    // this.user = this.userInfo
+    this.user = this.userInfo
     if(this.user.name) {
       this.getGroups()
     } else {
@@ -86,7 +86,9 @@ export default class GenalChat extends Vue {
     this.groupClient.on('connect', () => {
       console.log('群组socket连接成功');
       this.groupClient.on('addGroupUser',(res: Group) => {
-        this.$message.success(`${res.name}加入群${res.group}`)
+        if(res.name != this.user.name) {
+          this.$message.success(`${res.name}加入群${res.group}`)
+        }
       })
     });
   }
@@ -100,6 +102,7 @@ export default class GenalChat extends Vue {
       this.user = {}
       return
     }
+    this.$message.success('欢迎进入聊天室')
     //@ts-ignore
     this.setUserInfo(user);
     this.getGroups()
@@ -194,7 +197,7 @@ export default class GenalChat extends Vue {
       delete key.name
       this.addGroupUser(key.group)
     }
-    this.addGroupUser(data[0].group)
+    this.group = 'public'
     this.getMessages()
     this.groups = data;
     console.log(this.groups)
