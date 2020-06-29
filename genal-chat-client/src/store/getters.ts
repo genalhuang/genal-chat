@@ -8,6 +8,6 @@ export function userInfo(state: any) {
   // return state.userInfo; 
 }
 
-export function groups() {
-
+export function showLoginModal(state: any) {
+  return state.showLoginModal
 }

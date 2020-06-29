@@ -12,17 +12,17 @@
     </div>
     <div class='chat-part3'>
       <div class='chat-header'>
-        <a-input v-model='group' placeholder="输入任意id作为群名称"></a-input>
+        <a-input v-model='group' placeholder="输入任意id作为群名称" @keyup.enter="addGroupUser(group)"></a-input>
         <a-button @click='addGroupUser(group)'>加入群组</a-button>
       </div>
       <div class='chat-group'>{{group}}</div>
-      <div v-if='user.name'>
+      <div>
         <genal-message
         :messages='messages'
         @sendMessage='sendMessage'
         ></genal-message>
       </div>
-      <genal-login @login="addUser" v-if='!user.name'></genal-login>
+      <genal-login @login="addUser" :showLoginModal="showLoginModal"></genal-login>
     </div>
   </div>
 </template>
@@ -45,10 +45,10 @@ import io from 'socket.io-client'
     GenalGroup
   },
   computed: {
-    ...mapGetters(['userInfo'])
+    ...mapGetters(['userInfo', 'showLoginModal'])
   },
   methods: {
-    ...mapMutations(['setUserInfo'])
+    ...mapMutations(['setUserInfo','changeShowLoginModel'])
   }
 })
 export default class GenalChat extends Vue {
@@ -69,8 +69,16 @@ export default class GenalChat extends Vue {
     this.handleChatEvents();
     this.handleGroupEvents();
     // @ts-ignore
-    this.user = this.userInfo
-    this.getGroups();
+    // this.user = this.userInfo
+    if(this.user.name) {
+      this.getGroups()
+    } else {
+      this.groups = [{
+        group: 'public'
+      }]
+      this.group = 'public'
+      this.$message.info('你当前的身份是游客,请登录')
+    }
   }
 
   handleGroupEvents() {
@@ -78,7 +86,7 @@ export default class GenalChat extends Vue {
     this.groupClient.on('connect', () => {
       console.log('群组socket连接成功');
       this.groupClient.on('addGroupUser',(res: Group) => {
-        this.$message.success(`群${res.group},加入用户${res.name}`)
+        this.$message.success(`${res.name}加入群${res.group}`)
       })
     });
   }
@@ -100,12 +108,12 @@ export default class GenalChat extends Vue {
       // 监听消息事件
       this.chatClient.on('message', (res: any) => {
         console.log('message',res)
-        this.setGroupMessage(res)
+        this.setGroupNewMessage(res)
       });
     });
   }
 
-  setGroupMessage(message: Chat) {
+  setGroupNewMessage(message: Chat) {
     this.messages.push(message);
     // 更新群框框的最新消息
     for(let i=0;i<this.groups.length;i++) {
@@ -120,6 +128,11 @@ export default class GenalChat extends Vue {
   }
 
   sendMessage(message: string) {
+    if(!this.user.name) {
+      this.$message.error('游客不能发送消息')
+      return
+    }
+    console.log('asdf', message)
     this.chatClient.emit('message', {
       name: this.user.name,
       group: this.group,
@@ -175,6 +188,8 @@ export default class GenalChat extends Vue {
       delete key.name
       this.addGroupUser(key.group)
     }
+    this.addGroupUser(data[0].group)
+    this.getMessages()
     this.groups = data;
     console.log(this.groups)
   }

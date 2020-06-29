@@ -5,6 +5,6 @@ interface Group {
 
 interface GroupMessage {
   group: string;
-  name: string;
+  name?: string;
   newMesage?: string;
 }

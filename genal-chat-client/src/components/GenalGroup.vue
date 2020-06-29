@@ -43,6 +43,7 @@ export default class GenalGroup extends Vue {
       padding: 5px 10px;
       text-align: left;
       transition: all 0.2s linear;
+      cursor: pointer;
       &:hover {
         background-color: #ccc;
       }

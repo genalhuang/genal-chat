@@ -1,8 +1,9 @@
 <template>
+
   <div class="login">
     <a-modal 
     title="登录" 
-    :visible="visible"
+    :visible="showLoginModal"
     :closable='false'
     footer=''
     >
@@ -57,12 +58,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Form } from 'ant-design-vue';
+import { Component, Vue, Prop } from 'vue-property-decorator';
+import {mapMutations, mapGetters} from "vuex";
 
-@Component
+@Component({
+  computed: {
+    ...mapGetters(['showLoginModal'])
+  },
+  methods: {
+    ...mapMutations(['changeShowLoginModal'])
+  }
+})
 export default class GenalLogin extends Vue {
-  visible: boolean = true;
   form: any = null;
 
   created() {
@@ -74,7 +81,8 @@ export default class GenalLogin extends Vue {
     this.form.validateFields((err:any, values:any) => {
       if (!err) {
         this.$emit('login', values)
-        this.visible = false;
+        // @ts-ignore
+        this.changeShowLoginModal(false)
       }
     });
   }

@@ -4,13 +4,15 @@ export interface State {
     password: string;
     avatar?: string
   };
+  showLoginModal: boolean
 }
 
 const state: State = {
   userInfo: {
     name: '',
     password: ''
-  }
+  },
+  showLoginModal: false
 };
 
 export default state;
