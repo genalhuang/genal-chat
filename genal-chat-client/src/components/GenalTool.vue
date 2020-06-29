@@ -48,17 +48,12 @@ export default class GenalTool extends Vue {
 <style lang="scss" scoped>
 .tool {
   color: #fff;
-  padding: 10px 10px;
+  padding: 10px 5px;
   height: 98%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
+  position: relative;
   .tool-avatar {
-    width: 65px;
     .tool-avatar-img {
       margin: 0 auto;
-      width: 55px;
       img {
         cursor: pointer;
         width: 90%;
@@ -73,10 +68,15 @@ export default class GenalTool extends Vue {
     }
   }
   .tool-set {
-    font-size: 25px;
+    font-size: 20px;
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
     .tool-set-icon {
       transition: all 0.2s linear;
       cursor: pointer;
+      margin: 10px;
       &:hover {
         color: skyblue;
       }
