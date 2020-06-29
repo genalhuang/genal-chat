@@ -71,8 +71,7 @@ export default class GenalTool extends Vue {
     font-size: 20px;
     position: absolute;
     bottom: 10px;
-    display: flex;
-    flex-direction: column;
+    margin: 0 5px 0 0;
     .tool-set-icon {
       transition: all 0.2s linear;
       cursor: pointer;
