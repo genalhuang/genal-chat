@@ -16,14 +16,12 @@
     </div>
     <div class='chat-part3'>
       <div class='chat-group'>{{group}}</div>
-      <div>
-        <genal-message
-        :messages='messages'
-        @sendMessage='sendMessage'
-        ></genal-message>
-      </div>
-      <genal-login @login="addUser" :showLoginModal="showLoginModal"></genal-login>
+      <genal-message
+      :messages='messages'
+      @sendMessage='sendMessage'
+      ></genal-message>
     </div>
+    <genal-login @login="addUser" :showLoginModal="showLoginModal"></genal-login>
   </div>
 </template>
 
@@ -52,7 +50,6 @@ import io from 'socket.io-client'
   }
 })
 export default class GenalChat extends Vue {
-  userClient: any = null;
   chatClient: any = null;
   groupClient: any = null;
   group: string = 'public'
