@@ -11,23 +11,46 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  getUser(userId: string) {
-    if(userId) {
-      return this.userRepository.find({userId: userId})
+  async getUser(userId: string) {
+    try {
+      let data;
+      if(userId) {
+        data = await this.userRepository.find({userId: userId})
+        return {code: 0, data}
+      }
+      data = await this.userRepository.find()
+      return {code: 0, data}
+    } catch(e) {
+      return { code: 1 ,data: e}
     }
-    return this.userRepository.find()
   }
 
-  addUser(user: User) {
-    return this.userRepository.save(user)
+  async addUser(user: User) {
+    try {
+      let data = await this.userRepository.save(user)
+      return {code: 0, data }
+    } catch(e) {
+      return {code: 1, data: e}
+    }
+
   }
 
   async updateUser(userId: string, user: User) {
-    let oldUser = await this.userRepository.findOne({userId: userId})
-    return this.userRepository.update(oldUser,user)
+    try {
+      let oldUser = await this.userRepository.findOne({userId: userId})
+      let data = await this.userRepository.update(oldUser,user)
+      return {code: 0,data}
+    } catch(e) {
+      return {code: 1, data: e}
+    }
   }
 
-  delUser(userId: string) {
-    return this.userRepository.delete({userId: userId})
+  async delUser(userId: string) {
+    try {
+      let data =  await this.userRepository.delete({userId: userId})
+      return {code: 0,data}
+    } catch(e) {
+      return {code: 1, data: e}
+    }
   }
 }
