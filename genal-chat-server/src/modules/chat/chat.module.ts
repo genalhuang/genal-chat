@@ -10,11 +10,7 @@ import { FriendMessage } from '../friend/entity/friendMessage.entity'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Group, GroupMessage, Friend, FriendMessage]),
-    // TypeOrmModule.forFeature([Group]),
-    // TypeOrmModule.forFeature([GroupMessage]),
-    // TypeOrmModule.forFeature([Friend]),
-    // TypeOrmModule.forFeature([FriendMessage]),
+    TypeOrmModule.forFeature([User, Group, GroupMessage, Friend, FriendMessage])
   ],
   providers: [ChatGateway],
   controllers: [ChatController],
