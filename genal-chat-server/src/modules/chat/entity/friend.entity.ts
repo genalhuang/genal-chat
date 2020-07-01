@@ -1,13 +1,16 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Group {
+export class Friend {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ default: 'public' })
-  group: string;
+  @Column()
+  friendId: string;
 
-  @Column({ default: 'public' })
-  name: string;
+  @Column()
+  userId: string;
+
+  @Column()
+  createTime: string;
 }

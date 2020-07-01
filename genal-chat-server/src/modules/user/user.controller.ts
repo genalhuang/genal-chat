@@ -1,18 +1,29 @@
-import { Controller, Post, HttpCode, Get, Body, Query } from '@nestjs/common';
-import { UserGateway } from './user.gateway';
-import { UserDto } from './dto/user.dto';
+import { Controller, Post, HttpCode, Get, Body, Query, Patch, Param, Delete } from '@nestjs/common';
+import { UserService } from './user.service'
 
 @Controller('user')
 export class UserController {
-  constructor(private userGateway: UserGateway) {}
+  constructor(private readonly userService: UserService) {}
 
   @Get()
-  getUsers() {
-    return this.userGateway.getUsers()
+  getUsers(@Query('userId') userId: string) {
+    return this.userService.getUser(userId)
   }
 
   @Post()
-  addUser(@Body() user: UserDto) {
-    return this.userGateway.addUser(user)
+  addUser(@Body() user) {
+    user.createTime = parseInt(user.createTime)
+    return this.userService.addUser(user)
+  }
+
+  @Patch(':userId')
+  updateUser(@Param('userId') userId, @Body() user) {
+    console.log(userId, user)
+    return this.userService.updateUser(userId, user)
+  }
+
+  @Delete()
+  delUser(@Query() { id }) {
+    return this.userService.delUser(id);
   }
 }

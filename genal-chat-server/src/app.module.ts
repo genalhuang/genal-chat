@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GroupModule } from './modules/group/group.module';
 import { UserModule } from './modules/user/user.module';
 import { ChatModule } from './modules/chat/chat.module';
 
@@ -18,7 +17,6 @@ import { ChatModule } from './modules/chat/chat.module';
       autoLoadEntities: true,
       synchronize: true
     }),
-    GroupModule,
     UserModule,
     ChatModule
   ],
