@@ -9,11 +9,11 @@ import io from 'socket.io-client';
 @Component
 export default class Test extends Vue {
   a = {
-    userId: 'bbbbbbbbbbbbbb',
+    userId: '1',
     username: '余文乐',
   };
   b = {
-    userId: 'aaaaaaaaaaaaaaa',
+    userId: '2',
     username: '陈冠希',
   };
   aclient: any;

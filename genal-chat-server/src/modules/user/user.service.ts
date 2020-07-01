@@ -28,7 +28,7 @@ export class UserService {
   async addUser(user: User) {
     try {
       user.userId = '10'
-      let data = await this.userRepository.save(user)
+      const data = await this.userRepository.save(user)
       return {code: 0, data }
     } catch(e) {
       return {code: 1, data: e}
@@ -38,10 +38,10 @@ export class UserService {
 
   async updateUser(userId: string, user: User) {
     try {
-      let oldUser = await this.userRepository.findOne({userId: userId})
+      const oldUser = await this.userRepository.findOne({userId: userId})
       console.log(userId)
       if(user.password === oldUser.password) {
-        let data = await this.userRepository.update(oldUser,user)
+        const data = await this.userRepository.update(oldUser,user)
         return {code: 0,data}
       } 
       return {code: 1, data: '密码错误'}
@@ -52,7 +52,7 @@ export class UserService {
 
   async delUser(userId: string) {
     try {
-      let data =  await this.userRepository.delete({userId: userId})
+      const data =  await this.userRepository.delete({userId: userId})
       return {code: 0,data}
     } catch(e) {
       return {code: 1, data: e}
@@ -61,7 +61,7 @@ export class UserService {
 
   async login(user: {username: string, password: string}) {
     try {
-      let users = await this.userRepository.find({username:user.username, password: user.password})
+      const users = await this.userRepository.find({username:user.username, password: user.password})
       if(!users.length) {
         return {code: 1 , data: []}
       }

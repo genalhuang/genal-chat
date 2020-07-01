@@ -11,10 +11,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { User } from '../user/entity/user.entity';
-import { Group } from './entity/group.entity'
-import { GroupMessage } from './entity/groupMessage.entity'
-import { Friend } from './entity/friend.entity'
-import { FriendMessage } from './entity/friendMessage.entity'
+import { Group } from '../group/entity/group.entity'
+import { GroupMessage } from '../group/entity/groupMessage.entity'
+import { Friend } from '../friend/entity/friend.entity'
+import { FriendMessage } from '../friend/entity/friendMessage.entity'
 
 
 @WebSocketGateway({namespace:'chat'})
@@ -37,7 +37,7 @@ export class ChatGateway {
 
   // socket连接钩子
   async handleConnection(client: Socket): Promise<string> {
-    let defaultGroup = await this.groupRepository.find({groupname: 'public'})
+    const defaultGroup = await this.groupRepository.find({groupname: 'public'})
     if(!defaultGroup.length) {
       this.groupRepository.save({
         groupId: 'public',
@@ -54,13 +54,13 @@ export class ChatGateway {
   // 创建群组
   @SubscribeMessage('addGroup')
   async addGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group){
-    let isHava = await this.groupRepository.find({groupname: data.groupname})
+    const isHava = await this.groupRepository.find({groupname: data.groupname})
     client.join(data.groupId)
     if(isHava.length) {
       this.server.to(data.groupId).emit('addGroup', {code: 1, data:'该群已存在'})
       return;
     }
-    let group = await this.groupRepository.save(data)
+    const group = await this.groupRepository.save(data)
     console.log(group.groupId)
     this.server.to(group.groupId).emit('addGroup', {code: 0, data:group})
   }
@@ -68,12 +68,12 @@ export class ChatGateway {
   // 加入群组房间
   @SubscribeMessage('joinGroup')
   async joinGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group) {
-    let group = await this.groupRepository.findOne({groupname: data.groupname})
+    const group = await this.groupRepository.findOne({groupname: data.groupname})
     if(group && group.groupId) {
       data.groupId = group.groupId
       this.groupRepository.save(data)
       client.join(group.groupId)
-      let user = await this.userRepository.findOne({userId: data.userId})
+      const user = await this.userRepository.findOne({userId: data.userId})
       // @ts-ignore;
       user.groupId = group.groupId
       this.server.to(group.groupId).emit('joinGroup', {code: 0, data: user})
@@ -85,8 +85,8 @@ export class ChatGateway {
   async sendGroupMessage(@MessageBody() data: GroupMessage) {
     if(data.groupId) {
       this.gmRepository.save(data);
-      let user = this.userRepository.findOne({userId: data.userId})
-      let res: any = {...data}
+      const user = this.userRepository.findOne({userId: data.userId})
+      const res: any = {...data}
       res.user = user;
       this.server.to(data.groupId).emit('groupMessage', {code: 0, data: res})
     }
@@ -95,23 +95,24 @@ export class ChatGateway {
   // 添加好友
   @SubscribeMessage('addFriend')
   async addFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
+    console.log(data)
     if(data.friendId && data.userId) {
-      let isHave = await this.friendRepository.find({userId: data.userId, friendId: data.friendId})
+      const isHave = await this.friendRepository.find({userId: data.userId, friendId: data.friendId})
       console.log(isHave)
       if(isHave.length) {
         this.server.emit('addFriend', {code: 1, data: '已经有该好友'})
         return;
       }
-      let roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
-      let friend = await this.userRepository.find({userId: data.friendId});
+      const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
+      const friend = await this.userRepository.find({userId: data.friendId});
       if(!friend.length) {
         this.server.emit('addFriend', {code: 1, data: '该好友不存在'})
         return;
       }
       // 双方都添加好友 并存入数据库
       await this.friendRepository.save(data)
-      let friendData = JSON.parse(JSON.stringify(data))
-      let friendId = friendData.friendId
+      const friendData = JSON.parse(JSON.stringify(data))
+      const friendId = friendData.friendId
       friendData.friendId = friendData.userId
       friendData.userId = friendId
       delete friendData.id
@@ -127,7 +128,7 @@ export class ChatGateway {
   @SubscribeMessage('joinFriend')
   async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
     if(data.friendId && data.userId) {
-      let roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
+      const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
       client.join(roomId)
     }
   }
@@ -137,7 +138,7 @@ export class ChatGateway {
   async friendMessage(@MessageBody() data: FriendMessage) {
     if(data.from && data.to) {
       // console.log(data)
-      let roomId = data.from > data.to ? data.from + data.to : data.to + data.from
+      const roomId = data.from > data.to ? data.from + data.to : data.to + data.from
       await this.fmRepository.save(data)
       this.server.to(roomId).emit('friendMessage', {code: 0, data})
     }
