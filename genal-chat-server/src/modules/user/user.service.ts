@@ -27,6 +27,7 @@ export class UserService {
 
   async addUser(user: User) {
     try {
+      user.userId = '10'
       let data = await this.userRepository.save(user)
       return {code: 0, data }
     } catch(e) {
@@ -38,8 +39,12 @@ export class UserService {
   async updateUser(userId: string, user: User) {
     try {
       let oldUser = await this.userRepository.findOne({userId: userId})
-      let data = await this.userRepository.update(oldUser,user)
-      return {code: 0,data}
+      console.log(userId)
+      if(user.password === oldUser.password) {
+        let data = await this.userRepository.update(oldUser,user)
+        return {code: 0,data}
+      } 
+      return {code: 1, data: '密码错误'}
     } catch(e) {
       return {code: 1, data: e}
     }

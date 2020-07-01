@@ -2,10 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
 
 @Entity()
 export class Group {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @PrimaryGeneratedColumn('uuid')
   groupId: string;
 
   @Column()

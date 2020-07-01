@@ -55,6 +55,7 @@ export default class GenalChat extends Vue {
   group: string = 'public'
   groups: GroupMessage[] = [];
   user: User = {
+    id: '',
     name: '',
     password: '',
     avatar: 'aaaa.png',
