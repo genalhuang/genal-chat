@@ -53,4 +53,17 @@ export class UserService {
       return {code: 1, data: e}
     }
   }
+
+  async login(user: {username: string, password: string}) {
+    try {
+      let users = await this.userRepository.find({username:user.username, password: user.password})
+      if(!users.length) {
+        return {code: 1 , data: []}
+      }
+      return {code: 0, data: '登录成功'}
+    }catch(e) {
+      return {code: 1, data: e}
+    }
+  }
+
 }

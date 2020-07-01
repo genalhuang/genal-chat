@@ -26,4 +26,9 @@ export class UserController {
   delUser(@Query() { id }) {
     return this.userService.delUser(id);
   }
+
+  @Post('/login')
+  login(@Body() user) {
+    return this.userService.login(user)
+  }
 }
