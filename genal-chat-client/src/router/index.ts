@@ -9,8 +9,8 @@ const routes: Array<RouteConfig> = [
   {
     path: '/',
     name: 'Chat',
-    // component: GenalChat,
-    component: Test,
+    component: GenalChat,
+    // component: Test,
   },
 ];
 

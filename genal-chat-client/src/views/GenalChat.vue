@@ -1,26 +1,5 @@
 <template>
   <div class="chat">
-    <div class='chat-header'>
-      <a-input v-model='group' placeholder="输入任意id作为群名称" @keyup.enter="addGroupUser(group)"></a-input>
-      <a-button @click='addGroupUser(group)'>加入群组</a-button>
-    </div>
-    <div class='chat-part1'>
-      <genal-tool :user='user'></genal-tool>
-    </div>
-    <div class='chat-part2'>
-      <genal-group
-        :groups="groups"
-        :group="group"
-        @changeGroup="changeGroup"
-      ></genal-group>
-    </div>
-    <div class='chat-part3'>
-      <div class='chat-group'>{{group}}</div>
-      <genal-message
-      :messages='messages'
-      @sendMessage='sendMessage'
-      ></genal-message>
-    </div>
     <genal-login @login="addUser" :showLoginModal="showLoginModal"></genal-login>
   </div>
 </template>
@@ -28,183 +7,18 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import GenalLogin from '@/components/GenalLogin.vue'
-import GenalMessage from '@/components/GenalMessage.vue'
-import GenalTool from '@/components/GenalTool.vue'
-import GenalGroup from '@/components/GenalGroup.vue'
-import * as api from '@/api/apis/index';
 import { mapMutations, mapGetters } from 'vuex'
 import io from 'socket.io-client'
 
 @Component({
   components: {
-    GenalLogin,
-    GenalMessage,
-    GenalTool,
-    GenalGroup
+    GenalLogin
   },
-  computed: {
-    ...mapGetters(['userInfo', 'showLoginModal'])
-  },
-  methods: {
-    ...mapMutations(['setUserInfo','changeShowLoginModel'])
-  }
 })
 export default class GenalChat extends Vue {
-  chatClient: any = null;
-  groupClient: any = null;
-  group: string = 'public'
-  groups: GroupMessage[] = [];
-  user: User = {
-    id: '',
-    name: '',
-    password: '',
-    avatar: 'aaaa.png',
-  };
-  messages: Chat[] = [];
-  message: string = '';
-
-  created() {
-    this.handleChatEvents();
-    this.handleGroupEvents();
-    // @ts-ignore
-    this.user = this.userInfo
-    if(this.user.name) {
-      this.getGroups()
-    } else {
-      this.groups = [{
-        group: 'public'
-      }]
-      this.group = 'public'
-      this.$message.info('你当前的身份是游客,请登录')
-    }
-  }
-
-  handleGroupEvents() {
-    this.groupClient = io('/group');
-    this.groupClient.on('connect', () => {
-      console.log('群组socket连接成功');
-      this.groupClient.on('addGroupUser',(res: Group) => {
-        if(res.name != this.user.name) {
-          this.$message.success(`${res.name}加入群${res.group}`)
-        }
-      })
-    });
-  }
-
-  async addUser(user: User) {
-    this.user = user;
-    let { data } = await api.addUser(user);
-    if(data === '密码错误') {
-      this.$message.error('密码错误')
-      // @ts-ignore
-      this.user = {}
-      return
-    }
-    this.$message.success('欢迎进入聊天室')
-    //@ts-ignore
-    this.setUserInfo(user);
-    this.getGroups()
-  }
-
-  handleChatEvents() {
-    this.chatClient = io('/chat');
-    this.chatClient.on('connect', () => {
-      console.log('聊天socket连接成功');
-      // 获取聊天消息
-      this.getMessages();
-      // 监听消息事件
-      this.chatClient.on('message', (res: any) => {
-        console.log('message',res)
-        this.setGroupNewMessage(res)
-      });
-    });
-  }
-
-  setGroupNewMessage(message: Chat) {
-    this.messages.push(message);
-    // 更新群框框的最新消息
-    for(let i=0;i<this.groups.length;i++) {
-      if(this.groups[i].group === message.group) {
-        this.$set(this.groups,i,{
-          group: message.group,
-          name: message.name,
-          newMessage: message.message
-        })
-      }
-    }
-  }
-
-  sendMessage(message: string) {
-    if(!this.user.name) {
-      this.$message.error('游客不能发送消息')
-      return
-    }
-    console.log('asdf', message)
-    this.chatClient.emit('message', {
-      name: this.user.name,
-      group: this.group,
-      message: message,
-      time: new Date().getTime().toString()
-    })
-  }
-
-  async getMessages() {
-    let { data } = await api.getChat(this.group);
-    this.messages = data;
-    console.log(this.messages[this.messages.length-1])
-  }
-
-  // 用户加入某群
-  addGroupUser(group: string) {
-    this.group = group;
-    // 聊天socket加入该群
-    this.chatClient.emit('addGroupUser', {
-      group: group,
-      name: this.user.name
-    })
-    // 群组socket加入该群
-    this.groupClient.emit('addGroupUser', {
-      group: group,
-      name: this.user.name
-    })
-    // 重新获取一遍消息
-    this.getMessages()
-    // 去重添加进群组框
-    this.addGroups()
-  }
-
-  addGroups() {
-    let add = true;
-    for(let i=0;i<this.groups.length;i++) {
-      if(this.groups[i].group === this.group) {
-        add = false;
-      }
-    }
-    if(add) {
-      this.groups.push({
-        newMesage: '',
-        name: '',
-        group: this.group
-      })
-    }
-  }
-
-  async getGroups() {
-    let { data } = await api.getGroups(this.user.name)
-    for(let key of data) {
-      delete key.name
-      this.addGroupUser(key.group)
-    }
-    this.group = 'public'
-    this.getMessages()
-    this.groups = data;
-    console.log(this.groups)
-  }
-
-  changeGroup(group: string) {
-    this.group = group;
-    // 重新获取一遍消息
-    this.getMessages()
+  showLoginModal = true;
+  addUser() {
+    
   }
 }
 </script>
