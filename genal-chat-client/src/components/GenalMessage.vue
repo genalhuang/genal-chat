@@ -22,7 +22,7 @@ import * as api from '@/api/apis';
 
 @Component
 export default class GenalMessage extends Vue {
-  @Prop({default: () => []}) messages!: Chat[];
+  @Prop({default: () => []}) messages!: GroupMessageDto[];
   message: string = '';
   messageDom: Element = document.getElementsByClassName('message-frame')[0];
 

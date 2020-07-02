@@ -1,3 +1,4 @@
+export const SET_SOCKET = 'set_socket'
 export const ADD_GROUP = 'add_group';
 export const SET_GROUPS = 'set_groups';
 export const ADD_GROUP_MESSAGE = 'add_group_message';

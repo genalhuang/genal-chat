@@ -1,24 +1,67 @@
 <template>
   <div class="chat">
-    <genal-login @login="addUser" :showLoginModal="showLoginModal"></genal-login>
+    <a-button @click='logout'>注销</a-button>
+    {{user}}
+    <genal-join @regist='handleregist' @login="handlelogin" :showModal="showModal"></genal-join>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import GenalLogin from '@/components/GenalLogin.vue'
+import GenalJoin from '@/components/GenalJoin.vue'
 import { mapMutations, mapGetters } from 'vuex'
 import io from 'socket.io-client'
+import { namespace } from 'vuex-class'
+const appModule = namespace('app')
+const chatModule = namespace('chat')
 
 @Component({
   components: {
-    GenalLogin
+    GenalJoin
   },
 })
 export default class GenalChat extends Vue {
-  showLoginModal = true;
-  addUser() {
-    
+  showModal = false;
+  @appModule.Action('login') login: Function;
+  @appModule.Action('regist') regist: Function;
+  @appModule.Mutation('clear_user') clearUser: Function;
+  @appModule.Getter('user') user: User;
+
+  @chatModule.Getter('socket') socket: any;
+  @chatModule.Action('connectSocket') connectSocket: Function;
+
+  created() {
+    if(!this.user.username) {
+      this.showModal = true;
+    }
+  }
+
+  async handlelogin(user: User) {
+    let {code, data} = await this.login(user)
+    if(code) {
+      this.$message.error(data)
+      return;
+    }
+    this.$message.success('登录成功')
+    this.connectSocket()
+    this.showModal = false;
+  }
+
+  async handleregist(user: User) {
+    let {code, data} = await this.regist(user)
+    console.log(code,data)
+    if(code) {
+      this.$message.error(data)
+      return;
+    }
+    this.$message.success('注册成功')
+    this.connectSocket()
+    this.showModal = false;
+  }
+
+  logout() {
+    this.clearUser()
+    this.$router.go(0)
   }
 }
 </script>

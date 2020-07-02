@@ -2,11 +2,17 @@
 
   <div class="login">
     <a-modal 
-    title="登录" 
-    :visible="showLoginModal"
-    :closable='false'
-    footer=''
+      header=''
+      footer=''
+      :visible="showModal"
+      :closable='false'
     >
+    <a-tabs default-active-key="1" @change="changeType">
+      <a-tab-pane key="login" tab="登录">
+      </a-tab-pane>
+      <a-tab-pane key="regist" tab="注册" force-render>
+      </a-tab-pane>
+    </a-tabs>
       <a-form
         id="components-form-demo-normal-login"
         :form="form"
@@ -16,10 +22,10 @@
         <a-form-item>
           <a-input
             v-decorator="[
-              'name',
+              'username',
               { rules: [{ required: true, message: '请输入用户名!' }] },
             ]"
-            placeholder="name"
+            placeholder="username"
           >
             <a-icon slot="prefix" type="user" style="color: rgba(0,0,0,.25)" />
           </a-input>
@@ -61,28 +67,28 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import {mapMutations, mapGetters} from "vuex";
 
-@Component({
-  computed: {
-    ...mapGetters(['showLoginModal'])
-  },
-  methods: {
-    ...mapMutations(['changeShowLoginModal'])
-  }
-})
-export default class GenalLogin extends Vue {
+@Component
+export default class GenalJoin extends Vue {
+  @Prop() showModal:boolean;
   form: any = null;
+  type: string = 'login'
 
   created() {
     this.form = this.$form.createForm(this, { name: 'normal_login' });
   }
 
+  changeType(type: string) {
+    this.type = type
+  }
+
   handleSubmit(e:any) {
     e.preventDefault();
-    this.form.validateFields((err:any, values:any) => {
+    this.form.validateFields((err:any, values:User) => {
       if (!err) {
-        this.$emit('login', values)
-        // @ts-ignore
-        this.changeShowLoginModal(false)
+        if(this.type === 'regist') {
+          values.createTime = new Date().valueOf()
+        }
+        this.$emit(this.type,values)
       }
     });
   }

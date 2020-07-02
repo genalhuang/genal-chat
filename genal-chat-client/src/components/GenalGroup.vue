@@ -22,7 +22,7 @@ import { mapGetters } from 'vuex'
 
 @Component
 export default class GenalGroup extends Vue {
-  @Prop({ default: () => [] }) groups: Group[];
+  @Prop({ default: () => [] }) groups: GroupDto[];
   @Prop({ default: '' }) group: string;
 
   changeGroup(group: string) {

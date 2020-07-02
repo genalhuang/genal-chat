@@ -1,5 +1,5 @@
 export interface AppState {
-  user: User
+  user: User;
 }
 
 const appState: AppState = {

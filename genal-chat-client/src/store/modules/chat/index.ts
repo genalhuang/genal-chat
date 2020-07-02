@@ -6,8 +6,8 @@ import { Module } from 'vuex';
 import { RootState } from '../../index';
 
 const chat: Module<ChatState, RootState> = {
-  state,
   namespaced: true,
+  state,
   mutations,
   actions,
   getters,
