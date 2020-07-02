@@ -43,7 +43,7 @@ export class ChatGateway {
         groupId: 'public',
         groupname: 'public',
         userId: 'admin',
-        createTime: new Date().valueOf().toString()
+        createTime: new Date().valueOf()
       })
     }
     // 连接默认加入public房间

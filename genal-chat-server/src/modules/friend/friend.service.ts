@@ -34,7 +34,6 @@ export class FriendService {
       const userMessages = await this.friendRepository.find({userId: userId, friendId: friendId });
       const friendMessages = await this.friendRepository.find({userId: friendId, friendId: userId });
       data = [...userMessages, ...friendMessages]
-      console.log(data)
       return {code: 0, data: data}
     } catch(e) {
       return { code:1, data:e}
