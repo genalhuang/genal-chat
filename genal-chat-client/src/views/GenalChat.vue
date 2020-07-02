@@ -2,6 +2,7 @@
   <div class="chat">
     <a-button @click='logout'>注销</a-button>
     {{user}}
+    {{groups}}
     <genal-join @regist='handleregist' @login="handlelogin" :showModal="showModal"></genal-join>
   </div>
 </template>
@@ -22,20 +23,33 @@ const chatModule = namespace('chat')
 })
 export default class GenalChat extends Vue {
   showModal = false;
+
+  @appModule.Getter('user') user: User;
+  @appModule.Mutation('clear_user') clearUser: Function;
   @appModule.Action('login') login: Function;
   @appModule.Action('regist') regist: Function;
-  @appModule.Mutation('clear_user') clearUser: Function;
-  @appModule.Getter('user') user: User;
 
   @chatModule.Getter('socket') socket: any;
+  @chatModule.Getter('groups') groups: any;
   @chatModule.Action('connectSocket') connectSocket: Function;
+  @chatModule.Action('getGroupAndMessages') getGroupAndMessages: Function;
 
   created() {
-    if(!this.user.username) {
+    if(!this.user.userId) {
       this.showModal = true;
+    } else {
+      this.handleJoin()
     }
   }
 
+  mounted() {
+    setTimeout(()=>{
+    console.log(this.groups)
+    },1000)
+
+  }
+
+  // 登录
   async handlelogin(user: User) {
     let {code, data} = await this.login(user)
     if(code) {
@@ -43,10 +57,11 @@ export default class GenalChat extends Vue {
       return;
     }
     this.$message.success('登录成功')
-    this.connectSocket()
-    this.showModal = false;
+    // 进入系统事件
+    this.handleJoin()
   }
 
+  // 注册
   async handleregist(user: User) {
     let {code, data} = await this.regist(user)
     console.log(code,data)
@@ -55,10 +70,20 @@ export default class GenalChat extends Vue {
       return;
     }
     this.$message.success('注册成功')
-    this.connectSocket()
-    this.showModal = false;
+
+    // 进入系统事件
+    this.handleJoin()
   }
 
+  // 进入系统初始化事件
+  async handleJoin() {
+    this.showModal = false;
+    this.connectSocket()
+    await this.getGroupAndMessages()
+  }
+
+
+  // 注销
   logout() {
     this.clearUser()
     this.$router.go(0)

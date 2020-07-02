@@ -5,8 +5,8 @@ interface GroupDto {
   groupId: string;
   userId: string;
   groupname: string;
+  message?: GroupMessageDto[];
   createTime: string;
-  message?: GroupMessageDto[]
 }
 
 interface GroupMessageDto {
@@ -20,8 +20,8 @@ interface GroupMessageDto {
 interface FriendDto {
   friendId: string;
   userId: string;
+  message?: FriendMessageDto[];
   createTime: string;
-  message?: FriendMessageDto[]
 }
 
 interface FriendMessageDto {

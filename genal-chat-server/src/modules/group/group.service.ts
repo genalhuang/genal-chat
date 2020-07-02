@@ -14,7 +14,6 @@ export class GroupService {
   ) {}
 
   async getGroups(userId: string) {
-    console.log(userId)
     try {
       if(userId) {
         return {code: 0, data: await this.groupRepository.find({userId: userId})}

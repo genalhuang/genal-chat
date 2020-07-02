@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { 
   SET_SOCKET,
   ADD_GROUP,
@@ -41,7 +42,8 @@ const mutations: MutationTree<ChatState> = {
   [SET_GROUP_MESSAGES](state, payload: GroupMessageDto[]) {
     for(let i=0;i<state.groups.length; i++) {
       if(payload[0].groupId === state.groups[i].groupId) {
-        state.groups[i].message = payload
+        // vuex对象数组中对象改变不更新问题
+        Vue.set(state.groups[i], 'message' , payload)
       }
     }
   },
@@ -55,6 +57,8 @@ const mutations: MutationTree<ChatState> = {
   [SET_FRIENDS](state, payload: FriendDto[]) {
     state.friends = payload
   },
+
+  // 新增一条私聊消息
   [ADD_FRIEND_MESSAGE](state, payload: FriendMessageDto) {
     for(let i=0;i<state.friends.length; i++) {
       if(payload.to === state.friends[i].friendId) {

@@ -139,8 +139,6 @@ export class ChatGateway {
         delete friendData.id
         await this.friendRepository.save(friendData)
         client.join(roomId)
-        console.log(data, friendData)
-        console.log(await this.friendRepository.find())
         this.server.emit('addFriend', {code: 0, data})
       }
     } catch(e) {
@@ -155,6 +153,8 @@ export class ChatGateway {
       if(data.friendId && data.userId) {
         const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
         client.join(roomId)
+        // 通知被添加的一方加入房间成功
+        this.server.to(data.friendId).emit('joinFriend', {code:1, data})
       }
     } catch(e) {
       return { code: 1, data: e }
