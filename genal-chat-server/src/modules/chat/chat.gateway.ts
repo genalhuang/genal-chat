@@ -54,93 +54,114 @@ export class ChatGateway {
   // 创建群组
   @SubscribeMessage('addGroup')
   async addGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group){
-    const isHava = await this.groupRepository.find({groupname: data.groupname})
-    client.join(data.groupId)
-    if(isHava.length) {
-      this.server.to(data.groupId).emit('addGroup', {code: 1, data:'该群已存在'})
-      return;
+    try {
+      const isHava = await this.groupRepository.find({groupname: data.groupname})
+      client.join(data.groupId)
+      if(isHava.length) {
+        this.server.to(data.groupId).emit('addGroup', {code: 1, data:'该群已存在'})
+        return;
+      }
+      const group = await this.groupRepository.save(data)
+      console.log(group.groupId)
+      this.server.to(group.groupId).emit('addGroup', {code: 0, data:group})
+    } catch(e) {
+      return { code: 1, data: e }
     }
-    const group = await this.groupRepository.save(data)
-    console.log(group.groupId)
-    this.server.to(group.groupId).emit('addGroup', {code: 0, data:group})
   }
 
   // 加入群组房间
   @SubscribeMessage('joinGroup')
   async joinGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group) {
-    const group = await this.groupRepository.findOne({groupname: data.groupname})
-    if(group && group.groupId) {
-      data.groupId = group.groupId
-      this.groupRepository.save(data)
-      client.join(group.groupId)
+    try {
+      const group = await this.groupRepository.findOne({groupname: data.groupname})
       const user = await this.userRepository.findOne({userId: data.userId})
-      // @ts-ignore;
-      user.groupId = group.groupId
-      this.server.to(group.groupId).emit('joinGroup', {code: 0, data: user})
+      if(group && group.groupId) {
+        data.groupId = group.groupId
+        this.groupRepository.save(data)
+        client.join(group.groupId)
+        let res = { group: group, user: user}
+        this.server.to(group.groupId).emit('joinGroup', {code: 0, data: res})
+      }
+    } catch(e) {
+      return { code: 1, data: e }
     }
   }
 
   // 接收群消息
   @SubscribeMessage('groupMessage')
   async sendGroupMessage(@MessageBody() data: GroupMessage) {
-    if(data.groupId) {
-      this.gmRepository.save(data);
-      const user = this.userRepository.findOne({userId: data.userId})
-      const res: any = {...data}
-      res.user = user;
-      this.server.to(data.groupId).emit('groupMessage', {code: 0, data: res})
+    try {
+      if(data.groupId) {
+        this.gmRepository.save(data);
+        const user = this.userRepository.findOne({userId: data.userId})
+        const res: any = {...data}
+        res.user = user;
+        this.server.to(data.groupId).emit('groupMessage', {code: 0, data: res})
+      }
+    } catch(e) {
+      return { code: 1, data: e }
     }
   }
 
   // 添加好友
   @SubscribeMessage('addFriend')
   async addFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
-    console.log(data)
-    if(data.friendId && data.userId) {
-      const isHave = await this.friendRepository.find({userId: data.userId, friendId: data.friendId})
-      console.log(isHave)
-      if(isHave.length) {
-        this.server.emit('addFriend', {code: 1, data: '已经有该好友'})
-        return;
+    try {
+      if(data.friendId && data.userId) {
+        const isHave = await this.friendRepository.find({userId: data.userId, friendId: data.friendId})
+        if(isHave.length) {
+          this.server.emit('addFriend', {code: 1, data: '已经有该好友'})
+          return;
+        }
+        const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
+        const friend = await this.userRepository.find({userId: data.friendId});
+        if(!friend.length) {
+          this.server.emit('addFriend', {code: 1, data: '该好友不存在'})
+          return;
+        }
+        // 双方都添加好友 并存入数据库
+        await this.friendRepository.save(data)
+        const friendData = JSON.parse(JSON.stringify(data))
+        const friendId = friendData.friendId
+        friendData.friendId = friendData.userId
+        friendData.userId = friendId
+        delete friendData.id
+        await this.friendRepository.save(friendData)
+        client.join(roomId)
+        console.log(data, friendData)
+        console.log(await this.friendRepository.find())
+        this.server.emit('addFriend', {code: 0, data})
       }
-      const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
-      const friend = await this.userRepository.find({userId: data.friendId});
-      if(!friend.length) {
-        this.server.emit('addFriend', {code: 1, data: '该好友不存在'})
-        return;
-      }
-      // 双方都添加好友 并存入数据库
-      await this.friendRepository.save(data)
-      const friendData = JSON.parse(JSON.stringify(data))
-      const friendId = friendData.friendId
-      friendData.friendId = friendData.userId
-      friendData.userId = friendId
-      delete friendData.id
-      await this.friendRepository.save(friendData)
-      client.join(roomId)
-      console.log(data, friendData)
-      console.log(await this.friendRepository.find())
-      this.server.emit('addFriend', {code: 0, data})
+    } catch(e) {
+      return { code: 1, data: e }
     }
   }
 
   // 进入私聊房间
   @SubscribeMessage('joinFriend')
   async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
-    if(data.friendId && data.userId) {
-      const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
-      client.join(roomId)
+    try {
+      if(data.friendId && data.userId) {
+        const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
+        client.join(roomId)
+      }
+    } catch(e) {
+      return { code: 1, data: e }
     }
   }
 
   // 发送私聊消息
   @SubscribeMessage('friendMessage')
   async friendMessage(@MessageBody() data: FriendMessage) {
-    if(data.from && data.to) {
-      // console.log(data)
-      const roomId = data.from > data.to ? data.from + data.to : data.to + data.from
-      await this.fmRepository.save(data)
-      this.server.to(roomId).emit('friendMessage', {code: 0, data})
+    try {
+      if(data.from && data.to) {
+        // console.log(data)
+        const roomId = data.from > data.to ? data.from + data.to : data.to + data.from
+        await this.fmRepository.save(data)
+        this.server.to(roomId).emit('friendMessage', {code: 0, data})
+      }
+    } catch(e) {
+      return { code: 1, data: e }
     }
   }
 }

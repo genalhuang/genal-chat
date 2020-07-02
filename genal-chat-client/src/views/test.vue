@@ -24,7 +24,7 @@ export default class Test extends Vue {
       console.log('a connect');
       a.on('addFriend', (res: any) => {
         if (res.code) {
-          console.log(res);
+          console.log(1111111,res);
         }
         res = res.data;
         if (res.friendId === this.a.userId) {
@@ -76,6 +76,16 @@ export default class Test extends Vue {
     });
 
     setInterval(() => {
+     this.bclient.emit('joinFriend',{
+      userId: this.b.userId,
+      friendId: this.a.userId,
+      createTime: new Date().valueOf()
+    })
+    this.aclient.emit('joinFriend', {
+      userId: this.a.userId,
+      friendId: this.b.userId,
+      createTime: new Date().valueOf()
+    })
       this.bclient.emit('friendMessage', {
         from: this.b.userId,
         to: this.a.userId,
@@ -83,6 +93,7 @@ export default class Test extends Vue {
         time: new Date().valueOf(),
       });
     }, 2000);
+
   }
 }
 </script>

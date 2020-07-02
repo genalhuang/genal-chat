@@ -15,8 +15,13 @@ export class FriendService {
 
   async getFriends(userId: string) {
     try {
-      const data = await this.friendRepository.find({userId: userId})
-      return {code: 0, data }
+      console.log(userId)
+      if(userId) {
+        return {code: 0, data: await this.friendRepository.find({userId: userId}) }
+      } else {
+        return {code: 0, data: await this.friendRepository.find()}
+      }
+
     } catch(e) {
       return { code:1, data:e}
     }

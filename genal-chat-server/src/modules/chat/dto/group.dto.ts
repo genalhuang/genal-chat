@@ -1,6 +1,6 @@
-export class FriendMessageDto {
-  from: string;
-  to: string;
-  content: string;
-  time: string;
+export class GroupDto {
+  groupId: string;
+  userId: string;
+  groupname: string;
+  createTime: string;
 }

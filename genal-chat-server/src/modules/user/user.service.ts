@@ -27,7 +27,10 @@ export class UserService {
 
   async addUser(user: User) {
     try {
-      user.userId = '10'
+      let isHave = await this.userRepository.find({username: user.username})
+      if(isHave.length) {
+        return {code: 0, data: isHave }
+      }
       const data = await this.userRepository.save(user)
       return {code: 0, data }
     } catch(e) {

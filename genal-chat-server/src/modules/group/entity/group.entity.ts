@@ -11,6 +11,6 @@ export class Group {
   @Column()
   groupname: string;
 
-  @Column()
-  createTime: string;
+  @Column('double')
+  createTime: number;
 }
