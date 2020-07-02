@@ -31,8 +31,8 @@ export class FriendService {
     console.log(userId, friendId)
     try {
       let data = []
-      const userMessages = await this.friendRepository.find({userId: userId, friendId: friendId });
-      const friendMessages = await this.friendRepository.find({userId: friendId, friendId: userId });
+      const userMessages = await this.friendMessageResponsity.find({from: userId, to: friendId });
+      const friendMessages = await this.friendMessageResponsity.find({from: friendId, to: userId });
       data = [...userMessages, ...friendMessages]
       return {code: 0, data: data}
     } catch(e) {

@@ -6,8 +6,8 @@ export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
   @Get()
-  getGroups(@Query('groupId') groupId: string) {
-    return this.groupService.getGroups(groupId)
+  getGroups(@Query('userId') userId: string) {
+    return this.groupService.getGroups(userId)
   }
 
   @Get('/messages')

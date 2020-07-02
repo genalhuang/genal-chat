@@ -5,5 +5,5 @@ export class UserDto {
   avatar: string;
   role: string;
   tag: string;
-  createTime: string;
+  createTime: number;
 }

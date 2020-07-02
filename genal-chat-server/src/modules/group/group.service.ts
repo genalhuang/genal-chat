@@ -13,10 +13,10 @@ export class GroupService {
     private readonly GroupMessageResponsity: Repository<GroupMessage>,
   ) {}
 
-  async getGroups(groupId: string) {
+  async getGroups(userId: string) {
     try {
-      if(groupId) {
-        return {code: 0, data: await this.groupRepository.find({groupId: groupId})}
+      if(userId) {
+        return {code: 0, data: await this.groupRepository.find({userId: userId})}
       }
       return {code: 0, data:await this.groupRepository.find()}
     } catch (e) {
