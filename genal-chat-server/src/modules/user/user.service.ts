@@ -3,12 +3,15 @@ import { Repository, Connection, getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { UserDto } from './dto/user.dto';
+import { Group } from '../group/entity/group.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Group)
+    private readonly groupRepository: Repository<Group>,
   ) {}
 
   async getUser(userId: string) {
@@ -25,13 +28,22 @@ export class UserService {
     }
   }
 
-  async addUser(user: User) {
+  async addUser(user: any) {
     try {
       let isHave = await this.userRepository.find({username: user.username})
       if(isHave.length) {
-        return {code: 0, data: isHave }
+        return {code: 1, data: '用户名重复' }
       }
+
       const data = await this.userRepository.save(user)
+
+      await this.groupRepository.save({
+        userId: data.userId,
+        groupId: 'public',
+        groupname: 'public',
+        createTime: new Date().valueOf()
+      })
+      
       return {code: 0, data }
     } catch(e) {
       return {code: 1, data: e}
@@ -64,11 +76,11 @@ export class UserService {
 
   async login(user: {username: string, password: string}) {
     try {
-      const users = await this.userRepository.find({username:user.username, password: user.password})
-      if(!users.length) {
-        return {code: 1 , data: []}
+      const data = await this.userRepository.findOne({username:user.username, password: user.password})
+      if(!data) {
+        return {code: 1 , data: '密码错误'}
       }
-      return {code: 0, data: '登录成功'}
+      return {code: 0, data: data}
     }catch(e) {
       return {code: 1, data: e}
     }

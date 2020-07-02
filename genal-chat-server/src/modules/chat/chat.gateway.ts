@@ -9,7 +9,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
+import { v4 as uuidv4 } from 'uuid';
 import { User } from '../user/entity/user.entity';
 import { Group } from '../group/entity/group.entity'
 import { GroupMessage } from '../group/entity/groupMessage.entity'
@@ -37,6 +37,7 @@ export class ChatGateway {
 
   // socket连接钩子
   async handleConnection(client: Socket): Promise<string> {
+    let userRoom = client.handshake.query.userId
     const defaultGroup = await this.groupRepository.find({groupname: 'public'})
     if(!defaultGroup.length) {
       this.groupRepository.save({
@@ -48,6 +49,11 @@ export class ChatGateway {
     }
     // 连接默认加入public房间
     client.join('public')
+    // 用户独有消息房间 根据userId
+    if(userRoom) {
+      client.join(userRoom)
+    }
+
     return '连接成功'
   }
 
@@ -55,14 +61,15 @@ export class ChatGateway {
   @SubscribeMessage('addGroup')
   async addGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group){
     try {
-      const isHava = await this.groupRepository.find({groupname: data.groupname})
-      client.join(data.groupId)
-      if(isHava.length) {
-        this.server.to(data.groupId).emit('addGroup', {code: 1, data:'该群已存在'})
-        return;
+      const isHaveGroup = await this.groupRepository.find({groupname: data.groupname})
+      if(isHaveGroup.length) {
+        return this.server.to(data.userId).emit('addGroup', {code:1,data: '该房间已存在'})
       }
+
+      data.groupId = uuidv4()
+      client.join(data.groupId)
       const group = await this.groupRepository.save(data)
-      console.log(group.groupId)
+      console.log(group)
       this.server.to(group.groupId).emit('addGroup', {code: 0, data:group})
     } catch(e) {
       return { code: 1, data: e }
@@ -91,6 +98,10 @@ export class ChatGateway {
   @SubscribeMessage('groupMessage')
   async sendGroupMessage(@MessageBody() data: GroupMessage) {
     try {
+      let isInGroup = await this.groupRepository.find({userId: data.userId, groupId: data.groupId})
+      if(!isInGroup.length) {
+        return this.server.to(data.groupId).emit('groupMessage',{code:1,data: '群消息发送错误'})
+      } 
       if(data.groupId) {
         this.gmRepository.save(data);
         const user = this.userRepository.findOne({userId: data.userId})
@@ -99,7 +110,7 @@ export class ChatGateway {
         this.server.to(data.groupId).emit('groupMessage', {code: 0, data: res})
       }
     } catch(e) {
-      return { code: 1, data: e }
+      return this.server.to(data.groupId).emit('groupMessage',{ code: 1, data: e })
     }
   }
 

@@ -20,6 +20,6 @@ export class User {
   @Column({ default: '' })
   tag: string;
 
-  @Column({type: 'double'})
+  @Column({type: 'double',default: new Date().valueOf()})
   createTime: number;
 }

@@ -14,6 +14,7 @@ export class GroupService {
   ) {}
 
   async getGroups(userId: string) {
+    console.log(userId)
     try {
       if(userId) {
         return {code: 0, data: await this.groupRepository.find({userId: userId})}
@@ -54,6 +55,14 @@ export class GroupService {
   delGroup() {
     try {
 
+    } catch (e) {
+      return {code: 1, data: e}
+    }
+  }
+
+  async joinGroup(group:Group) {
+    try {
+      return {code:0, data: await this.groupRepository.save(group)}
     } catch (e) {
       return {code: 1, data: e}
     }

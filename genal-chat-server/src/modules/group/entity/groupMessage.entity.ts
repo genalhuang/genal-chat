@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
 @Entity()
 export class GroupMessage {
   @PrimaryGeneratedColumn()
-  id: number;
+  _id: number;
 
   @Column()
   userId: string;

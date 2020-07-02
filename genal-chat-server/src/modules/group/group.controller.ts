@@ -1,5 +1,6 @@
 import { Controller, Post, HttpCode, Get, Body, Query, Patch, Param, Delete } from '@nestjs/common';
 import { GroupService } from './group.service'
+import { Group } from './entity/group.entity';
 
 @Controller('group')
 export class GroupController {
@@ -13,5 +14,11 @@ export class GroupController {
   @Get('/messages')
   getGroupMessages(@Query('groupId') groupId: string) {
     return this.groupService.getGroupMessages(groupId);
+  }
+
+  @Post('/join')
+  joinGroup(@Body() group:Group) {
+    console.log(group)
+    return this.groupService.joinGroup(group)
   }
 }
