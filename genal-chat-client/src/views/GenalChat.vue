@@ -1,8 +1,22 @@
 <template>
   <div class="chat">
-    <a-button @click='logout'>注销</a-button>
-    {{user}}
-    {{groups}}
+    <div class='chat-part1'>
+      <a-button @click='logout'>注销</a-button>
+    </div>
+    <div class='chat-part2'>
+      <a-input v-model="user.username"></a-input>
+      <genal-group 
+        @addGroup='addGroup'
+        @addFriend='addFriend'
+        @setActiveChat='setActiveChat'
+        :groups="groups"
+      ></genal-group>
+    </div>
+    <div class='chat-part3'>
+      <template v-for="(item, index) in groups">
+        <genal-message :messages="item.messages" @sendMessage='sendMessage' :key='index'></genal-message>
+      </template>
+    </div>
     <genal-join @regist='handleregist' @login="handlelogin" :showModal="showModal"></genal-join>
   </div>
 </template>
@@ -10,6 +24,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import GenalJoin from '@/components/GenalJoin.vue'
+import GenalGroup from '@/components/GenalGroup.vue'
+import GenalMessage from '@/components/GenalMessage.vue'
 import { mapMutations, mapGetters } from 'vuex'
 import io from 'socket.io-client'
 import { namespace } from 'vuex-class'
@@ -18,7 +34,9 @@ const chatModule = namespace('chat')
 
 @Component({
   components: {
-    GenalJoin
+    GenalJoin,
+    GenalGroup,
+    GenalMessage
   },
 })
 export default class GenalChat extends Vue {
@@ -31,6 +49,8 @@ export default class GenalChat extends Vue {
 
   @chatModule.Getter('socket') socket: any;
   @chatModule.Getter('groups') groups: any;
+  @chatModule.Getter('activeChat') activeChat: any;
+  @chatModule.Mutation('set_active_chat') _setActiveChat: Function;
   @chatModule.Action('connectSocket') connectSocket: Function;
   @chatModule.Action('getGroupAndMessages') getGroupAndMessages: Function;
 
@@ -46,7 +66,6 @@ export default class GenalChat extends Vue {
     setTimeout(()=>{
     console.log(this.groups)
     },1000)
-
   }
 
   // 登录
@@ -82,6 +101,32 @@ export default class GenalChat extends Vue {
     await this.getGroupAndMessages()
   }
 
+  sendMessage(message: string) {
+    console.log(this.user,  this.activeChat.groupId)
+    this.socket.emit('groupMessage', {
+      userId: this.user.userId,
+      groupId: this.activeChat.groupId,
+      content: message,
+      time: new Date().valueOf()
+    })
+  }
+
+  addGroup(groupname: string) {
+    console.log(groupname)
+    this.socket.emit('addGroup', {
+      userId: this.user.userId,
+      groupname: groupname,
+      createTime: new Date().valueOf()
+    })
+  }
+
+  addFriend(friendname: string) {
+
+  }
+
+  setActiveChat(chat: FriendDto | GroupDto) {
+    this._setActiveChat(chat)
+  } 
 
   // 注销
   logout() {

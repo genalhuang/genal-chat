@@ -1,16 +1,19 @@
 <template>
   <div class="group">
+    <a-button @click='() => visibleGroup =!visibleGroup'>创建一个群</a-button>
+    <a-modal v-model="visibleGroup" title="Basic Modal" @ok="addGroup">
+      <a-input v-model='groupname' placeholder="群"></a-input>
+    </a-modal>
+    <a-button @click='() => visibleFriend =!visibleFriend'>添加好友</a-button>
+    <a-modal v-model="visibleFriend" title="Basic Modal" @ok="addFriend">
+      <a-input v-model='friendname' placeholder="好友"></a-input>
+    </a-modal>
     <div v-for="(item,index) in groups" :key="index">
       <div
         class="group-card"
-        :class="{'active': group === item.group}"
-        @click="changeGroup(item.group)"
+        @click="changeActiveChat(item)"
       >
-        <div class="group-card-name">{{item.group}}</div>
-        <div class="group-card-new">
-          <span class="name" v-if="item.name">{{item.name}}:</span>
-          <span class="text" v-if="item.newMessage">{{item.newMessage}}</span>
-        </div>
+        <div class="group-card-name">{{item.groupname}}</div>
       </div>
     </div>
   </div>
@@ -18,15 +21,28 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { mapGetters } from 'vuex'
+
 
 @Component
 export default class GenalGroup extends Vue {
   @Prop({ default: () => [] }) groups: GroupDto[];
-  @Prop({ default: '' }) group: string;
+  visibleGroup:boolean =false;
+  visibleFriend:boolean =false;
+  groupname: string = ''
+  friendname: string = ''
 
-  changeGroup(group: string) {
-    this.$emit('changeGroup', group)
+  addGroup() {
+    this.visibleGroup=false
+    this.$emit('addGroup', this.groupname)
+  }
+
+  addFriend() {
+    this.visibleFriend=false
+    this.$emit('addFriend', this.friendname)
+  }
+
+  changeActiveChat(activeChat: FriendDto | GroupDto) {
+    this.$emit('setActiveChat', activeChat)
   }
 }
 </script>

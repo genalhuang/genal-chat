@@ -5,10 +5,11 @@ interface GroupDto {
   groupId: string;
   userId: string;
   groupname: string;
-  message?: GroupMessageDto[];
+  messages: GroupMessageDto[];
   createTime: string;
 }
 
+// 群消息
 interface GroupMessageDto {
   userId: string;
   groupId: string;
@@ -16,18 +17,18 @@ interface GroupMessageDto {
   time: string;
 }
 
-// 私聊
+// 好友
 interface FriendDto {
   friendId: string;
   userId: string;
-  message?: FriendMessageDto[];
+  messages: FriendMessageDto[];
   createTime: string;
 }
 
+// 好友消息
 interface FriendMessageDto {
   from: string;
   to: string;
   content: string;
   time: string;
 }
-

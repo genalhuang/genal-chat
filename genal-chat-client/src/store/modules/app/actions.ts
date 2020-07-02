@@ -19,6 +19,7 @@ const actions: ActionTree<AppState, RootState> = {
       ...payload
     })
     if(res.data.code === 0) {
+      console.log(res.data.data)
       commit(SET_USER, res.data.data)
     }
     return res.data

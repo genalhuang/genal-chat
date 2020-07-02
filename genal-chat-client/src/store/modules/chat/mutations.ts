@@ -8,7 +8,8 @@ import {
   ADD_FRIEND, 
   SET_FRIENDS,
   ADD_FRIEND_MESSAGE,
-  SET_FRIEND_MESSAGES
+  SET_FRIEND_MESSAGES,
+  SET_ACTIVE_CHAT
 } from './mutation-types'
 import { ChatState } from './state';
 import { MutationTree } from 'vuex';
@@ -33,17 +34,20 @@ const mutations: MutationTree<ChatState> = {
   [ADD_GROUP_MESSAGE](state, payload: GroupMessageDto) {
     for(let i=0;i<state.groups.length; i++) {
       if(payload.groupId === state.groups[i].groupId) {
-        state.groups[i].message?.push(payload)
+        console.log( state.groups[i])
+        state.groups[i].messages.push(payload)
       }
     }
   },
 
   // 设置群消息
   [SET_GROUP_MESSAGES](state, payload: GroupMessageDto[]) {
-    for(let i=0;i<state.groups.length; i++) {
-      if(payload[0].groupId === state.groups[i].groupId) {
-        // vuex对象数组中对象改变不更新问题
-        Vue.set(state.groups[i], 'message' , payload)
+    if(payload.length) {
+      for(let i=0;i<state.groups.length; i++) {
+        if(payload[0].groupId === state.groups[i].groupId) {
+          // vuex对象数组中对象改变不更新问题
+          Vue.set(state.groups[i], 'messages' , payload)
+        }
       }
     }
   },
@@ -62,20 +66,26 @@ const mutations: MutationTree<ChatState> = {
   [ADD_FRIEND_MESSAGE](state, payload: FriendMessageDto) {
     for(let i=0;i<state.friends.length; i++) {
       if(payload.to === state.friends[i].friendId) {
-        state.friends[i].message?.push(payload)
+        state.friends[i].messages.push(payload)
       }
     }
   },
 
   // 设置私聊记录
   [SET_FRIEND_MESSAGES](state, payload: FriendMessageDto[]) {
-    for(let i=0;i<state.friends.length; i++) {
-      if(payload[0].to === state.friends[i].friendId) {
-        state.friends[i].message = payload
+    if(payload.length) {
+      for(let i=0;i<state.friends.length; i++) {
+        if(payload[0].to === state.friends[i].friendId) {
+          state.friends[i].messages = payload
+        }
       }
     }
   },
 
+  // 设置当前聊天对象(群或好友)
+  [SET_ACTIVE_CHAT](state, payload: FriendDto | GroupDto) {
+    state.activeChat = payload
+  }
 }
 
 export default mutations;

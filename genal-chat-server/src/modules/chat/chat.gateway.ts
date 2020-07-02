@@ -98,6 +98,7 @@ export class ChatGateway {
   @SubscribeMessage('groupMessage')
   async sendGroupMessage(@MessageBody() data: GroupMessage) {
     try {
+      console.log(data)
       let isInGroup = await this.groupRepository.find({userId: data.userId, groupId: data.groupId})
       if(!isInGroup.length) {
         return this.server.to(data.groupId).emit('groupMessage',{code:1,data: '群消息发送错误'})

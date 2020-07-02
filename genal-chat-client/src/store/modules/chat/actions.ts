@@ -3,6 +3,7 @@ import { ChatState } from './state'
 import { RootState } from '../../index'
 import fetch from '@/api/fetch';
 import io from 'socket.io-client'
+import Vue from 'vue'
 import { 
   SET_SOCKET,
   ADD_GROUP,
@@ -56,7 +57,7 @@ const actions: ActionTree<ChatState, RootState> = {
       })
 
       socket.on('groupMessage',(res:any)=> {
-        console.log(res)
+        console.log('groupMessage',res)
         if(!res.code) {
           commit(ADD_GROUP_MESSAGE, res.data)
         }
@@ -110,16 +111,18 @@ const actions: ActionTree<ChatState, RootState> = {
     let user = rootState.app.user
     let res = await fetch.get(`/group?userId=${user.userId}`)
     let {code, data} = res.data
-    if(!code) {
-      commit(SET_GROUPS, data)
-      data.forEach(async (group: GroupDto) => {
-        let res = await fetch.get(`/group/messages?groupId=${group.groupId}`)
-        let {code, data} = res.data
-        if(!code) {
-          commit(SET_GROUP_MESSAGES, data)
-        }
-      });
+    if(code) {
+      Vue.prototype.$message.error('获取群组失败')
     }
+    commit(SET_GROUPS, data)
+    data.forEach(async (group: GroupDto) => {
+      let res = await fetch.get(`/group/messages?groupId=${group.groupId}`)
+      let {code, data} = res.data
+      if(code) {
+        Vue.prototype.$message.error('获取群组消息失败')
+      }
+      commit(SET_GROUP_MESSAGES, data)
+    });
   }
 }
 
