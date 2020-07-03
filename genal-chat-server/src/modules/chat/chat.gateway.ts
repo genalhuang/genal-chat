@@ -140,15 +140,16 @@ export class ChatGateway {
         }
         // 双方都添加好友 并存入数据库
         await this.friendRepository.save(data)
-        const friendData = JSON.parse(JSON.stringify(data))
+        let friendData = JSON.parse(JSON.stringify(data))
         const friendId = friendData.friendId
         friendData.friendId = friendData.userId
         friendData.userId = friendId
         delete friendData._id
         await this.friendRepository.save(friendData)
         client.join(roomId)
-        this.server.of(data.friendId).emit('addFriend', {code: 0, data})
-        this.server.of(data.userId).emit('addFriend', {code: 0, data})
+        this.server.to(data.userId).emit('addFriend', {code: 0, data})
+        this.server.to(data.friendId).emit('addFriend', {code: 0, data})
+
       }
     } catch(e) {
       return { code: 1, data: e }

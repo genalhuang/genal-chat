@@ -75,11 +75,16 @@ const actions: ActionTree<ChatState, RootState> = {
         console.log('on addFriend',res)
         if(!res.code) {
           // 双方进入房间
-          if(res.data.data.userId === user.userId || res.data.data.friendId === user.userId) {
+          if(res.data.userId === user.userId) {
             commit(ADD_FRIEND, res.data)
           }
           // 如果当前用户是被添加的用户,当前用户加入room
-          if(res.data.data.friendId === user.userId) {
+          if(res.data.friendId === user.userId) {
+            let friendData: FriendMessageDto = JSON.parse(JSON.stringify(res.data))
+            let temp = friendData.userId
+            friendData.userId = friendData.friendId
+            friendData.friendId = temp
+            commit(ADD_FRIEND,friendData)
             socket.emit('joinFriend', res.data)
           }
         }

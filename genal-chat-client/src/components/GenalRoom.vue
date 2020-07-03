@@ -68,7 +68,7 @@ export default class GenalRoom extends Vue {
 
   addFriend() {
     this.visibleFriend=false
-    this.$emit('addFriend', 'e9b6dca2-3614-4a3b-80a3-4d61dc1d64a5')
+    this.$emit('addFriend', this.friendname)
   }
 
   changeActiveRoom(activeRoom: FriendDto & GroupDto) {
