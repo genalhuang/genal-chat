@@ -1,14 +1,20 @@
 <template>
   <div class="message">
-    <div class='message-frame' >
-      <div v-if='activeChat'>
-        <div class='message-frame-message' v-for="(item, index) in activeChat.messages" :key="index">
-          <div class='message-frame-name'>
-            <span class='name'>{{ item.userId }}</span>
-            <span class='time'>{{ formatTime(item.time) }}</span>
+    <div class='message-frame'>
+      <div v-if='activeRoom'>
+        <template v-for="(item, index) in activeRoom.messages">
+          <div 
+            class='message-frame-message' 
+            :key="index"
+            :class="{'text-right': item.userId === user.userId}"
+          >
+            <div class='message-frame-name'>
+              <span class='name'>{{ item.userId }}</span>
+              <span class='time'>{{ formatTime(item.time) }}</span>
+            </div>
+            <div class='message-frame-text'>{{ item.content }}</div>
           </div>
-          <div class='message-frame-text'>{{ item.content }}</div>
-        </div>
+        </template>
       </div>
     </div>
     <div class='message-input'>
@@ -23,15 +29,17 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as api from '@/api/apis';
 import { namespace } from 'vuex-class'
 const chatModule = namespace('chat')
+const appModule = namespace('app')
 
 @Component
 export default class GenalMessage extends Vue {
-  @chatModule.State('activeChat') activeChat: GroupDto | FriendDto;
+  @appModule.Getter('user') user: User;
+  @chatModule.State('activeRoom') activeRoom: GroupDto & FriendDto;
 
   message: string = '';
   messageDom: Element = document.getElementsByClassName('message-frame')[0];
 
-  @Watch('activeChat.messages')
+  @Watch('activeRoom.messages')
   changeMessages() {
     setTimeout(() => {
       this.scrollToBottom()
@@ -55,7 +63,11 @@ export default class GenalMessage extends Vue {
       this.$message.error('不能发送空消息!')
       return
     }
-    this.$emit('sendMessage', this.message)
+    if(this.activeRoom.groupId) {
+      this.$emit('sendMessage', {type: 'group', message: this.message})
+    } else {
+      this.$emit('sendMessage', {type: 'friend', message: this.message})
+    }
     this.message = ''
   }
 
@@ -76,6 +88,9 @@ export default class GenalMessage extends Vue {
     height: 490px;
     overflow: auto;
     position: relative;
+    .text-right {
+      text-align: right!important;
+    }
     .message-frame-message {
       text-align: left;
       margin: 10px;

@@ -5,12 +5,12 @@
     </div>
     <div class='chat-part2'>
       <a-input v-model="user.username"></a-input>
-      <genal-group 
+      <genal-room
         @addGroup='addGroup'
         @addFriend='addFriend'
-        @setActiveChat='setActiveChat'
+        @setActiveRoom='setActiveRoom'
         :groups="groups"
-      ></genal-group>
+      ></genal-room>
     </div>
     <div class='chat-part3'>
       <genal-message @sendMessage='sendMessage'></genal-message>
@@ -22,9 +22,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import GenalJoin from '@/components/GenalJoin.vue'
-import GenalGroup from '@/components/GenalGroup.vue'
+import GenalRoom from '@/components/GenalRoom.vue'
 import GenalMessage from '@/components/GenalMessage.vue'
-import { mapMutations, mapGetters } from 'vuex'
 import io from 'socket.io-client'
 import { namespace } from 'vuex-class'
 const appModule = namespace('app')
@@ -33,7 +32,7 @@ const chatModule = namespace('chat')
 @Component({
   components: {
     GenalJoin,
-    GenalGroup,
+    GenalRoom,
     GenalMessage
   },
 })
@@ -46,9 +45,9 @@ export default class GenalChat extends Vue {
   @appModule.Action('regist') regist: Function;
 
   @chatModule.Getter('socket') socket: any;
-  @chatModule.Getter('activeChat') activeChat: any;
+  @chatModule.Getter('activeRoom') activeRoom: any;
   @chatModule.Getter('groups') groups: any;
-  @chatModule.Mutation('set_active_chat') _setActiveChat: Function;
+  @chatModule.Mutation('set_active_room') _setActiveRoom: Function;
   @chatModule.Action('connectSocket') connectSocket: Function;
   @chatModule.Action('getGroupAndMessages') getGroupAndMessages: Function;
   @chatModule.Action('getFriendAndMessages') getFriendAndMessages: Function;
@@ -103,14 +102,24 @@ export default class GenalChat extends Vue {
     this.connectSocket(callback)
   }
 
-  sendMessage(message: string) {
-    console.log(this.user,  this.activeChat.groupId)
-    this.socket.emit('groupMessage', {
-      userId: this.user.userId,
-      groupId: this.activeChat.groupId,
-      content: message,
-      time: new Date().valueOf()
-    })
+  sendMessage(data: SendMessageDto) {
+    console.log('sendMessage',data)
+    if(data.type === 'group') {
+      this.socket.emit('groupMessage', {
+        userId: this.user.userId,
+        groupId: this.activeRoom.groupId,
+        content: data.message,
+        time: new Date().valueOf()
+      })
+    } else {
+      this.socket.emit('friendMessage', {
+        userId: this.user.userId,
+        friendId: this.activeRoom.friendId,
+        content: data.message,
+        time: new Date().valueOf()
+      })
+    }
+
   }
 
   addGroup(groupname: string) {
@@ -131,8 +140,8 @@ export default class GenalChat extends Vue {
     })
   }
 
-  setActiveChat(chat: FriendDto | GroupDto) {
-    this._setActiveChat(chat)
+  setActiveRoom(room: FriendDto & GroupDto) {
+    this._setActiveRoom(room)
   } 
 
   // 注销

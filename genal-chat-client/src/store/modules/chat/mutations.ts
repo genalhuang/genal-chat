@@ -9,7 +9,7 @@ import {
   SET_FRIENDS,
   ADD_FRIEND_MESSAGE,
   SET_FRIEND_MESSAGES,
-  SET_ACTIVE_CHAT
+  SET_ACTIVE_ROOM
 } from './mutation-types'
 import { ChatState } from './state';
 import { MutationTree } from 'vuex';
@@ -68,11 +68,12 @@ const mutations: MutationTree<ChatState> = {
   // 新增一条私聊消息
   [ADD_FRIEND_MESSAGE](state, payload: FriendMessageDto) {
     for(let i=0;i<state.friends.length; i++) {
-      if(payload.to === state.friends[i].friendId) {
+      if(payload.userId === state.friends[i].friendId || payload.friendId === state.friends[i].friendId) {
         if(state.friends[i].messages) {
+          console.log('ADD_FRIEND_MESSAGE',payload)
           state.friends[i].messages.push(payload)
         } else {
-          state.friends[i].messages = [payload]
+          Vue.set(state.friends[i], 'messages' , [payload])
         }
       }
     }
@@ -80,18 +81,21 @@ const mutations: MutationTree<ChatState> = {
 
   // 设置私聊记录
   [SET_FRIEND_MESSAGES](state, payload: FriendMessageDto[]) {
+    console.log('friends', state.friends)
     if(payload.length) {
       for(let i=0;i<state.friends.length; i++) {
-        if(payload[0].to === state.friends[i].friendId) {
-          state.friends[i].messages = payload
+        if(payload[0].userId === state.friends[i].friendId || payload[0].friendId === state.friends[i].friendId) {
+          // vuex对象数组中对象改变不更新问题
+          console.log('SET_FRIEND_MESSAGES',i)
+          Vue.set(state.friends[i], 'messages' , payload)
         }
       }
     }
   },
 
   // 设置当前聊天对象(群或好友)
-  [SET_ACTIVE_CHAT](state, payload: FriendDto | GroupDto) {
-    state.activeChat = payload
+  [SET_ACTIVE_ROOM](state, payload: FriendDto & GroupDto) {
+    state.activeRoom = payload
   }
 }
 

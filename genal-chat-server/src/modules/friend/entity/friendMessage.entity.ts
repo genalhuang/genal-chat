@@ -6,10 +6,10 @@ export class FriendMessage {
   _id: number;
 
   @Column()
-  from: string;
+  userId: string;
 
   @Column()
-  to: string;
+  friendId: string;
 
   @Column()
   content: string;

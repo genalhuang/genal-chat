@@ -12,8 +12,8 @@ const getters: GetterTree<ChatState, RootState> = {
   friends(state) {
     return state.friends
   },
-  activeChat(state) {
-    return state.activeChat
+  activeRoom(state) {
+    return state.activeRoom
   }
 } 
 

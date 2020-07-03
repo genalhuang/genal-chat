@@ -159,11 +159,12 @@ export class ChatGateway {
   @SubscribeMessage('joinFriend')
   async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
     try {
+      console.log('joinFriend',data)
       if(data.friendId && data.userId) {
-        const isUserInGroup = await this.friendRepository.findOne({friendId: data.friendId,userId: data.userId})
-        const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
-
-        if(isUserInGroup) {
+        const isUserInFriend = await this.friendRepository.findOne({friendId: data.friendId,userId: data.userId})
+        let roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
+        if(isUserInFriend) {
+          console.log('roomId',roomId)
           client.join(roomId)
           this.server.to(data.userId).emit('joinFriend',{code:0, data: '私聊socket成功'})
           this.server.to(data.friendId).emit('joinFriend',{code:0, data: '私聊socket成功'})
@@ -177,11 +178,13 @@ export class ChatGateway {
 
   // 发送私聊消息
   @SubscribeMessage('friendMessage')
-  async friendMessage(@MessageBody() data: FriendMessage) {
+  async friendMessage(@ConnectedSocket() client: Socket, @MessageBody() data: FriendMessage) {
     try {
-      if(data.from && data.to) {
+      console.log('friendMessage',data)
+      if(data.userId && data.friendId) {
         // console.log(data)
-        const roomId = data.from > data.to ? data.from + data.to : data.to + data.from
+        let roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId
+        client.join(roomId)
         await this.fmRepository.save(data)
         this.server.to(roomId).emit('friendMessage', {code: 0, data})
       }

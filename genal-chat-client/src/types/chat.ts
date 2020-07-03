@@ -7,6 +7,7 @@ interface GroupDto {
   groupname: string;
   messages: GroupMessageDto[];
   createTime: string;
+  type?: string;
 }
 
 // 群消息
@@ -15,6 +16,7 @@ interface GroupMessageDto {
   groupId: string;
   content: string;
   time: string;
+  type?: string;
 }
 
 // 好友
@@ -23,12 +25,20 @@ interface FriendDto {
   userId: string;
   messages: FriendMessageDto[];
   createTime: string;
+  type?: string;
 }
 
 // 好友消息
 interface FriendMessageDto {
-  from: string;
-  to: string;
+  userId: string;
+  friendId: string;
   content: string;
   time: string;
+  type?: string;
+}
+
+
+interface SendMessageDto {
+  type: string;
+  message: string;
 }

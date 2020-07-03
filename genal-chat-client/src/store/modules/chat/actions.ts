@@ -94,8 +94,12 @@ const actions: ActionTree<ChatState, RootState> = {
 
       socket.on('friendMessage',(res:any)=> {
         console.log('on friendMessage',res)
+
         if(!res.code) {
-          commit(ADD_FRIEND_MESSAGE, res.data)
+          if(res.data.friendId === user.userId || res.data.userId === user.userId ) {
+            console.log('ADD_FRIEND_MESSAGE', res.data)
+            commit(ADD_FRIEND_MESSAGE, res.data)
+          }
         }
       })
 
@@ -116,12 +120,13 @@ const actions: ActionTree<ChatState, RootState> = {
     if(code) {
       return Vue.prototype.$message.error('获取群组失败')
     }
-    commit(SET_GROUPS, data)
     // 获取到所有群之后加入对应socket
-    data.forEach((group: GroupDto)=>{
+    data.map((group: GroupDto)=>{
       socket.emit('joinGroup', group)
     })
-    state.activeChat = data[0]
+    commit(SET_GROUPS, data)
+
+    state.activeRoom = data[0]
     data.forEach(async (group: GroupDto) => {
       let res = await fetch.get(`/group/messages?groupId=${group.groupId}`)
       let {code, data} = res.data
@@ -141,20 +146,19 @@ const actions: ActionTree<ChatState, RootState> = {
     if(code) {
       return Vue.prototype.$message.error('获取好友失败')
     }
-    commit(SET_FRIENDS, data)
     // 获取到所有好友之后加入对应socket
     data.forEach((friend: FriendDto)=>{
-      console.log(friend)
       socket.emit('joinFriend', friend)
     })
-    // state.activeChat = data[0]
+    commit(SET_FRIENDS, data)
+    // state.activeRoom = data[0]
     data.forEach(async (friend: FriendDto) => {
       let res = await fetch.get(`/friend/messages?userId=${user.userId}&friendId=${friend.friendId}`)
       let {code, data} = res.data
-      console.log(data)
       if(code) {
         return Vue.prototype.$message.error('获取好友消息失败')
       }
+      console.log('friendmessage',data)
       commit(SET_FRIEND_MESSAGES, data)
     });
   }
