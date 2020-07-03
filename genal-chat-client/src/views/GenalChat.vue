@@ -13,9 +13,7 @@
       ></genal-group>
     </div>
     <div class='chat-part3'>
-      <template v-for="(item, index) in groups">
-        <genal-message :messages="item.messages" @sendMessage='sendMessage' :key='index'></genal-message>
-      </template>
+      <genal-message @sendMessage='sendMessage'></genal-message>
     </div>
     <genal-join @regist='handleregist' @login="handlelogin" :showModal="showModal"></genal-join>
   </div>
@@ -48,11 +46,12 @@ export default class GenalChat extends Vue {
   @appModule.Action('regist') regist: Function;
 
   @chatModule.Getter('socket') socket: any;
-  @chatModule.Getter('groups') groups: any;
   @chatModule.Getter('activeChat') activeChat: any;
+  @chatModule.Getter('groups') groups: any;
   @chatModule.Mutation('set_active_chat') _setActiveChat: Function;
   @chatModule.Action('connectSocket') connectSocket: Function;
   @chatModule.Action('getGroupAndMessages') getGroupAndMessages: Function;
+  @chatModule.Action('getFriendAndMessages') getFriendAndMessages: Function;
 
   created() {
     if(!this.user.userId) {
@@ -97,8 +96,11 @@ export default class GenalChat extends Vue {
   // 进入系统初始化事件
   async handleJoin() {
     this.showModal = false;
-    this.connectSocket()
-    await this.getGroupAndMessages()
+    let callback = {
+      getGroupAndMessages: this.getGroupAndMessages,
+      getFriendAndMessages: this.getFriendAndMessages
+    }
+    this.connectSocket(callback)
   }
 
   sendMessage(message: string) {
@@ -120,8 +122,13 @@ export default class GenalChat extends Vue {
     })
   }
 
-  addFriend(friendname: string) {
-
+  addFriend(friendId: string) {
+    console.log(this.user)
+    this.socket.emit('addFriend', {
+      userId: this.user.userId,
+      friendId: friendId,
+      createTime: new Date().valueOf()
+    })
   }
 
   setActiveChat(chat: FriendDto | GroupDto) {

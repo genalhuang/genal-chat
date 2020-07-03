@@ -34,8 +34,11 @@ const mutations: MutationTree<ChatState> = {
   [ADD_GROUP_MESSAGE](state, payload: GroupMessageDto) {
     for(let i=0;i<state.groups.length; i++) {
       if(payload.groupId === state.groups[i].groupId) {
-        console.log( state.groups[i])
-        state.groups[i].messages.push(payload)
+        if(state.groups[i].messages) {
+          state.groups[i].messages.push(payload)
+        } else {
+          state.groups[i].messages = [payload]
+        }
       }
     }
   },
@@ -66,7 +69,11 @@ const mutations: MutationTree<ChatState> = {
   [ADD_FRIEND_MESSAGE](state, payload: FriendMessageDto) {
     for(let i=0;i<state.friends.length; i++) {
       if(payload.to === state.friends[i].friendId) {
-        state.friends[i].messages.push(payload)
+        if(state.friends[i].messages) {
+          state.friends[i].messages.push(payload)
+        } else {
+          state.friends[i].messages = [payload]
+        }
       }
     }
   },

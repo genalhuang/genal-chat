@@ -76,21 +76,25 @@ export class ChatGateway {
     }
   }
 
-  // 加入群组房间
+  // 加入群组
   @SubscribeMessage('joinGroup')
   async joinGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group) {
     try {
-      const group = await this.groupRepository.findOne({groupname: data.groupname})
+      const group = await this.groupRepository.findOne({groupId: data.groupId})
+      const isUserInGroup = await this.groupRepository.findOne({groupId: data.groupId, userId: data.userId})
       const user = await this.userRepository.findOne({userId: data.userId})
-      if(group && group.groupId) {
-        data.groupId = group.groupId
-        this.groupRepository.save(data)
+      if(group) {
+        if(!isUserInGroup) {
+          this.groupRepository.save(data)
+        }
         client.join(group.groupId)
         let res = { group: group, user: user}
         this.server.to(group.groupId).emit('joinGroup', {code: 0, data: res})
+      } else {
+        this.server.to(data.userId).emit('joinGroup', {code:1,data:'该群不存在'})
       }
     } catch(e) {
-      return { code: 1, data: e }
+      this.server.to(data.userId).emit('joinGroup', {code:2,data:'进群错误'})
     }
   }
 
@@ -120,12 +124,15 @@ export class ChatGateway {
   async addFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
     try {
       if(data.friendId && data.userId) {
-        const isHave = await this.friendRepository.find({userId: data.userId, friendId: data.friendId})
-        if(isHave.length) {
+        const isHave1 = await this.friendRepository.find({userId: data.userId, friendId: data.friendId})
+        const isHave2 = await this.friendRepository.find({userId: data.friendId, friendId: data.userId})
+        const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
+
+        if(isHave1.length || isHave2.length) {
           this.server.emit('addFriend', {code: 1, data: '已经有该好友'})
           return;
         }
-        const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
+
         const friend = await this.userRepository.find({userId: data.friendId});
         if(!friend.length) {
           this.server.emit('addFriend', {code: 1, data: '该好友不存在'})
@@ -137,10 +144,11 @@ export class ChatGateway {
         const friendId = friendData.friendId
         friendData.friendId = friendData.userId
         friendData.userId = friendId
-        delete friendData.id
+        delete friendData._id
         await this.friendRepository.save(friendData)
         client.join(roomId)
-        this.server.emit('addFriend', {code: 0, data})
+        this.server.of(data.friendId).emit('addFriend', {code: 0, data})
+        this.server.of(data.userId).emit('addFriend', {code: 0, data})
       }
     } catch(e) {
       return { code: 1, data: e }
@@ -152,10 +160,15 @@ export class ChatGateway {
   async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
     try {
       if(data.friendId && data.userId) {
+        const isUserInGroup = await this.friendRepository.findOne({friendId: data.friendId,userId: data.userId})
         const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
-        client.join(roomId)
-        // 通知被添加的一方加入房间成功
-        this.server.to(data.friendId).emit('joinFriend', {code:1, data})
+
+        if(isUserInGroup) {
+          client.join(roomId)
+          this.server.to(data.userId).emit('joinFriend',{code:0, data: '私聊socket成功'})
+          this.server.to(data.friendId).emit('joinFriend',{code:0, data: '私聊socket成功'})
+          return 
+        } 
       }
     } catch(e) {
       return { code: 1, data: e }

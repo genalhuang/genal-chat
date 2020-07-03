@@ -1,12 +1,14 @@
 <template>
   <div class="message">
-    <div class='message-frame'>
-      <div class='message-frame-message' v-for="(item, index) in messages" :key="index">
-        <div class='message-frame-name'>
-          <span class='name'>{{ item.userId }}</span>
-          <span class='time'>{{ formatTime(item.time) }}</span>
+    <div class='message-frame' >
+      <div v-if='activeChat'>
+        <div class='message-frame-message' v-for="(item, index) in activeChat.messages" :key="index">
+          <div class='message-frame-name'>
+            <span class='name'>{{ item.userId }}</span>
+            <span class='time'>{{ formatTime(item.time) }}</span>
+          </div>
+          <div class='message-frame-text'>{{ item.content }}</div>
         </div>
-        <div class='message-frame-text'>{{ item.content }}</div>
       </div>
     </div>
     <div class='message-input'>
@@ -19,14 +21,17 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as api from '@/api/apis';
+import { namespace } from 'vuex-class'
+const chatModule = namespace('chat')
 
 @Component
 export default class GenalMessage extends Vue {
-  @Prop({default: () => []}) messages!: GroupMessageDto[];
+  @chatModule.State('activeChat') activeChat: GroupDto | FriendDto;
+
   message: string = '';
   messageDom: Element = document.getElementsByClassName('message-frame')[0];
 
-  @Watch('messages')
+  @Watch('activeChat.messages')
   changeMessages() {
     setTimeout(() => {
       this.scrollToBottom()
@@ -34,7 +39,6 @@ export default class GenalMessage extends Vue {
   }
 
   mounted() {
-    console.log(this.messages)
     this.messageDom = document.getElementsByClassName('message-frame')[0];
     this.scrollToBottom()
   }

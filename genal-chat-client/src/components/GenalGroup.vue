@@ -1,5 +1,6 @@
 <template>
   <div class="group">
+    {{friends}}
     <a-button @click='() => visibleGroup =!visibleGroup'>创建一个群</a-button>
     <a-modal v-model="visibleGroup" title="Basic Modal" @ok="addGroup">
       <a-input v-model='groupname' placeholder="群"></a-input>
@@ -8,9 +9,11 @@
     <a-modal v-model="visibleFriend" title="Basic Modal" @ok="addFriend">
       <a-input v-model='friendname' placeholder="好友"></a-input>
     </a-modal>
+
     <div v-for="(item,index) in groups" :key="index">
       <div
         class="group-card"
+        :class="{'active': activeChat.groupId === item.groupId}"
         @click="changeActiveChat(item)"
       >
         <div class="group-card-name">{{item.groupname}}</div>
@@ -21,11 +24,14 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-
+import { namespace } from 'vuex-class'
+const chatModule = namespace('chat')
 
 @Component
 export default class GenalGroup extends Vue {
-  @Prop({ default: () => [] }) groups: GroupDto[];
+  @chatModule.Getter('groups') groups: any;
+  @chatModule.Getter('friends') friends: any;
+  @chatModule.State('activeChat') activeChat: GroupDto | FriendDto;
   visibleGroup:boolean =false;
   visibleFriend:boolean =false;
   groupname: string = ''
@@ -38,7 +44,7 @@ export default class GenalGroup extends Vue {
 
   addFriend() {
     this.visibleFriend=false
-    this.$emit('addFriend', this.friendname)
+    this.$emit('addFriend', '8cd1e680-5587-4b7e-90fe-a2eef9b9f334')
   }
 
   changeActiveChat(activeChat: FriendDto | GroupDto) {
