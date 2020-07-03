@@ -37,7 +37,8 @@ const mutations: MutationTree<ChatState> = {
         if(state.groups[i].messages) {
           state.groups[i].messages.push(payload)
         } else {
-          state.groups[i].messages = [payload]
+          // vuex对象数组中对象改变不更新问题
+          Vue.set(state.groups[i], 'messages' , [payload])
         }
       }
     }
