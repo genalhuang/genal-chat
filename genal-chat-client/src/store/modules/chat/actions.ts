@@ -55,13 +55,15 @@ const actions: ActionTree<ChatState, RootState> = {
 
       socket.on('joinGroup',(res:any)=> {
         console.log('on joinGroup',res)
-        if(!res.code) {
-          let myuser = res.data.user
-          let mygroup = res.data.group
-          if(myuser.userId != user.userId) {
-            return Vue.prototype.$message.info(`${myuser.username}加入群${mygroup.groupname}`)
-          }
+        if(res.code) {
+          return Vue.prototype.$message.error(res.message)
         }
+        let myuser = res.data.user
+        let mygroup = res.data.group
+        if(myuser.userId != user.userId) {
+          return Vue.prototype.$message.info(`${myuser.username}加入群${mygroup.groupname}`)
+        }
+        
       })
 
       socket.on('groupMessage',(res:any)=> {
@@ -87,6 +89,8 @@ const actions: ActionTree<ChatState, RootState> = {
             commit(ADD_FRIEND,friendData)
             socket.emit('joinFriend', res.data)
           }
+        } else {
+          Vue.prototype.$message.error(res.data)
         }
       })
 
