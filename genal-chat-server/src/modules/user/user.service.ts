@@ -18,7 +18,7 @@ export class UserService {
     try {
       let data;
       if(userId) {
-        data = await this.userRepository.find({userId: userId})
+        data = await this.userRepository.findOne({userId: userId})
         return {code: 0, message:'获取用户成功', data}
       }
       data = await this.userRepository.find()
@@ -28,12 +28,16 @@ export class UserService {
     }
   }
 
-  async addUser(user: any) {
+  async addUser(user: User) {
     try {
       let isHave = await this.userRepository.find({username: user.username})
       if(isHave.length) {
         return {code: 1, message:'用户名重复', data: '' }
       }
+
+      let index = Math.round(Math.random()*19 +1)
+      user.avatar = `static/avatar(${index}).png`
+
       const data = await this.userRepository.save(user)
 
       await this.groupRepository.save({

@@ -9,7 +9,8 @@ import {
   SET_FRIENDS,
   ADD_FRIEND_MESSAGE,
   SET_FRIEND_MESSAGES,
-  SET_ACTIVE_ROOM
+  SET_ACTIVE_ROOM,
+  SET_USER_GATHER
 } from './mutation-types'
 import { ChatState } from './state';
 import { MutationTree } from 'vuex';
@@ -97,6 +98,11 @@ const mutations: MutationTree<ChatState> = {
   // 设置当前聊天对象(群或好友)
   [SET_ACTIVE_ROOM](state, payload: FriendDto & GroupDto) {
     state.activeRoom = payload
+  },
+
+  // 所有的用户的用户详细信息(头像,昵称等)
+  [SET_USER_GATHER](state, payload: UserResponse) {
+    state.userGather[payload.userId] = payload
   }
 }
 

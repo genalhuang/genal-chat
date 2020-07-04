@@ -14,10 +14,15 @@ import {
   ADD_FRIEND, 
   SET_FRIENDS,
   ADD_FRIEND_MESSAGE,
-  SET_FRIEND_MESSAGES
+  SET_FRIEND_MESSAGES,
+  SET_USER_GATHER
 } from './mutation-types'
 
 const actions: ActionTree<ChatState, RootState> = {
+  async getUserById({commit}, userId) {
+    let res = await fetch(`/user?userId=${userId}`)
+    return processReturn(res)
+  },
 
   async getGroups({commit}, userId) {
     let res = await fetch(`/group?userId=${userId}`)
@@ -39,10 +44,11 @@ const actions: ActionTree<ChatState, RootState> = {
     return processReturn(res)
   },
 
+  // 初始化socket连接和监听socket事件
   async connectSocket({commit, state,rootState}, callback) {
     let user = rootState.app.user
     let socket = io.connect(`/chat?userId=${user.userId}`);
-    socket.on('connect',()=> {
+    socket.on('connect',async ()=> {
       console.log('连接成功')
 
       // 先保存好socket对象
@@ -120,7 +126,8 @@ const actions: ActionTree<ChatState, RootState> = {
       
       // 这个是获取群和群消息的回调
       for(var key in callback) {
-        callback[key]()
+        // for in 中使用await是可以的
+        await callback[key]()
       }
     })
   },
@@ -159,6 +166,37 @@ const actions: ActionTree<ChatState, RootState> = {
           commit(SET_FRIEND_MESSAGES, friendMessages)
         }
       })
+    }
+  },
+
+  // 获取(群消息和用户消息都)需要的用户信息
+  async getUserGather({commit, dispatch, state, rootState}) {
+    let user = rootState.app.user
+    let userGather = state.userGather;
+
+    // 处理群里面的用户信息
+    for(let group of state.groups) {
+      for(let message of group.messages) {
+        // 这里做一下去重
+        if(userGather[message.userId]) {
+          if(message.userId != user.userId) {
+            let res = await dispatch('getUserById', message.userId)
+            commit(SET_USER_GATHER, res)
+          }
+        }
+      }
+    }
+
+    // 处理好友里面的用户信息
+    for(let friend of state.friends) {
+      // 这里做一下去重
+      if(userGather[friend.userId]) { 
+        if(friend.friendId != user.userId) {
+          let res = await dispatch('getUserById', friend.friendId)
+          commit(SET_USER_GATHER, res)
+        }
+      }
+
     }
   }
 

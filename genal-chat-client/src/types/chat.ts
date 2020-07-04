@@ -42,3 +42,30 @@ interface SendMessageDto {
   type: string;
   message: string;
 }
+
+
+// 所有群的群信息
+interface GroupGather {
+  [userId:string]: GroupResponse
+}
+
+// 所有用户的用户信息
+interface UserGather {
+  [userId:string]: UserResponse
+}
+
+interface GroupResponse {
+  groupId: string;
+  userId: string;
+  groupname: string;
+  createTime: string;
+}
+
+interface UserResponse {
+  userId: string;
+  username: string;
+  avatar: string;
+  role?: string;
+  tag?: string;
+  createTime: number;
+}
