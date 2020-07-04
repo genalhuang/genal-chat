@@ -4,6 +4,7 @@ import { RootState } from '../../index'
 import fetch from '@/api/fetch';
 import io from 'socket.io-client'
 import Vue from 'vue'
+import { processReturn } from '@/utils/common.ts';
 import { 
   SET_SOCKET,
   ADD_GROUP,
@@ -17,22 +18,27 @@ import {
 } from './mutation-types'
 
 const actions: ActionTree<ChatState, RootState> = {
-  async getGroups({commit}, payload) {
-    let res = await fetch(`/group?usrId=${payload}`)
-    console.log(res)
+
+  async getGroups({commit}, userId) {
+    let res = await fetch(`/group?userId=${userId}`)
+    return processReturn(res)
   },
-  async getGroupMessages({commit}, payload) {
-    let res = await fetch('/group/messages')
-    console.log(res)
+
+  async getGroupMessages({commit}, groupId) {
+    let res = await fetch(`/group/messages?groupId=${groupId}`)
+    return processReturn(res)
   },
-  async getFriends({commit}, payload) {
-    let res = await fetch(`/friend?usrId=${payload}`)
-    console.log(res)
+
+  async getFriends({commit}, userId) {
+    let res = await fetch(`/friend?userId=${userId}`)
+    return processReturn(res)
   },
+
   async getFriendMessages({commit}, payload) {
-    let res = await fetch(`/friend/messaegs?userId=${payload.userId}&friendId=${payload.friendId}`)
-    console.log(res)
+    let res = await fetch(`/friend/messages?userId=${payload.userId}&friendId=${payload.friendId}`)
+    return processReturn(res)
   },
+
   async connectSocket({commit, state,rootState}, callback) {
     let user = rootState.app.user
     let socket = io.connect(`/chat?userId=${user.userId}`);
@@ -111,7 +117,6 @@ const actions: ActionTree<ChatState, RootState> = {
           }
         }
       })
-
       
       // 这个是获取群和群消息的回调
       for(var key in callback) {
@@ -121,55 +126,40 @@ const actions: ActionTree<ChatState, RootState> = {
   },
 
   // 获取用户所有群和群消息
-  async getGroupAndMessages({commit, state,rootState}, payload) {
+  async getGroupAndMessages({commit, dispatch, state,rootState}, payload) {
     let user = rootState.app.user
     let socket = state.socket
-    let res = await fetch.get(`/group?userId=${user.userId}`)
-    let {code, data} = res.data
-    if(code) {
-      return Vue.prototype.$message.error('获取群组失败')
+    let groups = await dispatch('getGroups', user.userId)
+    if(groups) {
+      commit(SET_GROUPS, groups)
+      state.activeRoom = groups[0]
+      // 获取到所有群之后加入对应socket并获取群消息
+      groups.map(async(group: GroupDto)=>{
+        socket.emit('joinGroup', group)
+        let groupMessages = await dispatch('getGroupMessages', group.groupId)
+        if(groupMessages) {
+          commit(SET_GROUP_MESSAGES, groupMessages)
+        }
+      })
     }
-    // 获取到所有群之后加入对应socket
-    data.map((group: GroupDto)=>{
-      socket.emit('joinGroup', group)
-    })
-    commit(SET_GROUPS, data)
-
-    state.activeRoom = data[0]
-    data.forEach(async (group: GroupDto) => {
-      let res = await fetch.get(`/group/messages?groupId=${group.groupId}`)
-      let {code, data} = res.data
-      if(code) {
-        return Vue.prototype.$message.error('获取群组消息失败')
-      }
-      commit(SET_GROUP_MESSAGES, data)
-    });
   },
 
-  // 获取用户所有好友和所有好友聊天记录
-  async getFriendAndMessages({commit, state, rootState}, payload) {
+  // 获取用户所有好友和好友聊天记录
+  async getFriendAndMessages({commit, dispatch, state, rootState}, payload) {
     let user = rootState.app.user
     let socket = state.socket
-    let res = await fetch.get(`/friend?userId=${user.userId}`)
-    let {code, data} = res.data
-    if(code) {
-      return Vue.prototype.$message.error('获取好友失败')
+    let friends = await dispatch('getFriends', user.userId)
+    if(friends) {
+      commit(SET_FRIENDS, friends)
+      // 获取到所有好友之后加入对应socket
+      friends.map(async (friend: FriendDto)=>{
+        socket.emit('joinFriend', friend)
+        let friendMessages = await dispatch('getFriendMessages', {userId: user.userId, friendId: friend.friendId})
+        if(friendMessages) {
+          commit(SET_FRIEND_MESSAGES, friendMessages)
+        }
+      })
     }
-    // 获取到所有好友之后加入对应socket
-    data.forEach((friend: FriendDto)=>{
-      socket.emit('joinFriend', friend)
-    })
-    commit(SET_FRIENDS, data)
-    // state.activeRoom = data[0]
-    data.forEach(async (friend: FriendDto) => {
-      let res = await fetch.get(`/friend/messages?userId=${user.userId}&friendId=${friend.friendId}`)
-      let {code, data} = res.data
-      if(code) {
-        return Vue.prototype.$message.error('获取好友消息失败')
-      }
-      console.log('friendmessage',data)
-      commit(SET_FRIEND_MESSAGES, data)
-    });
   }
 
 }
