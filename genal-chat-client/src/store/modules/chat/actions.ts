@@ -96,7 +96,7 @@ const actions: ActionTree<ChatState, RootState> = {
             socket.emit('joinFriend', res.data)
           }
         } else {
-          Vue.prototype.$message.error(res.data)
+          Vue.prototype.$message.error(res.message)
         }
       })
 
