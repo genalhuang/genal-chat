@@ -73,6 +73,7 @@ const actions: ActionTree<ChatState, RootState> = {
         let myuser = res.data.user
         let mygroup = res.data.group
         if(myuser.userId != user.userId) {
+          commit(SET_USER_GATHER, myuser)
           return Vue.prototype.$message.info(`${myuser.username}加入群${mygroup.groupname}`)
         }
         
@@ -88,6 +89,9 @@ const actions: ActionTree<ChatState, RootState> = {
       socket.on('addFriend',(res:any)=> {
         console.log('on addFriend',res)
         if(!res.code) {
+          // 新加入的好友存储一下信息
+          commit(SET_USER_GATHER, res.data)
+
           // 双方进入房间
           if(res.data.userId === user.userId) {
             commit(ADD_FRIEND, res.data)
@@ -200,8 +204,14 @@ const actions: ActionTree<ChatState, RootState> = {
      
     // 当然也要把自己的信息加进去啦
     commit(SET_USER_GATHER, user)
-  }
+  },
 
+  // 当群或者好友新增一个用户时获取用户信息
+  async addUserGather({commit, dispatch, state, rootState}, payload) {
+    console.log(payload)
+    // let res = await dispatch('getUserById', payload.friendId)
+    // commit(SET_USER_GATHER, res)
+  }
 }
 
 export default actions;

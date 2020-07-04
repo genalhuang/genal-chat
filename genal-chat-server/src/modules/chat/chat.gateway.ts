@@ -132,6 +132,7 @@ export class ChatGateway {
         }
 
         const friend = await this.userRepository.findOne({userId: data.friendId});
+        const user = await this.userRepository.findOne({userId: data.userId})
         if(!friend) {
           this.server.to(data.userId).emit('addFriend', {code: 1, message:'该好友不存在', data: ''})
           return;
@@ -146,8 +147,8 @@ export class ChatGateway {
         delete friendData._id
         await this.friendRepository.save(friendData)
         client.join(roomId)
-        this.server.to(data.userId).emit('addFriend', {code: 0, message:'添加好友成功', data})
-        this.server.to(data.friendId).emit('addFriend', {code: 0, message:'你正被一个人添加', data})
+        this.server.to(data.userId).emit('addFriend', {code: 0, message:'添加好友成功', data: friend})
+        this.server.to(data.friendId).emit('addFriend', {code: 0, message:'你正被一个人添加', data: user})
       }
     } catch(e) {
       return { code: 2, message:'添加好友失败', data: e }

@@ -1,12 +1,13 @@
 <template>
   <div class="message">
-    <div class='message-frame' v-if='JSON.stringify(userGather) != "{}"'>
-      <div v-if='activeRoom'>
+    <div class='message-frame'>
+      <div v-if='JSON.stringify(userGather) != "{}"'>
         <template v-for="(item, index) in activeRoom.messages">
           <div 
             class='message-frame-message' 
             :key="index"
             :class="{'text-right': item.userId === user.userId}"
+            v-if='userGather[item.userId]'
           >
             <div class='message-frame-name'>
               <img :src="userGather[item.userId].avatar" style='width:40px' alt="">
@@ -35,7 +36,7 @@ const appModule = namespace('app')
 @Component
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
-  @chatModule.State('activeRoom') activeRoom: GroupDto & FriendDto;
+  @chatModule.Getter('activeRoom') activeRoom: GroupDto & FriendDto;
   @chatModule.Getter('userGather') userGather: UserGather;
 
   message: string = '';

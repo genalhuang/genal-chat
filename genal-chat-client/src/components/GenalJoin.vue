@@ -1,5 +1,4 @@
 <template>
-
   <div class="login">
     <a-modal 
       header=''
@@ -7,7 +6,7 @@
       :visible="showModal"
       :closable='false'
     >
-    <a-tabs default-active-key="1" @change="changeType">
+    <a-tabs @change="changeType">
       <a-tab-pane key="login" tab="登录">
       </a-tab-pane>
       <a-tab-pane key="regist" tab="注册" force-render>
