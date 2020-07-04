@@ -178,7 +178,7 @@ const actions: ActionTree<ChatState, RootState> = {
     for(let group of state.groups) {
       for(let message of group.messages) {
         // 这里做一下去重
-        if(userGather[message.userId]) {
+        if(!userGather[message.userId]) {
           if(message.userId != user.userId) {
             let res = await dispatch('getUserById', message.userId)
             commit(SET_USER_GATHER, res)
@@ -190,14 +190,16 @@ const actions: ActionTree<ChatState, RootState> = {
     // 处理好友里面的用户信息
     for(let friend of state.friends) {
       // 这里做一下去重
-      if(userGather[friend.userId]) { 
+      if(!userGather[friend.userId]) { 
         if(friend.friendId != user.userId) {
           let res = await dispatch('getUserById', friend.friendId)
           commit(SET_USER_GATHER, res)
         }
       }
-
     }
+     
+    // 当然也要把自己的信息加进去啦
+    commit(SET_USER_GATHER, user)
   }
 
 }

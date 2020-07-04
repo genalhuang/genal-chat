@@ -9,26 +9,28 @@
       <a-input v-model='friendname' placeholder="好友"></a-input>
     </a-modal>
 
-    <div v-for="(item,index) in rooms" :key="index">
-      <div v-if='item.groupId'>
-        <div
-          class="room-card"
-          :class="{'active': activeRoom.groupId === item.groupId}"
-          @click="changeActiveRoom(item)"
-        >
-          <div class="room-card-name">{{item.groupId}}</div>
+    <!-- <div v-if='JSON.stringify(userGather) != "{}"'> -->
+    <div>
+      <div v-for="(item,index) in rooms" :key="index">
+        <div v-if='item.groupId'>
+          <div
+            class="room-card"
+            :class="{'active': activeRoom.groupId === item.groupId}"
+            @click="changeActiveRoom(item)"
+          >
+            <div class="room-card-name">{{item.groupId}}</div>
+          </div>
+        </div>
+        <div v-if='item.friendId'>
+          <div
+            class="room-card"
+            :class="{'active': activeRoom.friendId === item.friendId}"
+            @click="changeActiveRoom(item)"
+          >
+            <div class="room-card-name">{{userGather[item.friendId].username}}</div>
+          </div>
         </div>
       </div>
-      <div v-if='item.friendId'>
-        <div
-          class="room-card"
-          :class="{'active': activeRoom.friendId === item.friendId}"
-          @click="changeActiveRoom(item)"
-        >
-          <div class="room-card-name">{{item.friendId}}</div>
-        </div>
-      </div>
-
     </div>
   </div>
 </template>
@@ -44,7 +46,8 @@ export default class GenalRoom extends Vue {
   @chatModule.Getter('groups') groups: GroupDto[];
   @chatModule.Getter('friends') friends: FriendDto[];
   @chatModule.State('activeRoom') activeRoom: GroupDto & FriendDto;
-
+  @chatModule.Getter('userGather') userGather: UserGather;
+  
   rooms: Array<GroupDto | FriendDto> = [];
   visibleGroup:boolean =false;
   visibleFriend:boolean =false;

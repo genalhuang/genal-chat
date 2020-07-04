@@ -102,7 +102,7 @@ const mutations: MutationTree<ChatState> = {
 
   // 所有的用户的用户详细信息(头像,昵称等)
   [SET_USER_GATHER](state, payload: UserResponse) {
-    state.userGather[payload.userId] = payload
+    Vue.set(state.userGather, payload.userId, payload)
   }
 }
 

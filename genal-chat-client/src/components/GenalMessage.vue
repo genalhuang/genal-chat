@@ -1,6 +1,6 @@
 <template>
   <div class="message">
-    <div class='message-frame'>
+    <div class='message-frame' v-if='JSON.stringify(userGather) != "{}"'>
       <div v-if='activeRoom'>
         <template v-for="(item, index) in activeRoom.messages">
           <div 
@@ -9,7 +9,8 @@
             :class="{'text-right': item.userId === user.userId}"
           >
             <div class='message-frame-name'>
-              <span class='name'>{{ item.userId }}</span>
+              <img :src="userGather[item.userId].avatar" style='width:40px' alt="">
+              <span class='name'>{{ userGather[item.userId].username }}</span>
               <span class='time'>{{ formatTime(item.time) }}</span>
             </div>
             <div class='message-frame-text'>{{ item.content }}</div>
@@ -35,6 +36,7 @@ const appModule = namespace('app')
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
   @chatModule.State('activeRoom') activeRoom: GroupDto & FriendDto;
+  @chatModule.Getter('userGather') userGather: UserGather;
 
   message: string = '';
   messageDom: Element = document.getElementsByClassName('message-frame')[0];
