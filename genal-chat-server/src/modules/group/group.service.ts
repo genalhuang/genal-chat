@@ -15,23 +15,28 @@ export class GroupService {
 
   async getGroups(userId: string) {
     try {
+      let data;
       if(userId) {
-        return {code: 0, data: await this.groupRepository.find({userId: userId})}
+        data = await this.groupRepository.find({userId: userId})
+        return {code: 0, messge:'获取用户的所有群成功', data}
       }
-      return {code: 0, data:await this.groupRepository.find()}
+      data = await this.groupRepository.find()
+      return {code: 0, message:'获取系统所有群成功', data}
     } catch (e) {
-      return {code: 1, data: e}
+      return {code: 1, message:'获取群失败',data: e}
     }
   }
 
   async getGroupMessages(groupId: string) {
     try {
+      let data;
       if(groupId) {
-        return {code: 0, data: await this.GroupMessageResponsity.find({groupId: groupId})}
+        data = await this.GroupMessageResponsity.find({groupId: groupId})
+        return {code: 0, message: '获取单个群消息成功', data}
       }
-      return {code: 0, data: await this.GroupMessageResponsity.find()}
+      return {code: 0, message: '获取所有群消息成功', data: await this.GroupMessageResponsity.find()}
     } catch (e) {
-      return {code: 1, data: e}
+      return {code: 1, message:'获取群消息失败', data: e}
     }
   }
 
@@ -61,9 +66,9 @@ export class GroupService {
 
   async joinGroup(group:Group) {
     try {
-      return {code:0, data: await this.groupRepository.save(group)}
+      return {code:0, messge:'加入群成功',data: await this.groupRepository.save(group)}
     } catch (e) {
-      return {code: 1, data: e}
+      return {code: 1, messge:'加入群失败', data: e}
     }
   }
 }

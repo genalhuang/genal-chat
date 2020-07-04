@@ -28,6 +28,7 @@ import io from 'socket.io-client'
 import { namespace } from 'vuex-class'
 const appModule = namespace('app')
 const chatModule = namespace('chat')
+import { processReturn } from '@/utils/common.ts';
 
 @Component({
   components: {
@@ -60,36 +61,23 @@ export default class GenalChat extends Vue {
     }
   }
 
-  mounted() {
-    setTimeout(()=>{
-    console.log(this.groups)
-    },1000)
-  }
 
   // 登录
   async handlelogin(user: User) {
-    let {code, data} = await this.login(user)
-    if(code) {
-      this.$message.error(data)
-      return;
+    let res = await this.login(user)
+    if(res) {
+      // 进入系统事件
+      this.handleJoin()
     }
-    this.$message.success('登录成功')
-    // 进入系统事件
-    this.handleJoin()
   }
 
   // 注册
   async handleregist(user: User) {
-    let {code, data} = await this.regist(user)
-    console.log(code,data)
-    if(code) {
-      this.$message.error(data)
-      return;
+    let res = await this.regist(user)
+    if(res) {
+      // 进入系统事件
+      this.handleJoin()
     }
-    this.$message.success('注册成功')
-
-    // 进入系统事件
-    this.handleJoin()
   }
 
   // 进入系统初始化事件
