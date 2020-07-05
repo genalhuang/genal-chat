@@ -13,7 +13,21 @@ export class GroupService {
     private readonly GroupMessageResponsity: Repository<GroupMessage>,
   ) {}
 
-  async getGroups(userId: string) {
+  async getGroups(groupId: string) {
+    try {
+      let data;
+      if(groupId) {
+        data = await this.groupRepository.findOne({groupId: groupId})
+        return {code: 0, messge:'获取单个群信息成功', data}
+      }
+      data = await this.groupRepository.find()
+      return {code: 0, message:'获取系统所有群信息成功', data}
+    } catch (e) {
+      return {code: 1, message:'获取群失败',data: e}
+    }
+  }
+
+  async getUserGroups(userId: string) {
     try {
       let data;
       if(userId) {
@@ -37,38 +51,6 @@ export class GroupService {
       return {code: 0, message: '获取所有群消息成功', data: await this.GroupMessageResponsity.find()}
     } catch (e) {
       return {code: 1, message:'获取群消息失败', data: e}
-    }
-  }
-
-  addGroup() {
-    try {
-
-    } catch (e) {
-      return {code: 1, data: e}
-    }
-  }
-
-  updateGroup() {
-    try {
-
-    } catch (e) {
-      return {code: 1, data: e}
-    }
-  }
-
-  delGroup() {
-    try {
-
-    } catch (e) {
-      return {code: 1, data: e}
-    }
-  }
-
-  async joinGroup(group:Group) {
-    try {
-      return {code:0, messge:'加入群成功',data: await this.groupRepository.save(group)}
-    } catch (e) {
-      return {code: 1, messge:'加入群失败', data: e}
     }
   }
 }

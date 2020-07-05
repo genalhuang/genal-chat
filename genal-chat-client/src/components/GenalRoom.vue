@@ -9,7 +9,6 @@
       <a-input v-model='friendname' placeholder="好友"></a-input>
     </a-modal>
 
-    <!-- <div v-if='JSON.stringify(userGather) != "{}"'> -->
     <div>
       <div v-for="(item,index) in rooms" :key="index">
         <div v-if='item.groupId'>
@@ -18,7 +17,7 @@
             :class="{'active': activeRoom.groupId === item.groupId}"
             @click="changeActiveRoom(item)"
           >
-            <div class="room-card-name">{{item.groupId}}</div>
+            <div class="room-card-name">{{groupGather[item.groupId].groupname}}</div>
           </div>
         </div>
         <div v-if='item.friendId'>
@@ -46,6 +45,7 @@ export default class GenalRoom extends Vue {
   @chatModule.Getter('groups') groups: GroupDto[];
   @chatModule.Getter('friends') friends: FriendDto[];
   @chatModule.State('activeRoom') activeRoom: GroupDto & FriendDto;
+  @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('userGather') userGather: UserGather;
   
   rooms: Array<GroupDto | FriendDto> = [];

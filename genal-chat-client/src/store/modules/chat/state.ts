@@ -3,7 +3,8 @@ export interface ChatState {
   groups: GroupDto[],
   friends: FriendDto[],
   activeRoom: GroupDto & FriendDto | null,
-  userGather: UserGather
+  groupGather: GroupGather,
+  userGather: UserGather,
 }
 
 const chatState: ChatState = {
@@ -11,7 +12,8 @@ const chatState: ChatState = {
   groups: [],
   friends: [],
   activeRoom: null,
-  userGather: {}
+  groupGather: {},
+  userGather: {},
 }
 
 export default chatState;

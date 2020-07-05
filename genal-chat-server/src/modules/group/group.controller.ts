@@ -7,18 +7,17 @@ export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
   @Get()
-  getGroups(@Query('userId') userId: string) {
-    return this.groupService.getGroups(userId)
+  getGroups(@Query('groupId') groupId: string) {
+    return this.groupService.getGroups(groupId)
+  }
+  
+  @Get('/userGroup')
+  getUserGroups(@Query('userId') userId: string) {
+    return this.groupService.getUserGroups(userId)
   }
 
   @Get('/messages')
   getGroupMessages(@Query('groupId') groupId: string) {
     return this.groupService.getGroupMessages(groupId);
-  }
-
-  @Post('/join')
-  joinGroup(@Body() group:Group) {
-    console.log(group)
-    return this.groupService.joinGroup(group)
   }
 }

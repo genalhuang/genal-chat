@@ -15,9 +15,12 @@ const getters: GetterTree<ChatState, RootState> = {
   activeRoom(state) {
     return state.activeRoom
   },
+  groupGather(state) {
+    return state.groupGather
+  },
   userGather(state) {
     return state.userGather
-  }
+  },
 } 
 
 export default getters;

@@ -107,10 +107,7 @@ export class ChatGateway {
       } 
       if(data.groupId) {
         this.gmRepository.save(data);
-        const user = this.userRepository.findOne({userId: data.userId})
-        const res: any = {...data}
-        res.user = user;
-        this.server.to(data.groupId).emit('groupMessage', {code: 0, message:'', data: res})
+        this.server.to(data.groupId).emit('groupMessage', {code: 0, message:'', data: data})
       }
     } catch(e) {
       return this.server.to(data.userId).emit('groupMessage',{ code: 2, message:'群消息发送错误', data: e })
@@ -122,6 +119,9 @@ export class ChatGateway {
   async addFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
     try {
       if(data.friendId && data.userId) {
+        if(data.userId === data.friendId) {
+          return this.server.to(data.userId).emit('addFriend', {code: 1, message:'不能添加自己为好友', data: ''})
+        }
         const isHave1 = await this.friendRepository.find({userId: data.userId, friendId: data.friendId})
         const isHave2 = await this.friendRepository.find({userId: data.friendId, friendId: data.userId})
         const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
@@ -139,16 +139,16 @@ export class ChatGateway {
         }
 
         // 双方都添加好友 并存入数据库
-        await this.friendRepository.save(data)
+        let userChat = await this.friendRepository.save(data)
         let friendData = JSON.parse(JSON.stringify(data))
         const friendId = friendData.friendId
         friendData.friendId = friendData.userId
         friendData.userId = friendId
         delete friendData._id
-        await this.friendRepository.save(friendData)
+        let friendChat = await this.friendRepository.save(friendData)
         client.join(roomId)
-        this.server.to(data.userId).emit('addFriend', {code: 0, message:'添加好友成功', data: friend})
-        this.server.to(data.friendId).emit('addFriend', {code: 0, message:'你正被一个人添加', data: user})
+        this.server.to(data.userId).emit('addFriend', {code: 0, message:'添加好友成功', data: {user:friend, chat: userChat}})
+        this.server.to(data.friendId).emit('addFriend', {code: 0, message:'你正被一个人添加', data: {user, chat: friendChat}})
       }
     } catch(e) {
       return { code: 2, message:'添加好友失败', data: e }

@@ -10,6 +10,7 @@ import {
   ADD_FRIEND_MESSAGE,
   SET_FRIEND_MESSAGES,
   SET_ACTIVE_ROOM,
+  SET_GROUP_GATHER,
   SET_USER_GATHER
 } from './mutation-types'
 import { ChatState } from './state';
@@ -95,12 +96,18 @@ const mutations: MutationTree<ChatState> = {
     }
   },
 
+
   // 设置当前聊天对象(群或好友)
   [SET_ACTIVE_ROOM](state, payload: FriendDto & GroupDto) {
     state.activeRoom = payload
   },
 
-  // 所有的用户的用户详细信息(头像,昵称等)
+  // 设置所有的群的群详细信息(头像,群名字等)
+  [SET_GROUP_GATHER](state, payload: GroupResponse) {
+    Vue.set(state.groupGather, payload.groupId, payload)
+  },
+
+  // 设置所有的用户的用户详细信息(头像,昵称等)
   [SET_USER_GATHER](state, payload: UserResponse) {
     Vue.set(state.userGather, payload.userId, payload)
   }

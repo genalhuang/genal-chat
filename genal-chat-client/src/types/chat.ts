@@ -46,7 +46,7 @@ interface SendMessageDto {
 
 // 所有群的群信息
 interface GroupGather {
-  [userId:string]: GroupResponse
+  [groupId:string]: GroupResponse
 }
 
 // 所有用户的用户信息

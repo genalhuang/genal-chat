@@ -15,6 +15,7 @@ import {
   SET_FRIENDS,
   ADD_FRIEND_MESSAGE,
   SET_FRIEND_MESSAGES,
+  SET_GROUP_GATHER,
   SET_USER_GATHER
 } from './mutation-types'
 
@@ -24,8 +25,13 @@ const actions: ActionTree<ChatState, RootState> = {
     return processReturn(res)
   },
 
-  async getGroups({commit}, userId) {
-    let res = await fetch(`/group?userId=${userId}`)
+  async getGroups({commit}, groupId) {
+    let res = await fetch(`/group?groupId=${groupId}`)
+    return processReturn(res)
+  },
+  
+  async getUserGroups({commit}, userId) {
+    let res = await fetch(`/group/userGroup?userId=${userId}`)
     return processReturn(res)
   },
 
@@ -45,7 +51,7 @@ const actions: ActionTree<ChatState, RootState> = {
   },
 
   // 初始化socket连接和监听socket事件
-  async connectSocket({commit, state,rootState}, callback) {
+  async connectSocket({commit, state, dispatch, rootState}, callback) {
     let user = rootState.app.user
     let socket = io.connect(`/chat?userId=${user.userId}`);
     socket.on('connect',async ()=> {
@@ -57,12 +63,11 @@ const actions: ActionTree<ChatState, RootState> = {
       // 初始化事件监听
       socket.on('addGroup',(res:any)=> {
         console.log('on addGroup',res)
-        if(!res.code) {
-          commit(ADD_GROUP, res.data)
-        } else {
-          if(res.data === '该房间已存在') {
-          }
+        if(res.code) {
+          return Vue.prototype.$message.error(res.message)
         }
+        commit(SET_GROUP_GATHER, res.data)
+        commit(ADD_GROUP, res.data)
       })
 
       socket.on('joinGroup',(res:any)=> {
@@ -70,11 +75,11 @@ const actions: ActionTree<ChatState, RootState> = {
         if(res.code) {
           return Vue.prototype.$message.error(res.message)
         }
-        let myuser = res.data.user
-        let mygroup = res.data.group
-        if(myuser.userId != user.userId) {
-          commit(SET_USER_GATHER, myuser)
-          return Vue.prototype.$message.info(`${myuser.username}加入群${mygroup.groupname}`)
+        let newUser = res.data.user
+        let group = res.data.group
+        if(newUser.userId != user.userId) {
+          commit(SET_USER_GATHER, newUser)
+          return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupname}`)
         }
         
       })
@@ -88,23 +93,12 @@ const actions: ActionTree<ChatState, RootState> = {
 
       socket.on('addFriend',(res:any)=> {
         console.log('on addFriend',res)
+        // user: 朋友的信息 chat: 聊天组所需要的信息
         if(!res.code) {
-          // 新加入的好友存储一下信息
-          commit(SET_USER_GATHER, res.data)
-
-          // 双方进入房间
-          if(res.data.userId === user.userId) {
-            commit(ADD_FRIEND, res.data)
-          }
-          // 如果当前用户是被添加的用户,当前用户加入room
-          if(res.data.friendId === user.userId) {
-            let friendData: FriendMessageDto = JSON.parse(JSON.stringify(res.data))
-            let temp = friendData.userId
-            friendData.userId = friendData.friendId
-            friendData.friendId = temp
-            commit(ADD_FRIEND,friendData)
-            socket.emit('joinFriend', res.data)
-          }
+          // 新好友存储一下信息
+          commit(SET_USER_GATHER, res.data.user)
+          commit(ADD_FRIEND, res.data.chat)
+          socket.emit('joinFriend', res.data.chat)
         } else {
           Vue.prototype.$message.error(res.message)
         }
@@ -128,11 +122,10 @@ const actions: ActionTree<ChatState, RootState> = {
         }
       })
       
-      // 这个是获取群和群消息的回调
-      for(var key in callback) {
-        // for in 中使用await是可以的
-        await callback[key]()
-      }
+      await dispatch('getGroupAndMessages')
+      await dispatch('getFriendAndMessages')
+      await dispatch('getGroupGather')
+      await dispatch('getUserGather')
     })
   },
 
@@ -140,18 +133,21 @@ const actions: ActionTree<ChatState, RootState> = {
   async getGroupAndMessages({commit, dispatch, state,rootState}, payload) {
     let user = rootState.app.user
     let socket = state.socket
-    let groups = await dispatch('getGroups', user.userId)
+    let groups = await dispatch('getUserGroups', user.userId)
+    console.log('getGroups')
     if(groups) {
       commit(SET_GROUPS, groups)
       state.activeRoom = groups[0]
       // 获取到所有群之后加入对应socket并获取群消息
-      groups.map(async(group: GroupDto)=>{
+      let promise = groups.map(async(group: GroupDto)=>{
+        console.log('joinGroup')
         socket.emit('joinGroup', group)
         let groupMessages = await dispatch('getGroupMessages', group.groupId)
         if(groupMessages) {
           commit(SET_GROUP_MESSAGES, groupMessages)
         }
       })
+      await Promise.all(promise);
     }
   },
 
@@ -160,32 +156,51 @@ const actions: ActionTree<ChatState, RootState> = {
     let user = rootState.app.user
     let socket = state.socket
     let friends = await dispatch('getFriends', user.userId)
+    console.log('friends')
     if(friends) {
       commit(SET_FRIENDS, friends)
       // 获取到所有好友之后加入对应socket
-      friends.map(async (friend: FriendDto)=>{
+      let promise  = friends.map(async (friend: FriendDto)=>{
+        console.log('joinFriend')
         socket.emit('joinFriend', friend)
         let friendMessages = await dispatch('getFriendMessages', {userId: user.userId, friendId: friend.friendId})
         if(friendMessages) {
           commit(SET_FRIEND_MESSAGES, friendMessages)
         }
       })
+      await Promise.all(promise);
     }
   },
 
-  // 获取(群消息和用户消息都)需要的用户信息
+  // 获取用户所有群的群信息
+  async getGroupGather({commit, dispatch, state, rootState}) {
+    let groups = state.groups
+    let groupGather = state.groupGather;
+    for(let group of state.groups) {
+      let res = await dispatch('getGroups', group.groupId)
+      if(res) {
+        if(!groupGather[res.userId]) {
+          commit(SET_GROUP_GATHER, res)
+        }
+      }
+    }
+  },
+
+  // 获取用户所有好友的好友信息
   async getUserGather({commit, dispatch, state, rootState}) {
+
     let user = rootState.app.user
     let userGather = state.userGather;
-
     // 处理群里面的用户信息
     for(let group of state.groups) {
-      for(let message of group.messages) {
-        // 这里做一下去重
-        if(!userGather[message.userId]) {
-          if(message.userId != user.userId) {
-            let res = await dispatch('getUserById', message.userId)
-            commit(SET_USER_GATHER, res)
+      if(group.messages) {
+        for(let message of group.messages) {
+          // 这里做一下去重
+          if(!userGather[message.userId]) {
+            if(message.userId != user.userId) {
+              let res = await dispatch('getUserById', message.userId)
+              commit(SET_USER_GATHER, res)
+            }
           }
         }
       }
@@ -205,13 +220,6 @@ const actions: ActionTree<ChatState, RootState> = {
     // 当然也要把自己的信息加进去啦
     commit(SET_USER_GATHER, user)
   },
-
-  // 当群或者好友新增一个用户时获取用户信息
-  async addUserGather({commit, dispatch, state, rootState}, payload) {
-    console.log(payload)
-    // let res = await dispatch('getUserById', payload.friendId)
-    // commit(SET_USER_GATHER, res)
-  }
 }
 
 export default actions;

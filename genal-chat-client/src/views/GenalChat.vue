@@ -84,13 +84,7 @@ export default class GenalChat extends Vue {
   // 进入系统初始化事件
   async handleJoin() {
     this.showModal = false;
-    // 使用策略模式传递回调函数调用
-    let callback = {
-      getGroupAndMessages: this.getGroupAndMessages,
-      getFriendAndMessages: this.getFriendAndMessages,
-      getUserGather: this.getUserGather
-    }
-    this.connectSocket(callback)
+    this.connectSocket()
   }
 
   sendMessage(data: SendMessageDto) {
