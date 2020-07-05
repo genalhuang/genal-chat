@@ -8,11 +8,7 @@
             :key="index"
             :class="{'text-right': item.userId === user.userId}"
           >
-            <div class='message-frame-name'>
-              <img :src="userGather[item.userId].avatar" style='width:40px' alt="">
-              <span class='name'>{{ userGather[item.userId].username }}</span>
-              <span class='time'>{{ formatTime(item.time) }}</span>
-            </div>
+            <genal-avatar :data='item'></genal-avatar>
             <div class='message-frame-text'>{{ item.content }}</div>
           </div>
         </template>
@@ -27,12 +23,17 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import GenalAvatar from './GenalAvatar.vue'
 import * as api from '@/api/apis';
 import { namespace } from 'vuex-class'
 const chatModule = namespace('chat')
 const appModule = namespace('app')
 
-@Component
+@Component({
+  components: {
+    GenalAvatar
+  }
+})
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
   @chatModule.Getter('activeRoom') activeRoom: GroupDto & FriendDto;

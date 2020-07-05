@@ -6,7 +6,6 @@
       ></genal-tool>
     </div>
     <div class='chat-part2'>
-      <a-input v-model="user.username"></a-input>
       <genal-room
         @addGroup='addGroup'
         @joinGroup='joinGroup'

@@ -1,6 +1,18 @@
 import Vue from 'vue';
 import 'ant-design-vue/dist/antd.less';
-import { message, Button, Input, Modal, Form, Checkbox, Icon, Tabs, Popover } from 'ant-design-vue';
+import { 
+  message, 
+  Button, 
+  Input, 
+  Modal, 
+  Form, 
+  Checkbox, 
+  Icon, 
+  Tabs, 
+  Popover,
+  Dropdown,
+  Menu
+} from 'ant-design-vue';
 
 Vue.use(Button);
 Vue.use(Input);
@@ -10,4 +22,6 @@ Vue.use(Checkbox);
 Vue.use(Icon);
 Vue.use(Tabs);
 Vue.use(Popover);
+Vue.use(Dropdown);
+Vue.use(Menu);
 Vue.prototype.$message = message;
