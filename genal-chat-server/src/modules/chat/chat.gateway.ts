@@ -116,10 +116,6 @@ export class ChatGateway {
     }
   }
 
-
-
-
-
   // 发送群消息
   @SubscribeMessage('groupMessage')
   async sendGroupMessage(@MessageBody() data: GroupMessage) {

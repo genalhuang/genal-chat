@@ -2,14 +2,13 @@
   <div class="tool">
     <div class='tool-avatar'>
       <div class='tool-avatar-img'>
-<!--        <img v-if='tool.avatar' :src="tool.avatar" alt="">-->
-        <img  v-if='user.name' src="@/assets/avatar.jpeg" alt="">
+        <img v-if='user' :src="user.avatar" alt="">
+        <img v-else src="@/assets/avatar.jpeg" alt="">
       </div>
-      <div class='tool-avatar-name'>{{user.name}}</div>
+      <div class='tool-avatar-name'>{{user.username}}</div>
     </div>
     <div class="tool-set" >
-      <a-icon class='tool-set-icon' type="login" @click="showTool"/>
-      <a-icon class='tool-set-icon' type="logout" @click="clearUserInfo"/>
+      <a-icon class='tool-set-icon' type="poweroff" @click="logout"/>
     </div>
   </div>
 </template>
@@ -17,32 +16,21 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import {mapMutations, mapGetters} from "vuex";
+import { namespace } from 'vuex-class'
+const appModule = namespace('app')
 
-@Component({
-  computed: {
-    ...mapGetters(['showLoginModal'])
-  },
-  methods: {
-    ...mapMutations(['delUserInfo', 'changeShowLoginModal'])
-  }
-})
+@Component
 export default class GenalTool extends Vue {
-  @Prop({ default: () => ({
-    name: '',
-    passwrod: '',
-    avatar: ''
-  })}) user: User;
-
-  showTool() {
-    // @ts-ignore
-    this.changeShowLoginModal(true)
+  @appModule.Getter('user') user: User;
+  
+  login() {
+    this.$emit('login')
   }
 
-  clearUserInfo() {
-    //@ts-ignore
-    this.delUserInfo()
-    this.$router.go(0)
+  logout() {
+    this.$emit('logout')
   }
+
 }
 </script>
 <style lang="scss" scoped>
@@ -71,6 +59,7 @@ export default class GenalTool extends Vue {
     font-size: 20px;
     position: absolute;
     bottom: 10px;
+    left: 12px;
     margin: 0 5px 0 0;
     .tool-set-icon {
       transition: all 0.2s linear;

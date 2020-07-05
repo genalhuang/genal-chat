@@ -1,7 +1,9 @@
 <template>
   <div class="chat">
     <div class='chat-part1'>
-      <a-button @click='logout'>注销</a-button>
+      <genal-tool
+        @logout='logout'
+      ></genal-tool>
     </div>
     <div class='chat-part2'>
       <a-input v-model="user.username"></a-input>
@@ -22,6 +24,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import GenalTool from '@/components/GenalTool.vue'
 import GenalJoin from '@/components/GenalJoin.vue'
 import GenalRoom from '@/components/GenalRoom.vue'
 import GenalMessage from '@/components/GenalMessage.vue'
@@ -33,6 +36,7 @@ import { processReturn } from '@/utils/common.ts';
 
 @Component({
   components: {
+    GenalTool,
     GenalJoin,
     GenalRoom,
     GenalMessage
