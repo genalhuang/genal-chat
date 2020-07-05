@@ -96,7 +96,6 @@ const mutations: MutationTree<ChatState> = {
     }
   },
 
-
   // 设置当前聊天对象(群或好友)
   [SET_ACTIVE_ROOM](state, payload: FriendDto & GroupDto) {
     state.activeRoom = payload
