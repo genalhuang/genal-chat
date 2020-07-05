@@ -80,8 +80,27 @@ const actions: ActionTree<ChatState, RootState> = {
         if(newUser.userId != user.userId) {
           commit(SET_USER_GATHER, newUser)
           return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupname}`)
+        } else {
+          console.log(state.groupGather, group.groupId)
+          if(!state.groupGather[group.groupId]) {
+            console.log(state.groupGather,11111111111111)
+            commit(SET_GROUP_GATHER, group)
+            commit(ADD_GROUP,group)
+          }
         }
-        
+      })
+
+      socket.on('joinGroupSocket',(res:any)=> {
+        console.log('on joinGroupSocket',res)
+        if(res.code) {
+          return Vue.prototype.$message.error(res.message)
+        }
+        let newUser = res.data.user
+        let group = res.data.group
+        if(newUser.userId != user.userId) {
+          commit(SET_USER_GATHER, newUser)
+          return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupname}`)
+        }
       })
 
       socket.on('groupMessage',(res:any)=> {
@@ -140,8 +159,8 @@ const actions: ActionTree<ChatState, RootState> = {
       state.activeRoom = groups[0]
       // 获取到所有群之后加入对应socket并获取群消息
       let promise = groups.map(async(group: GroupDto)=>{
-        console.log('joinGroup')
-        socket.emit('joinGroup', group)
+        console.log('joinGroupSocket')
+        socket.emit('joinGroupSocket', group)
         let groupMessages = await dispatch('getGroupMessages', group.groupId)
         if(groupMessages) {
           commit(SET_GROUP_MESSAGES, groupMessages)

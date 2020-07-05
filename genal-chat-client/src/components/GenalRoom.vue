@@ -1,8 +1,12 @@
 <template>
   <div class="room">
     <a-button @click='() => visibleGroup =!visibleGroup'>创建一个群</a-button>
+    <a-button @click='() => visibleJoinGroup =!visibleJoinGroup'>加入群聊</a-button>
     <a-modal v-model="visibleGroup" title="Basic Modal" @ok="addGroup">
       <a-input v-model='groupname' placeholder="群"></a-input>
+    </a-modal>
+    <a-modal v-model="visibleJoinGroup" title="Basic Modal" @ok="joinGroup">
+      <a-input v-model='groupname' placeholder="加入的群名字"></a-input>
     </a-modal>
     <a-button @click='() => visibleFriend =!visibleFriend'>添加好友</a-button>
     <a-modal v-model="visibleFriend" title="Basic Modal" @ok="addFriend">
@@ -50,6 +54,7 @@ export default class GenalRoom extends Vue {
   
   rooms: Array<GroupDto | FriendDto> = [];
   visibleGroup:boolean =false;
+  visibleJoinGroup:boolean =false;
   visibleFriend:boolean =false;
   groupname: string = ''
   friendname: string = ''
@@ -67,6 +72,11 @@ export default class GenalRoom extends Vue {
   addGroup() {
     this.visibleGroup=false
     this.$emit('addGroup', this.groupname)
+  }
+
+  joinGroup() {
+    this.visibleJoinGroup = false;
+    this.$emit('joinGroup', this.groupname)
   }
 
   addFriend() {

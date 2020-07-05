@@ -7,6 +7,7 @@
       <a-input v-model="user.username"></a-input>
       <genal-room
         @addGroup='addGroup'
+        @joinGroup='joinGroup'
         @addFriend='addFriend'
         @setActiveRoom='setActiveRoom'
         :groups="groups"
@@ -108,8 +109,16 @@ export default class GenalChat extends Vue {
   }
 
   addGroup(groupname: string) {
-    console.log(groupname)
     this.socket.emit('addGroup', {
+      userId: this.user.userId,
+      groupname: groupname,
+      createTime: new Date().valueOf()
+    })
+  }
+
+  joinGroup(groupname: string) {
+    console.log('gro',groupname)
+    this.socket.emit('joinGroup', {
       userId: this.user.userId,
       groupname: groupname,
       createTime: new Date().valueOf()

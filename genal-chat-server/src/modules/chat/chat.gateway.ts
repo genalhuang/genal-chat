@@ -78,23 +78,47 @@ export class ChatGateway {
   @SubscribeMessage('joinGroup')
   async joinGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group) {
     try {
-      const group = await this.groupRepository.findOne({groupId: data.groupId})
-      const isUserInGroup = await this.groupRepository.findOne({groupId: data.groupId, userId: data.userId})
+      const group = await this.groupRepository.findOne({groupname: data.groupname})
+      let userGroup = await this.groupRepository.findOne({groupname: data.groupname, userId: data.userId})
       const user = await this.userRepository.findOne({userId: data.userId})
       if(group) {
-        if(!isUserInGroup) {
-          this.groupRepository.save(data)
+        if(!userGroup) {
+          data.groupId = group.groupId
+          userGroup = await this.groupRepository.save(data)
         }
         client.join(group.groupId)
-        let res = { group: group, user: user}
+        let res = { group: userGroup, user: user}
         this.server.to(group.groupId).emit('joinGroup', {code: 0, message:`${user.username}加入群${group.groupname}`, data: res})
       } else {
-        this.server.to(data.userId).emit('joinGroup', {code:1, message:'该群不存在', data:'该群不存在'})
+        this.server.to(data.userId).emit('joinGroup', {code:1, message:'该群不存在', data:''})
       }
     } catch(e) {
-      this.server.to(data.userId).emit('joinGroup', {code:2, message:'该群不存在', data:'进群失败'})
+      this.server.to(data.userId).emit('joinGroup', {code:2, message:'进群失败', data:e})
     }
   }
+
+  // 加入群组的socket连接
+  @SubscribeMessage('joinGroupSocket')
+  async joinGroupSocket(@ConnectedSocket() client: Socket, @MessageBody() data: Group) {
+    try {
+      const group = await this.groupRepository.findOne({groupname: data.groupname})
+      let userGroup = await this.groupRepository.findOne({groupname: data.groupname, userId: data.userId})
+      const user = await this.userRepository.findOne({userId: data.userId})
+      if(group) {
+        client.join(group.groupId)
+        let res = { group: userGroup, user: user}
+        this.server.to(group.groupId).emit('joinGroupSocket', {code: 0, message:`${user.username}加入群${group.groupname}`, data: res})
+      } else {
+        this.server.to(data.userId).emit('joinGroupSocket', {code:1, message:'该群不存在', data:''})
+      }
+    } catch(e) {
+      this.server.to(data.userId).emit('joinGroupSocket', {code:2, message:'进群失败', data:e})
+    }
+  }
+
+
+
+
 
   // 发送群消息
   @SubscribeMessage('groupMessage')
