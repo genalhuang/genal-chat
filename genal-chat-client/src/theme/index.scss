@@ -2,8 +2,9 @@
   background-color: #fff;
 }
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 10px
+  // width: 8px;
+  // height: 10px
+  display: none;
 }
 ::-webkit-scrollbar-thumb {
   height: 50px;

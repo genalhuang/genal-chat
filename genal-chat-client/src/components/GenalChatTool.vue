@@ -1,9 +1,9 @@
 <template>
   <div class="chat-tool" v-if='activeRoom'>
-    <div v-if='groupGather[activeRoom.groupId] && activeRoom.groupId'> 
+    <div v-if='groupGather[activeRoom.groupId]'> 
       {{groupGather[activeRoom.groupId].groupname}}
     </div>
-    <div v-if='userGather[activeRoom.friendId] && activeRoom.friendId'>
+    <div v-if='userGather[activeRoom.friendId]'>
       {{userGather[activeRoom.friendId].username}}
     </div>
   </div>
@@ -26,7 +26,6 @@ export default class GenalChatTool extends Vue {
   @chatModule.Getter('activeRoom') activeRoom: GroupDto & FriendDto;
   @chatModule.Getter('groupGather') groupGather: UserGather;
   @chatModule.Getter('userGather') userGather: UserGather;
-
 }
 </script>
 <style lang="scss" scoped>
