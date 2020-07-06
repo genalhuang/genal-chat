@@ -1,5 +1,6 @@
 <template>
-  <div class="message">
+  <div class="message" v-if='activeRoom'>
+    <genal-chat-tool></genal-chat-tool>
     <div class='message-frame'>
       <div v-if='JSON.stringify(userGather) != "{}"'>
         <template v-for="(item, index) in activeRoom.messages">
@@ -24,6 +25,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue'
+import GenalChatTool from './GenalChatTool.vue'
 import * as api from '@/api/apis';
 import { namespace } from 'vuex-class'
 const chatModule = namespace('chat')
@@ -31,12 +33,14 @@ const appModule = namespace('app')
 
 @Component({
   components: {
-    GenalAvatar
+    GenalAvatar,
+    GenalChatTool
   }
 })
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
   @chatModule.Getter('activeRoom') activeRoom: GroupDto & FriendDto;
+  @chatModule.Getter('groupGather') groupGather: UserGather;
   @chatModule.Getter('userGather') userGather: UserGather;
 
   message: string = '';
@@ -49,9 +53,12 @@ export default class GenalMessage extends Vue {
     }, 0);
   }
 
-  mounted() {
-    this.messageDom = document.getElementsByClassName('message-frame')[0];
-    this.scrollToBottom()
+  @Watch('activeRoom')
+  changeActiveRoom() {
+    setTimeout(()=>{
+      this.messageDom = document.getElementsByClassName('message-frame')[0];
+      this.scrollToBottom()
+    }, 0)
   }
 
   scrollToBottom() {
@@ -84,7 +91,6 @@ export default class GenalMessage extends Vue {
 .message {
   overflow: hidden;
   height: 600px;
-  padding: 10px 0 10px 10px;
   display: flex;
   flex-direction: column;
   .message-frame {

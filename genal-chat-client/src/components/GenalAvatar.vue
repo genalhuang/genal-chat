@@ -1,7 +1,7 @@
 <template>
-  <div class="avatar">
+  <div class="avatar" v-if='userGather[data.userId]'>
     <a-popover v-if='data.userId != user.userId'>
-        <div slot="content">
+      <div slot="content">
         <a-button @click='addFriend(data.userId)'>添加好友</a-button>
       </div>
       <img type="primary" class='avatar-img' :src="userGather[data.userId].avatar" alt="">

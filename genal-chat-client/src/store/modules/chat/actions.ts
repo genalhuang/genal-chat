@@ -195,7 +195,7 @@ const actions: ActionTree<ChatState, RootState> = {
   async getGroupGather({commit, dispatch, state, rootState}) {
     let groups = state.groups
     let groupGather = state.groupGather;
-    for(let group of state.groups) {
+    for(let group of groups) {
       let res = await dispatch('getGroups', group.groupId)
       if(res) {
         if(!groupGather[res.userId]) {

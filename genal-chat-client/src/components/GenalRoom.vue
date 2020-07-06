@@ -9,13 +9,13 @@
 
         <a-menu slot="overlay">
           <a-menu-item>
-            <a-button @click='() => visibleGroup =!visibleGroup'>创建一个群</a-button>
+            <div @click='() => visibleGroup =!visibleGroup'>创建群</div>
           </a-menu-item>
           <a-menu-item>
-            <a-button @click='() => visibleJoinGroup =!visibleJoinGroup'>加入群聊</a-button>
+            <div @click='() => visibleJoinGroup =!visibleJoinGroup'>加入群聊</div>
           </a-menu-item>
           <a-menu-item>
-            <a-button @click='() => visibleFriend =!visibleFriend'>添加好友</a-button>
+            <div @click='() => visibleFriend =!visibleFriend'>添加好友</div>
           </a-menu-item>
         </a-menu>
       </a-dropdown>
@@ -23,7 +23,7 @@
     
     <div>
       <div v-for="(item,index) in rooms" :key="index">
-        <div v-if='item.groupId'>
+        <div v-if='groupGather[item.groupId]'>
           <div
             class="room-card"
             :class="{'active': activeRoom.groupId === item.groupId}"
@@ -32,7 +32,7 @@
             <div class="room-card-name">{{groupGather[item.groupId].groupname}}</div>
           </div>
         </div>
-        <div v-if='item.friendId'>
+        <div v-if='userGather[item.friendId]'>
           <div
             class="room-card"
             :class="{'active': activeRoom.friendId === item.friendId}"
@@ -102,7 +102,7 @@ export default class GenalRoom extends Vue {
     this.$emit('addFriend', this.friendname)
   }
 
-  changeActiveRoom(activeRoom: FriendDto & GroupDto) {
+  changeActiveRoom(activeRoom: User & GroupDto) {
     this.$emit('setActiveRoom', activeRoom)
   }
 
