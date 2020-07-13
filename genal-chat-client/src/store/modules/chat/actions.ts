@@ -12,7 +12,7 @@ import {
   ADD_FRIEND_MESSAGE,
   SET_FRIEND_MESSAGES,
   SET_GROUP_GATHER,
-  SET_Friend_GATHER,
+  SET_FRIEND_GATHER,
   SET_USER_GATHER
 } from './mutation-types'
 
@@ -75,7 +75,7 @@ const actions: ActionTree<ChatState, RootState> = {
         let group = res.data.group
         if (newUser.userId != user.userId) {
           commit(SET_USER_GATHER, newUser)
-          return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupname}`)
+          return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupName}`)
         } else {
           console.log(state.groupGather, group.groupId)
           if (!state.groupGather[group.groupId]) {
@@ -93,7 +93,7 @@ const actions: ActionTree<ChatState, RootState> = {
         let group: Group = res.data.group
         if (newUser.userId != user.userId) {
           commit(SET_USER_GATHER, newUser)
-          return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupname}`)
+          return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupName}`)
         } else {
           if (!state.groupGather[group.groupId]) {
             commit(SET_GROUP_GATHER, group)
@@ -111,6 +111,7 @@ const actions: ActionTree<ChatState, RootState> = {
       socket.on('addFriend', (res: any) => {
         console.log('on addFriend', res)
         if (!res.code) {
+          commit(SET_FRIEND_GATHER, res.data)
           commit(SET_USER_GATHER, res.data)
           socket.emit('joinFriend', {
             userId: user.userId,
@@ -178,7 +179,7 @@ const actions: ActionTree<ChatState, RootState> = {
     if (userMap) {
       for (var i = 0; i < userMap.length; i++) {
         let friend: Friend = await dispatch('getUserById', userMap[i].friendId)
-        commit(SET_Friend_GATHER, friend)
+        commit(SET_FRIEND_GATHER, friend)
         commit(SET_USER_GATHER, friend)
         socket.emit('joinFriend', {
           userId: user.userId,

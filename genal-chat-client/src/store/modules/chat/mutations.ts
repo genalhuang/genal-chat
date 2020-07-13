@@ -7,7 +7,7 @@ import {
   SET_FRIEND_MESSAGES,
   SET_ACTIVE_ROOM,
   SET_GROUP_GATHER,
-  SET_Friend_GATHER,
+  SET_FRIEND_GATHER,
   SET_USER_GATHER
 } from './mutation-types'
 import { ChatState } from './state';
@@ -86,7 +86,7 @@ const mutations: MutationTree<ChatState> = {
   },
 
   // 设置所有的好友的用户详细信息(头像,昵称等)
-  [SET_Friend_GATHER](state, payload: User) {
+  [SET_FRIEND_GATHER](state, payload: User) {
     Vue.set(state.friendGather, payload.userId, payload)
   }
 }

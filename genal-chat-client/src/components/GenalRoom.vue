@@ -26,7 +26,7 @@
       :class="{'active': activeRoom && activeRoom.groupId === group.groupId}"
       @click="changeActiveRoom(group)"
     >
-      <div class="room-card-name">{{group.groupname}}</div>
+      <div class="room-card-name">{{group.groupName}}</div>
     </div>
 
     <div
@@ -47,7 +47,7 @@
             :class="{'active': activeRoom.groupId === item.groupId}"
             @click="changeActiveRoom(item)"
           >
-            <div class="room-card-name">{{groupGather[item.groupId].groupname}}</div>
+            <div class="room-card-name">{{groupGather[item.groupId].groupName}}</div>
           </div>
         </div>
         <div v-if='userGather[item.friendId]'>
@@ -63,10 +63,10 @@
     </div> -->
     
     <a-modal v-model="visibleGroup" title="Basic Modal" @ok="addGroup">
-      <a-input v-model='groupname' placeholder="群"></a-input>
+      <a-input v-model='groupName' placeholder="群"></a-input>
     </a-modal>
     <a-modal v-model="visibleJoinGroup" title="Basic Modal" @ok="joinGroup">
-      <a-input v-model='groupname' placeholder="加入的群名字"></a-input>
+      <a-input v-model='groupId' placeholder="加入的群名字"></a-input>
     </a-modal>
     <a-modal v-model="visibleFriend" title="Basic Modal" @ok="addFriend">
       <a-input v-model='friendname' placeholder="好友"></a-input>
@@ -91,7 +91,8 @@ export default class GenalRoom extends Vue {
   visibleGroup:boolean =false;
   visibleJoinGroup:boolean =false;
   visibleFriend:boolean =false;
-  groupname: string = ''
+  groupName: string = ''
+  groupId: string = ''
   friendname: string = ''
 
 
@@ -102,12 +103,12 @@ export default class GenalRoom extends Vue {
 
   addGroup() {
     this.visibleGroup=false
-    this.$emit('addGroup', this.groupname)
+    this.$emit('addGroup', this.groupName)
   }
 
   joinGroup() {
     this.visibleJoinGroup = false;
-    this.$emit('joinGroup', this.groupname)
+    this.$emit('joinGroup', this.groupId)
   }
 
   addFriend() {

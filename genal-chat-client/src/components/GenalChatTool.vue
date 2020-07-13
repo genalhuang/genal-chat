@@ -1,9 +1,9 @@
 <template>
   <div class="chat-tool" v-if='activeRoom'>
     <div v-if='groupGather[activeRoom.groupId]'> 
-      {{groupGather[activeRoom.groupId].groupname}}
+      {{groupGather[activeRoom.groupId].groupName}}
     </div>
-    <div v-if='userGather[activeRoom.userId]'>
+    <div v-else>
       {{userGather[activeRoom.userId].username}}
     </div>
   </div>

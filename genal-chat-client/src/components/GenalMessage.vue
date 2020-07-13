@@ -2,18 +2,16 @@
   <div class="message" v-if='activeRoom'>
     <genal-chat-tool></genal-chat-tool>
     <div class='message-frame'>
-      <div>
-        <template v-for="(item, index) in activeRoom.messages">
-          <div 
-            class='message-frame-message' 
-            :key="index"
-            :class="{'text-right': item.userId === user.userId}"
-          >
-            <genal-avatar :data='item'></genal-avatar>
-            <div class='message-frame-text'>{{ item.content }}</div>
-          </div>
-        </template>
-      </div>
+      <template v-for="(item, index) in activeRoom.messages">
+        <div
+          class='message-frame-message'
+          :key="index"
+          :class="{'text-right': item.userId === user.userId}"
+        >
+          <genal-avatar :data='item'></genal-avatar>
+          <div class='message-frame-text'>{{ item.content }}</div>
+        </div>
+      </template>
     </div>
     <div class='message-input'>
       <a-input type="text" v-model="message" @keyup.enter="sendMessage"></a-input>

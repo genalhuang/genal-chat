@@ -1,6 +1,6 @@
 export class GroupDto {
   groupId: string;
   userId: string;
-  groupname: string;
+  groupName: string;
   createTime: string;
 }

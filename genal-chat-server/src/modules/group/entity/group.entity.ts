@@ -9,7 +9,7 @@ export class Group {
   userId: string;
 
   @Column()
-  groupname: string;
+  groupName: string;
 
   @Column({ default: '群主很懒,没写公告' })
   notice: string;

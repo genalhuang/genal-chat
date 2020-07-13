@@ -110,10 +110,10 @@ export default class GenalChat extends Vue {
 
   }
 
-  addGroup(groupname: string) {
+  addGroup(groupName: string) {
     this.socket.emit('addGroup', {
       userId: this.user.userId,
-      groupname: groupname,
+      groupName: groupName,
       createTime: new Date().valueOf()
     })
   }
@@ -121,7 +121,7 @@ export default class GenalChat extends Vue {
   joinGroup(groupId: string) {
     this.socket.emit('joinGroup', {
       userId: this.user.userId,
-      groupId: "2a1216d5-94f7-4e0f-abcc-9baa53ca0864",
+      groupId: groupId,
     })
     this.getGroupAndMessages()
   }

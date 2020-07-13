@@ -1,18 +1,18 @@
 declare module 'socket.io-client'
 
+// 所有群的群信息
+interface GroupGather {
+  [groupId:string]: Group
+}
+
 // 群组
 interface Group {
   groupId: string;
   userId: string; // 群主id
-  groupname: string;
+  groupName: string;
   notice: string;
   messages: GroupMessage[];
   createTime: number;
-}
-
-// 所有群的群信息
-interface GroupGather {
-  [groupId:string]: Group
 }
 
 // 群与用户关联表

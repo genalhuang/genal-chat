@@ -40,11 +40,11 @@ export class ChatGateway {
   // socket连接钩子
   async handleConnection(client: Socket): Promise<string> {
     let userRoom = client.handshake.query.userId
-    const defaultGroup = await this.groupRepository.find({groupname: 'public'})
+    const defaultGroup = await this.groupRepository.find({groupName: 'public'})
     if(!defaultGroup.length) {
       this.groupRepository.save({
         groupId: 'public',
-        groupname: 'public',
+        groupName: 'public',
         userId: 'admin',
         createTime: new Date().valueOf()
       })
@@ -62,14 +62,14 @@ export class ChatGateway {
   @SubscribeMessage('addGroup')
   async addGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group){
     try {
-      const isHaveGroup = await this.groupRepository.findOne({groupname: data.groupname})
+      const isHaveGroup = await this.groupRepository.findOne({groupName: data.groupName})
       if(isHaveGroup) {
         return this.server.to(data.userId).emit('addGroup', {code:1, message: '该群名字已存在', data: isHaveGroup})
       }
       data = await this.groupRepository.save(data)
       client.join(data.groupId)
       const group = await this.guRepository.save(data)
-      this.server.to(group.groupId).emit('addGroup', {code: 0, message: `成功创建群${data.groupname}`, data:group})
+      this.server.to(group.groupId).emit('addGroup', {code: 0, message: `成功创建群${data.groupName}`, data:group})
     } catch(e) {
       this.server.to(data.userId).emit('addGroup', {code: 2, message:'创建群失败', data:e})
     }
@@ -90,7 +90,7 @@ export class ChatGateway {
         }
         client.join(group.groupId)
         let res = { group: group, user: user}
-        this.server.to(group.groupId).emit('joinGroup', {code: 0, message:`${user.username}加入群${group.groupname}`, data: res})
+        this.server.to(group.groupId).emit('joinGroup', {code: 0, message:`${user.username}加入群${group.groupName}`, data: res})
       } else {
         this.server.to(data.userId).emit('joinGroup', {code:1, message:'该群不存在', data:''})
       }
@@ -109,7 +109,7 @@ export class ChatGateway {
       if(group) {
         client.join(group.groupId)
         let res = { group: group, user: user}
-        this.server.to(group.groupId).emit('joinGroupSocket', {code: 0, message:`${user.username}加入群${group.groupname}`, data: res})
+        this.server.to(group.groupId).emit('joinGroupSocket', {code: 0, message:`${user.username}加入群${group.groupName}`, data: res})
       } else {
         this.server.to(data.userId).emit('joinGroupSocket', {code:1, message:'该群不存在', data:''})
       }
