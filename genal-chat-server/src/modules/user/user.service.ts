@@ -3,15 +3,15 @@ import { Repository, Connection, getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { UserDto } from './dto/user.dto';
-import { Group } from '../group/entity/group.entity';
+import { GroupMap } from '../group/entity/group.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Group)
-    private readonly groupRepository: Repository<Group>,
+    @InjectRepository(GroupMap)
+    private readonly guRepository: Repository<GroupMap>,
   ) {}
 
   async getUser(userId: string) {
@@ -40,11 +40,9 @@ export class UserService {
 
       const data = await this.userRepository.save(user)
 
-      await this.groupRepository.save({
+      await this.guRepository.save({
         userId: data.userId,
         groupId: 'public',
-        groupname: 'public',
-        createTime: new Date().valueOf()
       })
       
       return {code: 0, message:'注册成功', data }

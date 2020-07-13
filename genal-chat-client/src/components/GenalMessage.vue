@@ -2,7 +2,7 @@
   <div class="message" v-if='activeRoom'>
     <genal-chat-tool></genal-chat-tool>
     <div class='message-frame'>
-      <div v-if='JSON.stringify(userGather) != "{}"'>
+      <div>
         <template v-for="(item, index) in activeRoom.messages">
           <div 
             class='message-frame-message' 
@@ -26,7 +26,6 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue'
 import GenalChatTool from './GenalChatTool.vue'
-import * as api from '@/api/apis';
 import { namespace } from 'vuex-class'
 const chatModule = namespace('chat')
 const appModule = namespace('app')
@@ -39,9 +38,9 @@ const appModule = namespace('app')
 })
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
-  @chatModule.Getter('activeRoom') activeRoom: GroupDto & FriendDto;
-  @chatModule.Getter('groupGather') groupGather: UserGather;
-  @chatModule.Getter('userGather') userGather: UserGather;
+  @chatModule.Getter('activeRoom') activeRoom: Group & Friend;
+  @chatModule.Getter('groupGather') groupGather: GroupGather;
+  @chatModule.Getter('userGather') userGather: FriendGather;
 
   message: string = '';
   messageDom: Element = document.getElementsByClassName('message-frame')[0];

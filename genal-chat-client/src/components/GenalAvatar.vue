@@ -23,7 +23,7 @@ const appModule = namespace('app')
 export default class GenalAvatar extends Vue {
   @Prop() data: User;
   @appModule.Getter('user') user: User;
-  @chatModule.Getter('userGather') userGather: UserGather;
+  @chatModule.Getter('userGather') userGather: FriendGather;
   @chatModule.Getter('socket') socket: any;
 
   addFriend(friendId: string) {

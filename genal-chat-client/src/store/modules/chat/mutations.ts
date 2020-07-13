@@ -1,16 +1,13 @@
 import Vue from 'vue';
 import { 
   SET_SOCKET,
-  ADD_GROUP,
-  SET_GROUPS,
   ADD_GROUP_MESSAGE,
   SET_GROUP_MESSAGES,
-  ADD_FRIEND, 
-  SET_FRIENDS,
   ADD_FRIEND_MESSAGE,
   SET_FRIEND_MESSAGES,
   SET_ACTIVE_ROOM,
   SET_GROUP_GATHER,
+  SET_Friend_GATHER,
   SET_USER_GATHER
 } from './mutation-types'
 import { ChatState } from './state';
@@ -22,93 +19,75 @@ const mutations: MutationTree<ChatState> = {
     state.socket = payload;
   },
 
-  // 新增一个群
-  [ADD_GROUP](state, payload: GroupDto) {
-    state.groups.push(payload)
-  },
-
-  // 设置群
-  [SET_GROUPS](state, payload: GroupDto[]) {
-    state.groups = payload
-  },
-
   // 新增一条群消息
-  [ADD_GROUP_MESSAGE](state, payload: GroupMessageDto) {
-    for(let i=0;i<state.groups.length; i++) {
-      if(payload.groupId === state.groups[i].groupId) {
-        if(state.groups[i].messages) {
-          state.groups[i].messages.push(payload)
-        } else {
-          // vuex对象数组中对象改变不更新问题
-          Vue.set(state.groups[i], 'messages' , [payload])
-        }
-      }
+  [ADD_GROUP_MESSAGE](state, payload: GroupMessage) {
+    if(state.groupGather[payload.groupId].messages) {
+      state.groupGather[payload.groupId].messages.push(payload)
+    } else {
+      // vuex对象数组中对象改变不更新问题
+      Vue.set(state.groupGather[payload.groupId], 'messages' , [payload])
     }
   },
 
   // 设置群消息
-  [SET_GROUP_MESSAGES](state, payload: GroupMessageDto[]) {
+  [SET_GROUP_MESSAGES](state, payload: GroupMessage[]) {
     if(payload.length) {
-      for(let i=0;i<state.groups.length; i++) {
-        if(payload[0].groupId === state.groups[i].groupId) {
-          // vuex对象数组中对象改变不更新问题
-          Vue.set(state.groups[i], 'messages' , payload)
-        }
-      }
+      Vue.set(state.groupGather[payload[0].groupId], 'messages' , payload)
     }
-  },
-
-  // 新增一个朋友
-  [ADD_FRIEND](state, payload: FriendDto) {
-    state.friends.push(payload)
-  },
-
-  // 设置朋友
-  [SET_FRIENDS](state, payload: FriendDto[]) {
-    state.friends = payload
   },
 
   // 新增一条私聊消息
-  [ADD_FRIEND_MESSAGE](state, payload: FriendMessageDto) {
-    for(let i=0;i<state.friends.length; i++) {
-      if(payload.userId === state.friends[i].friendId || payload.friendId === state.friends[i].friendId) {
-        if(state.friends[i].messages) {
-          console.log('ADD_FRIEND_MESSAGE',payload)
-          state.friends[i].messages.push(payload)
-        } else {
-          Vue.set(state.friends[i], 'messages' , [payload])
-        }
+  [ADD_FRIEND_MESSAGE](state, payload: FriendMessage) {
+    // @ts-ignore
+    let userId = this.getters['app/user'].userId
+    if(payload.friendId === userId) {
+      if(state.friendGather[payload.userId].messages) {
+        state.friendGather[payload.userId].messages.push(payload)
+      } else {
+        Vue.set(state.friendGather[payload.userId], 'messages' , [payload])
+      }
+    } else {
+      if(state.friendGather[payload.friendId].messages) {
+        state.friendGather[payload.friendId].messages.push(payload)
+      } else {
+        Vue.set(state.friendGather[payload.friendId], 'messages' , [payload])
       }
     }
+
   },
 
   // 设置私聊记录
-  [SET_FRIEND_MESSAGES](state, payload: FriendMessageDto[]) {
-    console.log('friends', state.friends)
+
+  [SET_FRIEND_MESSAGES](state, payload: FriendMessage[]) {
+    // @ts-ignore
+    let userId = this.getters['app/user'].userId
     if(payload.length) {
-      for(let i=0;i<state.friends.length; i++) {
-        if(payload[0].userId === state.friends[i].friendId || payload[0].friendId === state.friends[i].friendId) {
-          // vuex对象数组中对象改变不更新问题
-          console.log('SET_FRIEND_MESSAGES',i)
-          Vue.set(state.friends[i], 'messages' , payload)
-        }
+      if(payload[0].friendId === userId) {
+        Vue.set(state.friendGather[payload[0].userId], 'messages' , payload)
+      } else {
+        Vue.set(state.friendGather[payload[0].friendId], 'messages' , payload)
       }
     }
   },
 
   // 设置当前聊天对象(群或好友)
-  [SET_ACTIVE_ROOM](state, payload: FriendDto & GroupDto) {
+  [SET_ACTIVE_ROOM](state, payload: Friend & Group) {
     state.activeRoom = payload
   },
 
   // 设置所有的群的群详细信息(头像,群名字等)
-  [SET_GROUP_GATHER](state, payload: GroupResponse) {
+  [SET_GROUP_GATHER](state, payload: Group) {
     Vue.set(state.groupGather, payload.groupId, payload)
   },
 
   // 设置所有的用户的用户详细信息(头像,昵称等)
-  [SET_USER_GATHER](state, payload: UserResponse) {
+  [SET_USER_GATHER](state, payload: User) {
     Vue.set(state.userGather, payload.userId, payload)
+  },
+
+  // 设置所有的好友的用户详细信息(头像,昵称等)
+  [SET_Friend_GATHER](state, payload: User) {
+    Vue.set(state.friendGather, payload.userId, payload)
   }
 }
 

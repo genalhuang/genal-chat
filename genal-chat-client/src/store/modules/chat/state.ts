@@ -1,19 +1,17 @@
 export interface ChatState {
   socket: any;
-  groups: GroupDto[],
-  friends: FriendDto[],
-  activeRoom: GroupDto & FriendDto | null,
+  activeRoom: Group & Friend | null,
   groupGather: GroupGather,
-  userGather: UserGather,
+  userGather: FriendGather,
+  friendGather: FriendGather
 }
 
 const chatState: ChatState = {
   socket: null,
-  groups: [],
-  friends: [],
   activeRoom: null,
   groupGather: {},
   userGather: {},
+  friendGather: {}
 }
 
 export default chatState;

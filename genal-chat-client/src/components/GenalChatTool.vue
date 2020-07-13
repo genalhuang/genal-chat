@@ -3,8 +3,8 @@
     <div v-if='groupGather[activeRoom.groupId]'> 
       {{groupGather[activeRoom.groupId].groupname}}
     </div>
-    <div v-if='userGather[activeRoom.friendId]'>
-      {{userGather[activeRoom.friendId].username}}
+    <div v-if='userGather[activeRoom.userId]'>
+      {{userGather[activeRoom.userId].username}}
     </div>
   </div>
 </template>
@@ -23,9 +23,9 @@ const appModule = namespace('app')
   }
 })
 export default class GenalChatTool extends Vue {
-  @chatModule.Getter('activeRoom') activeRoom: GroupDto & FriendDto;
-  @chatModule.Getter('groupGather') groupGather: UserGather;
-  @chatModule.Getter('userGather') userGather: UserGather;
+  @chatModule.Getter('activeRoom') activeRoom: Group & Friend;
+  @chatModule.Getter('groupGather') groupGather: GroupGather;
+  @chatModule.Getter('userGather') userGather: FriendGather;
 }
 </script>
 <style lang="scss" scoped>

@@ -11,7 +11,6 @@
         @joinGroup='joinGroup'
         @addFriend='addFriend'
         @setActiveRoom='setActiveRoom'
-        :groups="groups"
       ></genal-room>
     </div>
     <div class='chat-part3'>
@@ -52,7 +51,6 @@ export default class GenalChat extends Vue {
   @chatModule.Getter('socket') socket: any;
   @chatModule.Getter('userGather') userGather: any;
   @chatModule.Getter('activeRoom') activeRoom: any;
-  @chatModule.Getter('groups') groups: any;
   @chatModule.Mutation('set_active_room') _setActiveRoom: Function;
   @chatModule.Action('connectSocket') connectSocket: Function;
   @chatModule.Action('getGroupAndMessages') getGroupAndMessages: Function;
@@ -92,7 +90,7 @@ export default class GenalChat extends Vue {
     this.connectSocket()
   }
 
-  sendMessage(data: SendMessageDto) {
+  sendMessage(data: SendMessage) {
     console.log('sendMessage',data)
     if(data.type === 'group') {
       this.socket.emit('groupMessage', {
@@ -104,7 +102,7 @@ export default class GenalChat extends Vue {
     } else {
       this.socket.emit('friendMessage', {
         userId: this.user.userId,
-        friendId: this.activeRoom.friendId,
+        friendId: this.activeRoom.userId,
         content: data.message,
         time: new Date().valueOf()
       })
@@ -120,13 +118,12 @@ export default class GenalChat extends Vue {
     })
   }
 
-  joinGroup(groupname: string) {
-    console.log('gro',groupname)
+  joinGroup(groupId: string) {
     this.socket.emit('joinGroup', {
       userId: this.user.userId,
-      groupname: groupname,
-      createTime: new Date().valueOf()
+      groupId: "2a1216d5-94f7-4e0f-abcc-9baa53ca0864",
     })
+    this.getGroupAndMessages()
   }
 
   addFriend(friendId: string) {
@@ -138,7 +135,7 @@ export default class GenalChat extends Vue {
     })
   }
 
-  setActiveRoom(room: FriendDto & GroupDto) {
+  setActiveRoom(room: Friend & Group) {
     this._setActiveRoom(room)
   } 
 

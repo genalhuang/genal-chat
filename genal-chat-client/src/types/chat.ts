@@ -1,71 +1,73 @@
 declare module 'socket.io-client'
 
 // 群组
-interface GroupDto {
+interface Group {
   groupId: string;
-  userId: string;
+  userId: string; // 群主id
   groupname: string;
-  messages: GroupMessageDto[];
-  createTime: string;
-  type?: string;
+  notice: string;
+  messages: GroupMessage[];
+  createTime: number;
 }
-
-// 群消息
-interface GroupMessageDto {
-  userId: string;
-  groupId: string;
-  content: string;
-  time: string;
-  type?: string;
-}
-
-// 好友
-interface FriendDto {
-  friendId: string;
-  userId: string;
-  messages: FriendMessageDto[];
-  createTime: string;
-  type?: string;
-}
-
-// 好友消息
-interface FriendMessageDto {
-  userId: string;
-  friendId: string;
-  content: string;
-  time: string;
-  type?: string;
-}
-
-
-interface SendMessageDto {
-  type: string;
-  message: string;
-}
-
 
 // 所有群的群信息
 interface GroupGather {
-  [groupId:string]: GroupResponse
+  [groupId:string]: Group
 }
 
-// 所有用户的用户信息
-interface UserGather {
-  [userId:string]: UserResponse
-}
-
-interface GroupResponse {
+// 群与用户关联表
+interface GroupMap {
   groupId: string;
   userId: string;
-  groupname: string;
-  createTime: string;
 }
 
-interface UserResponse {
+// 群消息
+interface GroupMessage {
+  userId: string;
+  groupId: string;
+  content: string;
+  time: string;
+}
+
+// 所有好友的好友信息
+interface FriendGather {
+  [userId:string]: Friend
+}
+
+// 好友
+interface Friend {
   userId: string;
   username: string;
   avatar: string;
   role?: string;
   tag?: string;
-  createTime: number;
+  messages: FriendMessage[];
+  createTime: string;
 }
+
+// 用户与好友关联表
+interface UserMap {
+  userId: string;
+  friendId: string;
+}
+
+// 好友消息
+interface FriendMessage {
+  userId: string;
+  friendId: string;
+  content: string;
+  time: string;
+  type?: string;
+}
+
+interface SendMessage {
+  type: string;
+  message: string;
+}
+
+
+
+
+
+
+

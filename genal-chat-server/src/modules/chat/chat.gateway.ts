@@ -11,7 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../user/entity/user.entity';
-import { Group } from '../group/entity/group.entity'
+import { Group, GroupMap } from '../group/entity/group.entity'
 import { GroupMessage } from '../group/entity/groupMessage.entity'
 import { Friend } from '../friend/entity/friend.entity'
 import { FriendMessage } from '../friend/entity/friendMessage.entity'
@@ -24,6 +24,8 @@ export class ChatGateway {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
+    @InjectRepository(GroupMap)
+    private readonly guRepository: Repository<GroupMap>,
     @InjectRepository(GroupMessage)
     private readonly gmRepository: Repository<GroupMessage>,
     @InjectRepository(Friend)
@@ -62,12 +64,11 @@ export class ChatGateway {
     try {
       const isHaveGroup = await this.groupRepository.findOne({groupname: data.groupname})
       if(isHaveGroup) {
-        return this.server.to(data.userId).emit('addGroup', {code:1, message: '该房间已存在', data: isHaveGroup})
+        return this.server.to(data.userId).emit('addGroup', {code:1, message: '该群名字已存在', data: isHaveGroup})
       }
-      data.groupId = uuidv4()
+      data = await this.groupRepository.save(data)
       client.join(data.groupId)
-      const group = await this.groupRepository.save(data)
-      console.log(group)
+      const group = await this.guRepository.save(data)
       this.server.to(group.groupId).emit('addGroup', {code: 0, message: `成功创建群${data.groupname}`, data:group})
     } catch(e) {
       this.server.to(data.userId).emit('addGroup', {code: 2, message:'创建群失败', data:e})
@@ -76,18 +77,19 @@ export class ChatGateway {
 
   // 加入群组
   @SubscribeMessage('joinGroup')
-  async joinGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group) {
+  async joinGroup(@ConnectedSocket() client: Socket, @MessageBody() data: GroupMap) {
     try {
-      const group = await this.groupRepository.findOne({groupname: data.groupname})
-      let userGroup = await this.groupRepository.findOne({groupname: data.groupname, userId: data.userId})
+      console.log('11111111111')
+      const group = await this.groupRepository.findOne({groupId: data.groupId})
+      let userGroup = await this.guRepository.findOne({groupId: group.groupId, userId: data.userId})
       const user = await this.userRepository.findOne({userId: data.userId})
       if(group) {
         if(!userGroup) {
           data.groupId = group.groupId
-          userGroup = await this.groupRepository.save(data)
+          userGroup = await this.guRepository.save(data)
         }
         client.join(group.groupId)
-        let res = { group: userGroup, user: user}
+        let res = { group: group, user: user}
         this.server.to(group.groupId).emit('joinGroup', {code: 0, message:`${user.username}加入群${group.groupname}`, data: res})
       } else {
         this.server.to(data.userId).emit('joinGroup', {code:1, message:'该群不存在', data:''})
@@ -99,14 +101,14 @@ export class ChatGateway {
 
   // 加入群组的socket连接
   @SubscribeMessage('joinGroupSocket')
-  async joinGroupSocket(@ConnectedSocket() client: Socket, @MessageBody() data: Group) {
+  async joinGroupSocket(@ConnectedSocket() client: Socket, @MessageBody() data: GroupMap) {
     try {
-      const group = await this.groupRepository.findOne({groupname: data.groupname})
-      let userGroup = await this.groupRepository.findOne({groupname: data.groupname, userId: data.userId})
+      const group = await this.groupRepository.findOne({groupId: data.groupId})
       const user = await this.userRepository.findOne({userId: data.userId})
+      console.log(group,data)
       if(group) {
         client.join(group.groupId)
-        let res = { group: userGroup, user: user}
+        let res = { group: group, user: user}
         this.server.to(group.groupId).emit('joinGroupSocket', {code: 0, message:`${user.username}加入群${group.groupname}`, data: res})
       } else {
         this.server.to(data.userId).emit('joinGroupSocket', {code:1, message:'该群不存在', data:''})
@@ -121,7 +123,7 @@ export class ChatGateway {
   async sendGroupMessage(@MessageBody() data: GroupMessage) {
     try {
       console.log(data)
-      let isUserInGroup = await this.groupRepository.findOne({userId: data.userId, groupId: data.groupId})
+      let isUserInGroup = await this.guRepository.findOne({userId: data.userId, groupId: data.groupId})
       if(!isUserInGroup) {
         return this.server.to(data.userId).emit('groupMessage',{code:1, message:'群消息发送错误', data: ''})
       } 
@@ -159,16 +161,16 @@ export class ChatGateway {
         }
 
         // 双方都添加好友 并存入数据库
-        let userChat = await this.friendRepository.save(data)
+        await this.friendRepository.save(data)
         let friendData = JSON.parse(JSON.stringify(data))
         const friendId = friendData.friendId
         friendData.friendId = friendData.userId
         friendData.userId = friendId
         delete friendData._id
-        let friendChat = await this.friendRepository.save(friendData)
+        await this.friendRepository.save(friendData)
         client.join(roomId)
-        this.server.to(data.userId).emit('addFriend', {code: 0, message:'添加好友成功', data: {user:friend, chat: userChat}})
-        this.server.to(data.friendId).emit('addFriend', {code: 0, message:'你正被一个人添加', data: {user, chat: friendChat}})
+        this.server.to(data.userId).emit('addFriend', {code: 0, message:'添加好友成功', data: friend })
+        this.server.to(data.friendId).emit('addFriend', {code: 0, message:'你正被一个人添加', data: user })
       }
     } catch(e) {
       return { code: 2, message:'添加好友失败', data: e }

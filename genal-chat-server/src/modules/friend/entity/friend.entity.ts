@@ -10,7 +10,4 @@ export class Friend {
 
   @Column()
   userId: string;
-
-  @Column('double')
-  createTime: number;
 }
