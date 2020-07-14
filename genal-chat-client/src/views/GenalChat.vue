@@ -55,7 +55,6 @@ export default class GenalChat extends Vue {
   @chatModule.Action('connectSocket') connectSocket: Function;
   @chatModule.Action('getGroupAndMessages') getGroupAndMessages: Function;
   @chatModule.Action('getFriendAndMessages') getFriendAndMessages: Function;
-  @chatModule.Action('getUserGather') getUserGather: Function;
 
   created() {
     if(!this.user.userId) {

@@ -17,23 +17,23 @@ import {
 } from './mutation-types'
 
 const actions: ActionTree<ChatState, RootState> = {
-  async getUserById({commit}, userId) {
-    let res = await fetch(`/user?userId=${userId}`)
-    return processReturn(res)
-  },
-
   async getGroup({commit}, groupId) {
     let res = await fetch(`/group?groupId=${groupId}`)
     return processReturn(res)
   },
 
-  async getUserGroups({commit}, userId) {
+  async getGroups({commit}, userId) {
     let res = await fetch(`/group/userGroup?userId=${userId}`)
     return processReturn(res)
   },
 
   async getGroupMessages({commit}, groupId) {
     let res = await fetch(`/group/messages?groupId=${groupId}`)
+    return processReturn(res)
+  },
+
+  async getUser({commit}, userId) {
+    let res = await fetch(`/user?userId=${userId}`)
     return processReturn(res)
   },
 
@@ -113,7 +113,7 @@ const actions: ActionTree<ChatState, RootState> = {
         if (!res.code) {
           commit(SET_FRIEND_GATHER, res.data)
           commit(SET_USER_GATHER, res.data)
-          socket.emit('joinFriend', {
+          socket.emit('joinFriendSocket', {
             userId: user.userId,
             friendId: res.data.userId
           })
@@ -122,8 +122,8 @@ const actions: ActionTree<ChatState, RootState> = {
         }
       })
 
-      socket.on('joinFriend', (res: any) => {
-        console.log('on joinFriend', res)
+      socket.on('joinFriendSocket', (res: any) => {
+        console.log('on joinFriendSocket', res)
         if (!res.code) {
           console.log('成功加入私聊房间')
         }
@@ -142,7 +142,7 @@ const actions: ActionTree<ChatState, RootState> = {
 
       await dispatch('getGroupAndMessages')
       await dispatch('getFriendAndMessages')
-      await dispatch('getUserGather')
+      await dispatch('getGroupUsers')
     })
   },
 
@@ -150,7 +150,7 @@ const actions: ActionTree<ChatState, RootState> = {
   async getGroupAndMessages({commit, dispatch, state, rootState}, payload) {
     let user = rootState.app.user
     let socket = state.socket
-    let groupMap: GroupMap[] = await dispatch('getUserGroups', user.userId)
+    let groupMap: GroupMap[] = await dispatch('getGroups', user.userId)
     if (groupMap.length) {
       for (var i = 0; i < groupMap.length; i++) {
         let group = await dispatch('getGroup', groupMap[i].groupId)
@@ -178,10 +178,10 @@ const actions: ActionTree<ChatState, RootState> = {
     console.log('friends', userMap)
     if (userMap) {
       for (var i = 0; i < userMap.length; i++) {
-        let friend: Friend = await dispatch('getUserById', userMap[i].friendId)
+        let friend: Friend = await dispatch('getUser', userMap[i].friendId)
         commit(SET_FRIEND_GATHER, friend)
         commit(SET_USER_GATHER, friend)
-        socket.emit('joinFriend', {
+        socket.emit('joinFriendSocket', {
           userId: user.userId,
           friendId: friend.userId
         })
@@ -190,46 +190,32 @@ const actions: ActionTree<ChatState, RootState> = {
           commit(SET_FRIEND_MESSAGES, friendMessages)
         }
       }
+      // 当然也要把自己的信息加进去啦
+      commit(SET_USER_GATHER, user)
     }
   },
 
-    // 获取用户所有好友的好友信息
-    async getUserGather({commit, dispatch, state, rootState}) {
-
-      let user = rootState.app.user
-      let userGather = state.userGather;
-      let groupGather = state.groupGather
-      // 处理群里面的用户信息
-      for (let groupId in groupGather) {
-        let group = groupGather[groupId]
-        if (group.messages) {
-          for (let message of group.messages) {
-            // 这里做一下去重
-            if (!userGather[message.userId]) {
-              if (message.userId != user.userId) {
-                let res = await dispatch('getUserById', message.userId)
-                commit(SET_USER_GATHER, res)
-              }
+  // 获取群用户的用户信息
+  async getGroupUsers({commit, dispatch, state, rootState}) {
+    let user = rootState.app.user
+    let userGather = state.userGather;
+    let groupGather = state.groupGather
+    // 处理群里面的用户信息
+    for (let groupId in groupGather) {
+      let group = groupGather[groupId]
+      if (group.messages) {
+        for (let message of group.messages) {
+          // 这里做一下去重
+          if (!userGather[message.userId]) {
+            if (message.userId != user.userId) {
+              let res = await dispatch('getUser', message.userId)
+              commit(SET_USER_GATHER, res)
             }
           }
         }
       }
-
-      // // 处理好友里面的用户信息
-      // for(let friend of state.friends) {
-      //   // 这里做一下去重
-      //   if(!userGather[friend.userId]) {
-      //     if(friend.userId != user.userId) {
-      //       let res = await dispatch('getUserById', friend.userId)
-      //       commit(SET_USER_GATHER, res)
-      //     }
-      //   }
-      // }
-
-      // 当然也要把自己的信息加进去啦
-      commit(SET_USER_GATHER, user)
     }
-  ,
-  }
+  },
+}
 
   export default actions;

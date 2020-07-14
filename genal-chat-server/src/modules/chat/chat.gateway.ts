@@ -178,22 +178,22 @@ export class ChatGateway {
   }
 
   // 进入私聊房间
-  @SubscribeMessage('joinFriend')
+  @SubscribeMessage('joinFriendSocket')
   async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
     try {
-      console.log('joinFriend',data)
+      console.log('joinFriendSocket',data)
       if(data.friendId && data.userId) {
         const isUserInFriend = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId })
         let roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
         if(isUserInFriend) {
           client.join(roomId)
-          this.server.to(data.userId).emit('joinFriend',{code:0, message:'进入私聊socket成功', data: isUserInFriend })
-          this.server.to(data.friendId).emit('joinFriend',{code:0, message:'进入私聊socket成功', data: isUserInFriend})
+          this.server.to(data.userId).emit('joinFriendSocket',{code:0, message:'进入私聊socket成功', data: isUserInFriend })
+          this.server.to(data.friendId).emit('joinFriendSocket',{code:0, message:'进入私聊socket成功', data: isUserInFriend})
           return 
         } 
       }
     } catch(e) {
-      this.server.to(data.userId).emit('joinFriend',{ code:1, message:'进入私聊socket失败', data: e })
+      this.server.to(data.userId).emit('joinFriendSocket',{ code:1, message:'进入私聊socket失败', data: e })
     }
   }
 

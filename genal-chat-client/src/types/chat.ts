@@ -47,8 +47,8 @@ interface Friend {
 
 // 用户与好友关联表
 interface UserMap {
-  userId: string;
   friendId: string;
+  userId: string;
 }
 
 // 好友消息
