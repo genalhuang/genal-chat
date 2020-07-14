@@ -8,67 +8,46 @@
         </div>
         <a-menu slot="overlay">
           <a-menu-item>
-            <div @click='() => visibleGroup =!visibleGroup'>创建群</div>
+            <div @click='() => visibleAddGroup =!visibleAddGroup'>创建群</div>
           </a-menu-item>
           <a-menu-item>
             <div @click='() => visibleJoinGroup =!visibleJoinGroup'>加入群聊</div>
           </a-menu-item>
           <a-menu-item>
-            <div @click='() => visibleFriend =!visibleFriend'>添加好友</div>
+            <div @click='() => visibleAddFriend =!visibleAddFriend'>添加好友</div>
           </a-menu-item>
         </a-menu>
       </a-dropdown>
     </div>
-    <div 
-      class="room-card" 
-      v-for='(group,groupId) in groupGather'
-      :key='groupId'
-      :class="{'active': activeRoom && activeRoom.groupId === group.groupId}"
-      @click="changeActiveRoom(group)"
-    >
-      <div class="room-card-name">{{group.groupName}}</div>
-    </div>
 
-    <div
-      class="room-card"
-      v-for='(friend,userId) in friendGather'
-      :key='userId'
-      :class="{'active': activeRoom && activeRoom.userId === friend.userId}"
-      @click="changeActiveRoom(friend)"
-    >
-      <div class="room-card-name">{{friend.username}}</div>
-    </div>
-
-    <!-- <div>
-      <div v-for="(item,index) in rooms" :key="index">
-        <div v-if='groupGather[item.groupId]'>
-          <div
-            class="room-card"
-            :class="{'active': activeRoom.groupId === item.groupId}"
-            @click="changeActiveRoom(item)"
-          >
-            <div class="room-card-name">{{groupGather[item.groupId].groupName}}</div>
-          </div>
-        </div>
-        <div v-if='userGather[item.friendId]'>
-          <div
-            class="room-card"
-            :class="{'active': activeRoom.friendId === item.friendId}"
-            @click="changeActiveRoom(item)"
-          >
-            <div class="room-card-name">{{userGather[item.friendId].username}}</div>
-          </div>
-        </div>
+    <div>
+      <div 
+        class="room-card" 
+        v-for='(group,groupId) in groupGather'
+        :key='groupId'
+        :class="{'active': activeRoom && activeRoom.groupId === group.groupId}"
+        @click="changeActiveRoom(group)"
+      >
+        <div class="room-card-name">{{group.groupName}}</div>
       </div>
-    </div> -->
+      <div
+        class="room-card"
+        v-for='(friend,userId) in friendGather'
+        :key='userId'
+        :class="{'active': activeRoom && activeRoom.userId === friend.userId}"
+        @click="changeActiveRoom(friend)"
+      >
+        <div class="room-card-name">{{friend.username}}</div>
+      </div>
+    </div>
     
-    <a-modal v-model="visibleGroup" title="Basic Modal" @ok="addGroup">
+    <a-modal v-model="visibleAddGroup" title="Basic Modal" @ok="addGroup">
       <a-input v-model='groupName' placeholder="群"></a-input>
     </a-modal>
     <a-modal v-model="visibleJoinGroup" title="Basic Modal" @ok="joinGroup">
       <a-input v-model='groupId' placeholder="加入的群名字"></a-input>
     </a-modal>
-    <a-modal v-model="visibleFriend" title="Basic Modal" @ok="addFriend">
+    <a-modal v-model="visibleAddFriend" title="Basic Modal" @ok="addFriend">
       <a-input v-model='friendname' placeholder="好友"></a-input>
     </a-modal>
   </div>
@@ -82,27 +61,19 @@ const chatModule = namespace('chat')
 @Component
 export default class GenalRoom extends Vue {
 
-  @chatModule.Getter('friends') friends: Friend[];
   @chatModule.State('activeRoom') activeRoom: Group & Friend;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('friendGather') friendGather: FriendGather;
   
-  rooms: Array<Group | Friend> = [];
-  visibleGroup:boolean =false;
+  visibleAddGroup:boolean =false;
   visibleJoinGroup:boolean =false;
-  visibleFriend:boolean =false;
+  visibleAddFriend:boolean =false;
   groupName: string = ''
   groupId: string = ''
   friendname: string = ''
 
-
-  @Watch('friends') 
-  changeFriends() {
-    this.initRooms()
-  }
-
   addGroup() {
-    this.visibleGroup=false
+    this.visibleAddGroup=false
     this.$emit('addGroup', this.groupName)
   }
 
@@ -112,21 +83,12 @@ export default class GenalRoom extends Vue {
   }
 
   addFriend() {
-    this.visibleFriend=false
+    this.visibleAddFriend=false
     this.$emit('addFriend', this.friendname)
   }
 
   changeActiveRoom(activeRoom: User & Group) {
     this.$emit('setActiveRoom', activeRoom)
-  }
-
-  initRooms() {
-    this.rooms = [...this.friends]
-    this.sortRoom()
-    console.log(this.rooms)
-  }
-
-  sortRoom() {
   }
 }
 </script>

@@ -22,7 +22,12 @@ const actions: ActionTree<ChatState, RootState> = {
     return processReturn(res)
   },
 
-  async getGroups({commit}, userId) {
+  async getGroupUsers({commit}, groupId) {
+    let res = await fetch(`/group/groupUser?groupId=${groupId}`)
+    return processReturn(res)
+  },
+
+  async getUserGroups({commit}, userId) {
     let res = await fetch(`/group/userGroup?userId=${userId}`)
     return processReturn(res)
   },
@@ -66,7 +71,7 @@ const actions: ActionTree<ChatState, RootState> = {
         commit(SET_GROUP_GATHER, res.data)
       })
 
-      socket.on('joinGroup', (res: any) => {
+      socket.on('joinGroup', async (res: any) => {
         console.log('on joinGroup', res)
         if (res.code) {
           return Vue.prototype.$message.error(res.message)
@@ -78,8 +83,11 @@ const actions: ActionTree<ChatState, RootState> = {
           return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupName}`)
         } else {
           console.log(state.groupGather, group.groupId)
+          // 是用户自己加入到某个群
           if (!state.groupGather[group.groupId]) {
             commit(SET_GROUP_GATHER, group)
+            // 获取群里面所有用户的用户信息
+            await dispatch('handleGroupUsers')
           }
         }
       })
@@ -142,7 +150,7 @@ const actions: ActionTree<ChatState, RootState> = {
 
       await dispatch('getGroupAndMessages')
       await dispatch('getFriendAndMessages')
-      await dispatch('getGroupUsers')
+      await dispatch('handleGroupUsers')
     })
   },
 
@@ -150,7 +158,7 @@ const actions: ActionTree<ChatState, RootState> = {
   async getGroupAndMessages({commit, dispatch, state, rootState}, payload) {
     let user = rootState.app.user
     let socket = state.socket
-    let groupMap: GroupMap[] = await dispatch('getGroups', user.userId)
+    let groupMap: GroupMap[] = await dispatch('getUserGroups', user.userId)
     if (groupMap.length) {
       for (var i = 0; i < groupMap.length; i++) {
         let group = await dispatch('getGroup', groupMap[i].groupId)
@@ -195,23 +203,22 @@ const actions: ActionTree<ChatState, RootState> = {
     }
   },
 
-  // 获取群用户的用户信息
-  async getGroupUsers({commit, dispatch, state, rootState}) {
+  // 处理所有群的所有用户的用户信息
+  async handleGroupUsers({commit, dispatch, state, rootState}) {
     let user = rootState.app.user
     let userGather = state.userGather;
     let groupGather = state.groupGather
-    // 处理群里面的用户信息
+
     for (let groupId in groupGather) {
-      let group = groupGather[groupId]
-      if (group.messages) {
-        for (let message of group.messages) {
-          // 这里做一下去重
-          if (!userGather[message.userId]) {
-            if (message.userId != user.userId) {
-              let res = await dispatch('getUser', message.userId)
-              commit(SET_USER_GATHER, res)
-            }
+    let groupMapArr: GroupMap[]  = await dispatch('getGroupUsers', groupId)
+      for(var groupMap of groupMapArr) {
+        console.log(groupMap.userId)
+        if (!userGather[groupMap.userId]) {
+          let user = await dispatch('getUser', groupMap.userId)
+          if(user) {
+            commit(SET_USER_GATHER, user)
           }
+
         }
       }
     }
