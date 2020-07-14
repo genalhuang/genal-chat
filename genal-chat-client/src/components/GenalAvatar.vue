@@ -1,6 +1,6 @@
 <template>
   <div class="avatar" v-if='userGather[data.userId]'>
-    <a-popover v-if='data.userId != user.userId'>
+    <a-popover v-if='data.userId != user.userId && !friendGather[data.userId]'>
       <div slot="content">
         <a-button @click='addFriend(data.userId)'>添加好友</a-button>
       </div>
@@ -24,6 +24,7 @@ export default class GenalAvatar extends Vue {
   @Prop() data: User;
   @appModule.Getter('user') user: User;
   @chatModule.Getter('userGather') userGather: FriendGather;
+  @chatModule.Getter('friendGather') friendGather: FriendGather;
   @chatModule.Getter('socket') socket: any;
 
   addFriend(friendId: string) {
@@ -42,6 +43,7 @@ export default class GenalAvatar extends Vue {
 </script>
 <style lang="scss" scoped>
 .avatar {
+  height: 35px;
   .avatar-img {
     width: 35px;
   }

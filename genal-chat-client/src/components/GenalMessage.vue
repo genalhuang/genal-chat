@@ -53,12 +53,12 @@ export default class GenalMessage extends Vue {
   @Watch('activeRoom')
   changeActiveRoom() {
     setTimeout(()=>{
-      this.messageDom = document.getElementsByClassName('message-frame')[0];
       this.scrollToBottom()
     }, 0)
   }
 
   scrollToBottom() {
+    this.messageDom = document.getElementsByClassName('message-frame')[0];
     this.messageDom.scrollTop=this.messageDom.scrollHeight;
   }
 
