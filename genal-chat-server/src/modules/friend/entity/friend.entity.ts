@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Friend {
+export class UserMap {
   @PrimaryGeneratedColumn()
   _id: number;
 

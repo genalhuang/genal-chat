@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Repository, Connection, getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Friend } from './entity/friend.entity';
+import { UserMap } from './entity/friend.entity';
 import { FriendMessage } from './entity/friendMessage.entity';
 
 @Injectable()
 export class FriendService {
   constructor(
-    @InjectRepository(Friend)
-    private readonly friendRepository: Repository<Friend>,
+    @InjectRepository(UserMap)
+    private readonly friendRepository: Repository<UserMap>,
     @InjectRepository(FriendMessage)
     private readonly friendMessageResponsity: Repository<FriendMessage>,
   ){}

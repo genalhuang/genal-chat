@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { User } from '../user/entity/user.entity';
 import { Group, GroupMap } from '../group/entity/group.entity'
 import { GroupMessage } from '../group/entity/groupMessage.entity'
-import { Friend } from '../friend/entity/friend.entity'
+import { UserMap } from '../friend/entity/friend.entity'
 import { FriendMessage } from '../friend/entity/friendMessage.entity'
 
 
@@ -28,8 +28,8 @@ export class ChatGateway {
     private readonly guRepository: Repository<GroupMap>,
     @InjectRepository(GroupMessage)
     private readonly gmRepository: Repository<GroupMessage>,
-    @InjectRepository(Friend)
-    private readonly friendRepository: Repository<Friend>,
+    @InjectRepository(UserMap)
+    private readonly friendRepository: Repository<UserMap>,
     @InjectRepository(FriendMessage)
     private readonly fmRepository: Repository<FriendMessage>,
   ) {}
@@ -138,7 +138,7 @@ export class ChatGateway {
 
   // 添加好友
   @SubscribeMessage('addFriend')
-  async addFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
+  async addFriend(@ConnectedSocket() client: Socket, @MessageBody() data: UserMap) {
     try {
       if(data.friendId && data.userId) {
         if(data.userId === data.friendId) {
@@ -179,7 +179,7 @@ export class ChatGateway {
 
   // 进入私聊房间
   @SubscribeMessage('joinFriendSocket')
-  async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: Friend) {
+  async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: UserMap) {
     try {
       console.log('joinFriendSocket',data)
       if(data.friendId && data.userId) {
