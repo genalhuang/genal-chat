@@ -39,7 +39,19 @@ export class GroupService {
       data = await this.guRepository.find()
       return {code: 0, message:'获取系统所有群成功', data}
     } catch (e) {
-      return {code: 1, message:'获取群失败',data: e}
+      return {code: 1, message:'获取用户的群失败',data: e}
+    }
+  }
+
+  async getGroupUsers(groupId: string) {
+    try {
+      let data;
+      if(groupId) {
+        data = await this.guRepository.find({groupId: groupId})
+        return {code: 0, messge:'获取群的所有用户成功', data}
+      }
+    } catch (e) {
+      return {code: 1, message:'获取群的用户失败',data: e}
     }
   }
 

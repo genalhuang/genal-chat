@@ -16,6 +16,11 @@ export class GroupController {
     return this.groupService.getUserGroups(userId)
   }
 
+  @Get('/groupUser')
+  getGroupUsers(@Query('groupId') groupId: string) {
+    return this.groupService.getGroupUsers(groupId)
+  }
+
   @Get('/messages')
   getGroupMessages(@Query('groupId') groupId: string) {
     return this.groupService.getGroupMessages(groupId);
