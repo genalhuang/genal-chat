@@ -6,7 +6,7 @@
       </div>
       <img type="primary" class='avatar-img' :src="userGather[data.userId].avatar" alt="">
     </a-popover>
-    <img v-else type="primary" class='avatar-img' :src="userGather[data.userId].avatar" alt="">
+    <a-avatar v-else icon="user" :src="userGather[data.userId].avatar" />
     <span class='avatar-name'>{{ userGather[data.userId].username }}</span>
     <span class='avatar-time'>{{ formatTime(data.time) }}</span>
   </div>

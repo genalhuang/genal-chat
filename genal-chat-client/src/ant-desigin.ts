@@ -11,9 +11,11 @@ import {
   Tabs, 
   Popover,
   Dropdown,
-  Menu
+  Menu,
+  Avatar
 } from 'ant-design-vue';
 
+Vue.use(Avatar)
 Vue.use(Button);
 Vue.use(Input);
 Vue.use(Modal);
