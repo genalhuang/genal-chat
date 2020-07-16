@@ -29,6 +29,7 @@
         @click="changeActiveRoom(group)"
       >
         <div class="room-card-name">{{group.groupName}}</div>
+        <div class='room-card-new' v-if='group.messages'>{{group.messages[group.messages.length-1].content}}</div>
       </div>
       <div
         class="room-card"
@@ -38,6 +39,7 @@
         @click="changeActiveRoom(friend)"
       >
         <div class="room-card-name">{{friend.username}}</div>
+        <div class='room-card-new' v-if='friend.messages'>{{friend.messages[friend.messages.length-1].content}}</div>
       </div>
     </div>
     

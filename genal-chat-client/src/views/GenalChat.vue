@@ -26,7 +26,6 @@ import GenalTool from '@/components/GenalTool.vue'
 import GenalJoin from '@/components/GenalJoin.vue'
 import GenalRoom from '@/components/GenalRoom.vue'
 import GenalMessage from '@/components/GenalMessage.vue'
-import io from 'socket.io-client'
 import { namespace } from 'vuex-class'
 const appModule = namespace('app')
 const chatModule = namespace('chat')

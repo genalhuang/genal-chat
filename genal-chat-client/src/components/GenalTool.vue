@@ -1,15 +1,37 @@
 <template>
   <div class="tool">
     <div class='tool-avatar'>
-      <div class='tool-avatar-img'>
+      <div class='tool-avatar-img' @click='showModal("showUserModal")'>
         <img v-if='user' :src="user.avatar" alt="">
         <img v-else src="@/assets/avatar.jpeg" alt="">
       </div>
       <div class='tool-avatar-name'>{{user.username}}</div>
     </div>
-    <div class="tool-set" >
-      <a-icon class='tool-set-icon' type="poweroff" @click="logout"/>
+    <div class="tool-set">
+      <a-icon class='tool-set-icon' type="setting" @click='showModal("showSetModal")'/>
+
     </div>
+
+    <a-modal
+      title="用户信息"
+      :visible="showUserModal"
+      footer=""
+      @cancel='handleCancel("showUserModal")'
+    >
+      <div>
+        <span>更改用户名</span><a-input v-model='username'></a-input>
+        <a-button @click='changeUser'>确认</a-button>
+      </div>
+    </a-modal>
+
+    <a-modal
+      title="设置"
+      :visible="showSetModal"
+      footer=""
+      @cancel='handleCancel("showSetModal")'
+    >
+      <div>退出 <a-icon class='tool-set-icon' type="poweroff" @click="logout"/></div>
+    </a-modal>
   </div>
 </template>
 
@@ -17,20 +39,38 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import {mapMutations, mapGetters} from "vuex";
 import { namespace } from 'vuex-class'
+import * as apis  from '@/api/apis'
+import { processReturn } from '@/utils/common.ts';
 const appModule = namespace('app')
+
+
 
 @Component
 export default class GenalTool extends Vue {
   @appModule.Getter('user') user: User;
-  
-  login() {
-    this.$emit('login')
-  }
+  showSetModal: boolean = false;
+  showUserModal: boolean = false;
+  username: string = ''
 
   logout() {
     this.$emit('logout')
   }
 
+  showModal(modalType: 'showSetModal' | 'showUserModal') {
+    this[modalType] = true;
+  }
+
+  handleCancel(modalType: 'showSetModal' | 'showUserModal') {
+    this[modalType] = false;
+  }
+
+  async changeUser() {
+    let user: User = JSON.parse(JSON.stringify(this.user))
+    user.username = this.username
+    let res = await apis.patchUser(user)
+    processReturn(res)
+    this.logout()
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -56,19 +96,21 @@ export default class GenalTool extends Vue {
     }
   }
   .tool-set {
+    display: flex;
+    flex-direction: column;
     font-size: 20px;
     position: absolute;
     bottom: 10px;
     left: 12px;
-    margin: 0 5px 0 0;
-    .tool-set-icon {
-      transition: all 0.2s linear;
-      cursor: pointer;
-      margin: 10px;
-      &:hover {
-        color: skyblue;
-      }
+  }
+
+}
+  .tool-set-icon {
+    transition: all 0.2s linear;
+    cursor: pointer;
+    margin: 10px;
+    &:hover {
+      color: skyblue;
     }
   }
-}
 </style>
