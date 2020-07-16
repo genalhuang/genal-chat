@@ -1,7 +1,9 @@
 <template>
   <div class="avatar" v-if='userGather[data.userId]'>
     <a-popover v-if='data.userId != user.userId && !friendGather[data.userId]'>
-      <div slot="content">
+      <div slot="content" class='avatar-card'>
+        <a-avatar icon="user" :size='60' :src="userGather[data.userId].avatar" />
+        <div>{{userGather[data.userId].username}}</div>
         <a-button @click='addFriend(data.userId)'>添加好友</a-button>
       </div>
       <img type="primary" class='avatar-img' :src="userGather[data.userId].avatar" alt="">
@@ -54,6 +56,15 @@ export default class GenalAvatar extends Vue {
     font-size: 10px;
     color: rgb(139, 139, 139);
     margin-left: 5px;
+  }
+}
+.avatar-card {
+  display: flex;
+  font-weight: bold;
+  flex-direction: column;
+  align-items: center;
+  > div {
+    margin: 4px;
   }
 }
 </style>
