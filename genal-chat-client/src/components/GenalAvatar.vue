@@ -4,7 +4,7 @@
       <div slot="content" class='avatar-card'>
         <a-avatar icon="user" :size='60' :src="userGather[data.userId].avatar" />
         <div>{{userGather[data.userId].username}}</div>
-        <a-button @click='addFriend(data.userId)'>添加好友</a-button>
+        <a-button @click='addFriend(data.userId)' type='primary'>添加好友</a-button>
       </div>
       <img type="primary" class='avatar-img' :src="userGather[data.userId].avatar" alt="">
     </a-popover>
