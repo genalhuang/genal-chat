@@ -13,7 +13,6 @@
     "ant-design-vue": "^1.6.2",
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
-    "jquery": "^3.5.1",
     "js-cookie": "^2.2.1",
     "less-loader": "^6.1.2",
     "moment": "^2.27.0",
