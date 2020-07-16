@@ -9,7 +9,6 @@
     </div>
     <div class="tool-set">
       <a-icon class='tool-set-icon' type="setting" @click='showModal("showSetModal")'/>
-
     </div>
 
     <a-modal
@@ -18,9 +17,13 @@
       footer=""
       @cancel='handleCancel("showUserModal")'
     >
-      <div>
-        <span>更改用户名</span><a-input v-model='username'></a-input>
-        <a-button @click='changeUser'>确认</a-button>
+      <div class='tool-user'>
+        <a-avatar :src='user.avatar' :size='100'></a-avatar>
+        <div class='tool-user-name'>
+          <div class='tool-user-name-title'>更改用户名</div>
+          <a-input style='width: 200px' v-model='username' placeholder="请输入用户名"></a-input>
+          <a-button @click='changeUser'>确认</a-button>
+        </div>
       </div>
     </a-modal>
 
@@ -43,14 +46,16 @@ import * as apis  from '@/api/apis'
 import { processReturn } from '@/utils/common.ts';
 const appModule = namespace('app')
 
-
-
 @Component
 export default class GenalTool extends Vue {
   @appModule.Getter('user') user: User;
   showSetModal: boolean = false;
   showUserModal: boolean = false;
   username: string = ''
+
+  created() {
+    this.username = this.user.username
+  }
 
   logout() {
     this.$emit('logout')
@@ -105,12 +110,27 @@ export default class GenalTool extends Vue {
   }
 
 }
-  .tool-set-icon {
-    transition: all 0.2s linear;
-    cursor: pointer;
-    margin: 10px;
-    &:hover {
-      color: skyblue;
+.tool-user {
+  text-align: center;
+  .tool-user-name {
+    display: flex;
+    align-items: center;
+    > * {
+      margin-right: 5px;
+    }
+    .tool-user-name-title {
+      font-weight: bold;
+      font-size: 15px;
+      margin-right: 15px;
     }
   }
+}
+.tool-set-icon {
+  transition: all 0.2s linear;
+  cursor: pointer;
+  margin: 10px;
+  &:hover {
+    color: skyblue;
+  }
+}
 </style>
