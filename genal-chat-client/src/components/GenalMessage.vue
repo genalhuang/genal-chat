@@ -14,8 +14,8 @@
       </template>
     </div>
     <div class='message-input'>
-      <a-input type="text" v-model="message" @keyup.enter="sendMessage"></a-input>
-      <a-button @click="sendMessage">发送</a-button>
+      <a-input type="text" placeholder="好好说话..." v-model="message" @keyup.enter="sendMessage" />
+      <img class='message-input-button' @click="sendMessage" src="~@/assets/send.png" alt="">
     </div>
   </div>
 </template>
@@ -88,10 +88,9 @@ export default class GenalMessage extends Vue {
 .message {
   overflow: hidden;
   height: 600px;
-  display: flex;
-  flex-direction: column;
+  position: relative;
   .message-frame {
-    height: 490px;
+    height: 495px;
     overflow: auto;
     position: relative;
     .text-right {
@@ -100,38 +99,32 @@ export default class GenalMessage extends Vue {
     .message-frame-message {
       text-align: left;
       margin: 10px;
-      .message-frame-name {
-        font-size: 14px;
-        margin-bottom: 3px;
-        .name {
-          font-weight: bold;
-        }
-        .time {
-          font-size: 10px;
-          color: rgb(139, 139, 139);
-          margin-left: 5px;
-        }
-      }
       .message-frame-text {
         display: inline-block;
         background-color: skyblue;
         padding: 5px 8px;
         font-size: 12px;
         border-radius: 10px;
-        cursor: pointer;
-        &:hover {
-          box-shadow: 1px 1px 4px skyblue;
-        }
       }
     }
   }
   .message-input {
     display: flex;
     flex-wrap: nowrap;
-    position: relative;
+    position: absolute;
     width: 99%;
     margin-top: 10px;
-    bottom: 0;
+    bottom: 10px;
+    input {
+      height: 40px;
+    }
+    .message-input-button {
+      width: 30px;
+      cursor: pointer;
+      position: absolute;
+      right: 10px;
+      top: 4px;
+    }
   }
 }
 </style>

@@ -162,7 +162,6 @@ const actions: ActionTree<ChatState, RootState> = {
     if (groupMap.length) {
       for (var i = 0; i < groupMap.length; i++) {
         let group = await dispatch('getGroup', groupMap[i].groupId)
-        commit(SET_GROUP_GATHER, group)
         if (group) {
           socket.emit('joinGroupSocket', {
             groupId: group.groupId,
@@ -187,15 +186,17 @@ const actions: ActionTree<ChatState, RootState> = {
     if (userMap) {
       for (var i = 0; i < userMap.length; i++) {
         let friend: Friend = await dispatch('getUser', userMap[i].friendId)
-        commit(SET_FRIEND_GATHER, friend)
-        commit(SET_USER_GATHER, friend)
-        socket.emit('joinFriendSocket', {
-          userId: user.userId,
-          friendId: friend.userId
-        })
-        let friendMessages:FriendMessage[] = await dispatch('getFriendMessages', {userId: user.userId, friendId: friend.userId})
-        if(friendMessages) {
-          commit(SET_FRIEND_MESSAGES, friendMessages)
+        if(friend) {
+          socket.emit('joinFriendSocket', {
+            userId: user.userId,
+            friendId: friend.userId
+          })
+          commit(SET_FRIEND_GATHER, friend)
+          commit(SET_USER_GATHER, friend)
+          let friendMessages:FriendMessage[] = await dispatch('getFriendMessages', {userId: user.userId, friendId: friend.userId})
+          if(friendMessages) {
+            commit(SET_FRIEND_MESSAGES, friendMessages)
+          }
         }
       }
       // 当然也要把自己的信息加进去啦
@@ -205,7 +206,6 @@ const actions: ActionTree<ChatState, RootState> = {
 
   // 处理所有群的所有用户的用户信息
   async handleGroupUsers({commit, dispatch, state, rootState}) {
-    let user = rootState.app.user
     let userGather = state.userGather;
     let groupGather = state.groupGather
 
@@ -218,11 +218,10 @@ const actions: ActionTree<ChatState, RootState> = {
           if(user) {
             commit(SET_USER_GATHER, user)
           }
-
         }
       }
     }
   },
 }
 
-  export default actions;
+export default actions;

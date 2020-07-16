@@ -45,6 +45,7 @@ export default class GenalAvatar extends Vue {
 </script>
 <style lang="scss" scoped>
 .avatar {
+  cursor: pointer;
   height: 35px;
   .avatar-img {
     width: 35px;
@@ -54,7 +55,7 @@ export default class GenalAvatar extends Vue {
   }
   .avatar-time {
     font-size: 10px;
-    color: rgb(139, 139, 139);
+    color: rgb(100, 98, 98);
     margin-left: 5px;
   }
 }

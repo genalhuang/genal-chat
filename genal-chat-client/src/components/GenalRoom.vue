@@ -1,6 +1,6 @@
 <template>
   <div class="room">
-    <div style='display:flex;'>
+    <div class='room-search'>
       <a-input></a-input>
       <a-dropdown>
         <div class="ant-dropdown-link" @click="e => e.preventDefault()">
@@ -19,7 +19,6 @@
         </a-menu>
       </a-dropdown>
     </div>
-
     <div>
       <div 
         class="room-card" 
@@ -98,9 +97,16 @@ export default class GenalRoom extends Vue {
   .room {
     height: 100%;
     overflow: auto;
+    .room-search {
+      display: flex;
+      height: 50px;
+      background-color: rgb(221, 221, 221,.5);
+      padding: 10px;
+      align-items: center;
+    }
     .room-card {
       min-height: 52px;
-      background-color: rgb(233, 233, 233);
+      background-color: rgb(233, 233, 233,.5);
       /*margin: 5px;*/
       width: 200px;
       margin-bottom: 1px;
@@ -109,10 +115,10 @@ export default class GenalRoom extends Vue {
       transition: all 0.2s linear;
       cursor: pointer;
       &:hover {
-        background-color: #ccc;
+        background-color: rgb(204, 204, 204, .5);
       }
       &.active {
-        background-color: #ccc;
+        background-color: rgb(204, 204, 204,.5);
       }
       .room-card-name {
         overflow:hidden; //超出的文本隐藏
