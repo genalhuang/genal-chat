@@ -30,8 +30,8 @@ export default class GenalChatTool extends Vue {
 </script>
 <style lang="scss" scoped>
 .chat-tool {
-  height: 50px;
-  line-height: 50px;
-  background-color: rgb(233, 233, 233, .5);
+  height: 60px;
+  line-height: 60px;
+  background-color: rgb(0, 0, 0,.3);
 }
 </style>

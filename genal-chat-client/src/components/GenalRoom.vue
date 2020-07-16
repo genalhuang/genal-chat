@@ -99,43 +99,37 @@ export default class GenalRoom extends Vue {
     overflow: auto;
     .room-search {
       display: flex;
-      height: 50px;
-      background-color: rgb(221, 221, 221,.5);
+      height: 60px;
       padding: 10px;
       align-items: center;
     }
     .room-card {
-      min-height: 52px;
-      background-color: rgb(233, 233, 233,.5);
-      /*margin: 5px;*/
-      width: 200px;
-      margin-bottom: 1px;
+      min-height: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      background-color: rgba(54, 50, 50, 0.1);
       padding: 5px 10px;
       text-align: left;
       transition: all 0.2s linear;
       cursor: pointer;
       &:hover {
-        background-color: rgb(204, 204, 204, .5);
+        background-color: rgb(0, 0, 0,.3);
       }
       &.active {
-        background-color: rgb(204, 204, 204,.5);
+        background-color: rgb(0, 0, 0,.3);
       }
       .room-card-name {
         overflow:hidden; //超出的文本隐藏
         text-overflow:ellipsis; //溢出用省略号显示
         white-space:nowrap; //溢出不换行
-        font-weight: bold;
       }
       .room-card-new {
         overflow:hidden; //超出的文本隐藏
         text-overflow:ellipsis; //溢出用省略号显示
         white-space:nowrap; //溢出不换行
-        color: #878987;
-        .name {
-        }
-        .text {
-          margin-left: 5px;
-        }
+        color: gray;
+        font-size: 14px;
       }
     }
   }

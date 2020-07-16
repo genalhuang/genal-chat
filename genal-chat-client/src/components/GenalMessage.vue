@@ -87,24 +87,28 @@ export default class GenalMessage extends Vue {
 <style lang="scss" scoped>
 .message {
   overflow: hidden;
-  height: 600px;
+  height: 800px;
   position: relative;
+  color: #fff;
   .message-frame {
-    height: 495px;
+    height: calc(100% - 115px);
     overflow: auto;
     position: relative;
     .text-right {
       text-align: right!important;
+      .avatar {
+        justify-content: flex-end;
+      }
     }
     .message-frame-message {
       text-align: left;
-      margin: 10px;
+      margin: 10px 20px;
       .message-frame-text {
         display: inline-block;
-        background-color: skyblue;
-        padding: 5px 8px;
-        font-size: 12px;
-        border-radius: 10px;
+        background-color: rgb(0, 200, 255, .4);
+        padding: 5px 10px;
+        font-size: 14px;
+        border-radius: 5px;
       }
     }
   }

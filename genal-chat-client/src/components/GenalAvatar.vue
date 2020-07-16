@@ -45,23 +45,25 @@ export default class GenalAvatar extends Vue {
 </script>
 <style lang="scss" scoped>
 .avatar {
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  height: 35px;
+  height: 37px;
   .avatar-img {
     width: 35px;
   }
   .avatar-name {
-    font-weight: bold;
+    margin-left: 2px;
   }
   .avatar-time {
-    font-size: 10px;
-    color: rgb(100, 98, 98);
+    font-size: 13px;
+    color: rgba(219, 213, 213, 1);
     margin-left: 5px;
   }
 }
 .avatar-card {
   display: flex;
-  font-weight: bold;
+  font-size: 16px;
   flex-direction: column;
   align-items: center;
   > div {

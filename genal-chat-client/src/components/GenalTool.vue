@@ -21,7 +21,7 @@
         <a-avatar :src='user.avatar' :size='100'></a-avatar>
         <div class='tool-user-name'>
           <div class='tool-user-name-title'>更改用户名</div>
-          <a-input size='large' v-model='username' placeholder="请输入用户名"></a-input>
+          <a-input size='normal' v-model='username' placeholder="请输入用户名"></a-input>
           <a-button @click='changeUser'>确认</a-button>
         </div>
       </div>
@@ -103,14 +103,15 @@ export default class GenalTool extends Vue {
   .tool-set {
     display: flex;
     flex-direction: column;
-    font-size: 20px;
+    font-size: 25px;
     position: absolute;
-    bottom: 10px;
-    left: 12px;
+    bottom: 0px;
+    left: 13px;
   }
 }
 .tool-user {
   text-align: center;
+  font-size: 16px;
   .tool-user-name {
     display: flex;
     align-items: center;
@@ -119,7 +120,7 @@ export default class GenalTool extends Vue {
     }
     .tool-user-name-title {
       font-weight: bold;
-      font-size: 15px;
+      word-break: keep-all;
       margin-right: 15px;
     }
   }
