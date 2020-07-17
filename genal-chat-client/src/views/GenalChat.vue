@@ -94,6 +94,7 @@ export default class GenalChat extends Vue {
     this.connectSocket()
   }
 
+  // 发消息
   sendMessage(data: SendMessage) {
     console.log('sendMessage',data)
     if(data.type === 'group') {
@@ -114,6 +115,7 @@ export default class GenalChat extends Vue {
 
   }
 
+  // 创建群组
   addGroup(groupName: string) {
     this.socket.emit('addGroup', {
       userId: this.user.userId,
@@ -122,6 +124,7 @@ export default class GenalChat extends Vue {
     })
   }
 
+  // 加入群组
   joinGroup(groupId: string) {
     this.socket.emit('joinGroup', {
       userId: this.user.userId,
@@ -130,6 +133,7 @@ export default class GenalChat extends Vue {
     this.getGroupAndMessages()
   }
 
+  // 添加好友
   addFriend(friendId: string) {
     console.log(this.user)
     this.socket.emit('addFriend', {
@@ -139,6 +143,7 @@ export default class GenalChat extends Vue {
     })
   }
 
+  // 设置当前聊天窗
   setActiveRoom(room: Friend & Group) {
     this._setActiveRoom(room)
   } 
@@ -149,19 +154,20 @@ export default class GenalChat extends Vue {
     this.$router.go(0)
   }
 
+  // 星空代码
   runStarrySky() {
       //Helpers
-      function lineToAngle(x1, y1, length, radians) {
+      function lineToAngle(x1:any, y1:any, length:any, radians:any) {
         var x2 = x1 + length * Math.cos(radians),
           y2 = y1 + length * Math.sin(radians);
         return { x: x2, y: y2 };
       }
 
-      function randomRange(min, max) {
+      function randomRange(min:any, max:any) {
         return min + Math.random() * (max - min);
       }
 
-      function degreesToRads(degrees) {
+      function degreesToRads(degrees:any) {
         return degrees / 180 * Math.PI;
       }
 
@@ -173,7 +179,7 @@ export default class GenalChat extends Vue {
         vy: 0,
         radius: 0,
 
-        create: function (x, y, speed, direction) {
+        create: function (x:any, y:any, speed:any, direction:any) {
           var obj = Object.create(this);
           obj.x = x;
           obj.y = y;
@@ -186,7 +192,7 @@ export default class GenalChat extends Vue {
           return Math.sqrt(this.vx * this.vx + this.vy * this.vy);
         },
 
-        setSpeed: function (speed) {
+        setSpeed: function (speed:any) {
           var heading = this.getHeading();
           this.vx = Math.cos(heading) * speed;
           this.vy = Math.sin(heading) * speed;
@@ -196,7 +202,7 @@ export default class GenalChat extends Vue {
           return Math.atan2(this.vy, this.vx);
         },
 
-        setHeading: function (heading) {
+        setHeading: function (heading:any) {
           var speed = this.getSpeed();
           this.vx = Math.cos(heading) * speed;
           this.vy = Math.sin(heading) * speed;
@@ -209,12 +215,12 @@ export default class GenalChat extends Vue {
       };
 
       //Canvas and settings
-      var canvas = document.getElementById("canvas"),
+      var canvas:any = document.getElementById("canvas"),
         context = canvas.getContext("2d"),
         width = canvas.width = window.innerWidth,
         height = canvas.height = window.innerHeight,
-        stars = [],
-        shootingStars = [],
+        stars:any = [],
+        shootingStars:any = [],
         layers = [
           { speed: 0.15, scale: 0.2, count: 320 },
           { speed: 0.3, scale: 0.5, count: 50 },
@@ -258,7 +264,7 @@ export default class GenalChat extends Vue {
         shootingStars.push(shootingStar);
       }
 
-      function killShootingStar(shootingStar) {
+      function killShootingStar(shootingStar:any) {
         setTimeout(function () {
           shootingStar.isDying = true;
         }, shootingStarLifeTime);
@@ -323,14 +329,14 @@ export default class GenalChat extends Vue {
         requestAnimationFrame(update);
       }
 
-      function drawStar(star) {
+      function drawStar(star:any) {
         context.fillStyle = "rgb(255, 221, 157)";
         context.beginPath();
         context.arc(star.x, star.y, star.radius, 0, Math.PI * 2, false);
         context.fill();
       }
 
-      function drawShootingStar(p) {
+      function drawShootingStar(p:any) {
         var x = p.x,
           y = p.y,
           currentTrailLength = (maxTrailLength * p.trailLengthDelta),
