@@ -10,10 +10,10 @@
     </div>
     <div class='message-frame' ref='messages'>
       <a-icon type="sync" spin class='message-frame-loading' v-if='showLoading()' />
-      <template v-for="(item, index) in pagingMessage">
+      <template v-for="(item,index) in pagingMessage">
         <div
           class='message-frame-message'
-          :key="index"
+          :key="item.userId + index"
           :class="{'text-right': item.userId === user.userId}"
         >
           <genal-avatar :data='item'></genal-avatar>
