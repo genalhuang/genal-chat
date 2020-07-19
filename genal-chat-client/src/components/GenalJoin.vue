@@ -87,6 +87,8 @@ export default class GenalJoin extends Vue {
         if(this.type === 'regist') {
           values.createTime = new Date().valueOf()
         }
+        // @ts-ignore
+        delete values.remember
         this.$emit(this.type,values)
       }
     });
