@@ -53,6 +53,11 @@ export default class GenalTool extends Vue {
   showUserModal: boolean = false;
   username: string = ''
 
+  @Watch('user') 
+  userChange() {
+    this.username = this.user.username
+  }
+
   created() {
     this.username = this.user.username
   }
@@ -73,8 +78,10 @@ export default class GenalTool extends Vue {
     let user: User = JSON.parse(JSON.stringify(this.user))
     user.username = this.username
     let res = await apis.patchUser(user)
-    processReturn(res)
-    this.logout()
+    let data = processReturn(res)
+    if(data) {
+      this.logout()
+    }
   }
 }
 </script>
