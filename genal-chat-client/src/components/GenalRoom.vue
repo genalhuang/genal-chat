@@ -59,7 +59,10 @@ export default class GenalRoom extends Vue {
         // @ts-ignore
         return b.messages[b.messages.length-1].time - a.messages[a.messages.length-1].time
       }
-      return -1
+      if(a.messages) {
+        return -1
+      }
+      return 1
     })
   }
 
