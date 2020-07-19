@@ -28,6 +28,25 @@ export class UserService {
     }
   }
 
+  async postUsers(userIds: string) {
+    try {
+      if(userIds) {
+        let userIdArr = userIds.split(',');
+        let userArr = []
+        for(let userId of userIdArr) {
+          if(userId) {
+            const data = await this.userRepository.findOne({userId: userId})
+            userArr.push(data)
+          }
+        }
+        return {code: 0, message:'获取用户信息成功', data: userArr}
+      }
+      return {code: 1, message:'获取用户信息失败', data: null}
+    } catch(e) {
+      return { code: 2 , message:'获取用户信息失败', data: e}
+    }
+  }
+
   async addUser(user: User) {
     try {
       let isHave = await this.userRepository.find({username: user.username})

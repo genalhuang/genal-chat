@@ -5,7 +5,7 @@ import fetch from '@/api/fetch';
  * @param User
  */
 export const addUser = (params: User) => {
-  return fetch.post('/user', {
+  return fetch.post('/user/regist', {
     ...params,
   });
 };

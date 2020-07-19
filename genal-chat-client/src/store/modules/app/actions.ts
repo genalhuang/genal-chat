@@ -7,7 +7,7 @@ import { processReturn } from '@/utils/common.ts';
 
 const actions: ActionTree<AppState, RootState> = {
   async regist({commit}, payload) {
-    let res = await fetch.post('/user', {
+    let res = await fetch.post('/user/regist', {
       ...payload
     })
     let user = processReturn(res)
