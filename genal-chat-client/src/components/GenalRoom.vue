@@ -19,7 +19,7 @@
       <div 
         v-else
         class="room-card" 
-        :class="{'active': activeRoom && activeRoom.userId === chat.userId}"
+        :class="{'active': activeRoom && !activeRoom.groupId && activeRoom.userId === chat.userId}"
         @click="changeActiveRoom(chat)"
       >
         <img class='room-card-type' :src="friendGather[chat.userId].avatar" alt="">
