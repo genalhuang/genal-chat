@@ -1,14 +1,28 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
-import { GroupGateway } from './group.gateway';
+import { Controller, Post, HttpCode, Get, Body, Query, Patch, Param, Delete } from '@nestjs/common';
+import { GroupService } from './group.service'
 import { Group } from './entity/group.entity';
 
 @Controller('group')
 export class GroupController {
-  constructor(private groupGateway: GroupGateway) {}
+  constructor(private readonly groupService: GroupService) {}
 
   @Get()
-  getgroups() {
-    return this.groupGateway.getGroup()
+  getGroups(@Query('groupId') groupId: string) {
+    return this.groupService.getGroups(groupId)
+  }
+  
+  @Get('/userGroup')
+  getUserGroups(@Query('userId') userId: string) {
+    return this.groupService.getUserGroups(userId)
   }
 
+  @Get('/groupUser')
+  getGroupUsers(@Query('groupId') groupId: string) {
+    return this.groupService.getGroupUsers(groupId)
+  }
+
+  @Get('/messages')
+  getGroupMessages(@Query('groupId') groupId: string) {
+    return this.groupService.getGroupMessages(groupId);
+  }
 }

@@ -14,4 +14,5 @@ const fetch: AxiosInstance = axios.create({
 fetch.interceptors.request.use(requestSuccess, requestFail);
 fetch.interceptors.response.use(responseSuccess, responseFail);
 
+
 export default fetch;
