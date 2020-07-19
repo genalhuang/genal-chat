@@ -1,24 +1,27 @@
 <template>
   <div class="room">
-    <div 
-      class="room-card" 
-      v-for='(group,groupId) in groupGather'
-      :key='groupId'
-      :class="{'active': activeRoom && activeRoom.groupId === group.groupId}"
-      @click="changeActiveRoom(group)"
-    >
-      <div class="room-card-name">{{group.groupName}}</div>
-      <div class='room-card-new' v-if='group.messages'>{{group.messages[group.messages.length-1].content}}</div>
-    </div>
     <div
-      class="room-card"
-      v-for='(friend,userId) in friendGather'
-      :key='userId'
-      :class="{'active': activeRoom && activeRoom.userId === friend.userId}"
-      @click="changeActiveRoom(friend)"
+      v-for='(chat,index) in chatArr'
+      :key='index'
     >
-      <div class="room-card-name">{{friend.username}}</div>
-      <div class='room-card-new' v-if='friend.messages'>{{friend.messages[friend.messages.length-1].content}}</div>
+      <div 
+        v-if='chat.groupId'
+        class="room-card" 
+        :class="{'active': activeRoom && activeRoom.groupId === chat.groupId}"
+        @click="changeActiveRoom(chat)"
+      >
+        <div class="room-card-name">{{chat.groupName}}</div>
+        <div class='room-card-new' v-if='chat.messages'>{{chat.messages[chat.messages.length-1].content}}</div>
+      </div>
+      <div 
+        v-else
+        class="room-card" 
+        :class="{'active': activeRoom && activeRoom.userId === chat.userId}"
+        @click="changeActiveRoom(chat)"
+      >
+        <div class="room-card-name">{{chat.username}}</div>
+        <div class='room-card-new' v-if='chat.messages'>{{chat.messages[chat.messages.length-1].content}}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +36,32 @@ export default class GenalRoom extends Vue {
   @chatModule.State('activeRoom') activeRoom: Group & Friend;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('friendGather') friendGather: FriendGather;
+  chatArr: Array<Group | Friend> = []
+
+  @Watch('groupGather',{ deep: true }) 
+  changeGroupGather() {
+    this.sortChat()
+  }
+
+  @Watch('friendGather', { deep: true }) 
+  changeFriendGather() {
+    this.sortChat()
+  }
+
+  sortChat() {
+    this.chatArr = []
+    let groups = Object.values(this.groupGather)
+    let friends = Object.values(this.friendGather)
+    this.chatArr = [...groups, ...friends]
+    // 对聊天窗进行排序(根据最新消息时间)
+    this.chatArr = this.chatArr.sort((a:Group | Friend,b:Group | Friend)=>{
+      if(a.messages && b.messages) {
+        // @ts-ignore
+        return b.messages[b.messages.length-1].time - a.messages[a.messages.length-1].time
+      }
+      return -1
+    })
+  }
 
   changeActiveRoom(activeRoom: User & Group) {
     this.$emit('setActiveRoom', activeRoom)

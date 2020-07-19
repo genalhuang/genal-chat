@@ -212,7 +212,6 @@ const actions: ActionTree<ChatState, RootState> = {
     for (let groupId in groupGather) {
     let groupMapArr: GroupMap[]  = await dispatch('getGroupUsers', groupId)
       for(var groupMap of groupMapArr) {
-        console.log(groupMap.userId)
         if (!userGather[groupMap.userId]) {
           let user = await dispatch('getUser', groupMap.userId)
           if(user) {
