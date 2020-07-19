@@ -8,8 +8,9 @@
         {{userGather[activeRoom.userId].username}}
       </div>
     </div>
-    <div class='message-frame'>
-      <template v-for="(item, index) in activeRoom.messages">
+    <div class='message-frame' ref='messages'>
+      <a-icon type="sync" spin class='message-frame-loading' v-if='showLoading()' />
+      <template v-for="(item, index) in pagingMessage">
         <div
           class='message-frame-message'
           :key="index"
@@ -31,6 +32,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue'
 import { namespace } from 'vuex-class'
+import { Message } from 'ant-design-vue/types/message';
 const chatModule = namespace('chat')
 const appModule = namespace('app')
 
@@ -46,24 +48,53 @@ export default class GenalMessage extends Vue {
   @chatModule.Getter('userGather') userGather: FriendGather;
 
   message: string = '';
+  loading: boolean = true
   messageDom: Element = document.getElementsByClassName('message-frame')[0];
+  pagingMessage: Array<GroupMessage | FriendMessage> = [];
+  messageCount: number = 15;
 
-  @Watch('activeRoom.messages')
-  changeMessages() {
-    setTimeout(() => {
-      this.scrollToBottom()
-    }, 0);
-  }
-
-  @Watch('activeRoom')
+  @Watch('activeRoom', {deep: true})
   changeActiveRoom() {
+    this.messageCount = 20
+    this.loading = true;
+    this.getPagingMessage()
     setTimeout(()=>{
       this.scrollToBottom()
     }, 0)
   }
 
+  handleScroll(event:any) {
+    if (event.currentTarget) {
+      console.log("开始滚动",this.messageDom.scrollTop);
+      if(this.messageDom.scrollTop === 0) {
+        this.loading = true
+        this.messageCount += 15;
+        this.getPagingMessage()
+      }
+    }
+  }
+
+  getPagingMessage() {
+    if(!this.activeRoom.messages) {
+      return this.pagingMessage = []
+    }
+    if(this.activeRoom.messages.length < this.messageCount) {
+      this.loading = false;
+      return this.pagingMessage = this.activeRoom.messages
+    } 
+    this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length-this.messageCount)
+    if(this.messageDom) {
+      this.messageDom.scrollTop = 60;
+    }
+  }
+
+  showLoading() {
+    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length > 1
+  }
+
   scrollToBottom() {
     this.messageDom = document.getElementsByClassName('message-frame')[0];
+    this.messageDom.addEventListener("scroll", this.handleScroll);
     this.messageDom.scrollTop=this.messageDom.scrollHeight;
   }
 
@@ -104,11 +135,19 @@ export default class GenalMessage extends Vue {
     height: calc(100% - 115px);
     overflow: auto;
     position: relative;
+    transition: 1s all linear;
     .text-right {
       text-align: right!important;
       .avatar {
         justify-content: flex-end;
       }
+    }
+    .message-frame-loading {
+      margin: 15px auto;
+      font-size: 20px;
+      padding: 8px;
+      border-radius: 50%;
+      background-color: rgb(0, 0, 0, .8);
     }
     .message-frame-message {
       text-align: left;
