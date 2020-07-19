@@ -18,11 +18,11 @@ export class FriendService {
       if(userId) {
         return {code: 0, message:'获取用户好友成功', data: await this.friendRepository.find({userId: userId}) }
       } else {
-        return {code: 0, message:'获取好友数据库成功', data: await this.friendRepository.find()}
+        return {code: 0, message:'获取用户好友失败', data: await this.friendRepository.find()}
       }
 
     } catch(e) {
-      return { code:1, message:'获取好友成功', data:e}
+      return { code:1, message:'获取用户好友失败', data:e}
     }
   }
 

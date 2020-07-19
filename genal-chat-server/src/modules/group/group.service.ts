@@ -15,17 +15,20 @@ export class GroupService {
     private readonly gmRepository: Repository<GroupMessage>,
   ) {}
 
-  async getGroups(groupId: string) {
+  async postGroups(groupIds: string) {
     try {
-      let data;
-      if(groupId) {
-        data = await this.groupRepository.findOne({groupId: groupId})
-        return {code: 0, messge:'获取单个群信息成功', data}
+      if(groupIds) {
+        let groupIdArr = groupIds.split(',');
+        let groupArr = []
+        for(let groupId of groupIdArr) {
+          const data = await this.groupRepository.findOne({groupId: groupId})
+          groupArr.push(data)
+        }
+        return {code: 0, message:'获取群信息成功', data: groupArr}
       }
-      data = await this.groupRepository.find()
-      return {code: 0, message:'获取系统所有群信息成功', data}
+      return {code: 1, message:'获取群信息失败', data: null}
     } catch (e) {
-      return {code: 1, message:'获取群失败',data: e}
+      return {code: 2, message:'获取群失败',data: e}
     }
   }
 
@@ -34,7 +37,7 @@ export class GroupService {
       let data;
       if(userId) {
         data = await this.guRepository.find({userId: userId})
-        return {code: 0, messge:'获取用户的所有群成功', data}
+        return {code: 0, message:'获取用户所有群成功', data}
       }
       data = await this.guRepository.find()
       return {code: 0, message:'获取系统所有群成功', data}
@@ -48,7 +51,7 @@ export class GroupService {
       let data;
       if(groupId) {
         data = await this.guRepository.find({groupId: groupId})
-        return {code: 0, messge:'获取群的所有用户成功', data}
+        return {code: 0, message:'获取群的所有用户成功', data}
       }
     } catch (e) {
       return {code: 1, message:'获取群的用户失败',data: e}
@@ -60,7 +63,7 @@ export class GroupService {
       let data;
       if(groupId) {
         data = await this.gmRepository.find({groupId: groupId})
-        return {code: 0, message: '获取单个群消息成功', data}
+        return {code: 0, message: '获取群消息成功', data}
       }
       return {code: 0, message: '获取所有群消息成功', data: await this.gmRepository.find()}
     } catch (e) {

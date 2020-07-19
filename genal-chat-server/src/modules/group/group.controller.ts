@@ -6,9 +6,9 @@ import { Group } from './entity/group.entity';
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
-  @Get()
-  getGroups(@Query('groupId') groupId: string) {
-    return this.groupService.getGroups(groupId)
+  @Post()
+  postGroups(@Body('groupIds') groupIds: string) {
+    return this.groupService.postGroups(groupIds)
   }
   
   @Get('/userGroup')

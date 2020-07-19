@@ -10,10 +10,10 @@
     </div>
     <div class='message-frame' ref='messages'>
       <a-icon type="sync" spin class='message-frame-loading' v-if='showLoading()' />
-      <template v-for="(item, index) in pagingMessage">
+      <template v-for="(item,index) in pagingMessage">
         <div
           class='message-frame-message'
-          :key="index"
+          :key="item.userId + index"
           :class="{'text-right': item.userId === user.userId}"
         >
           <genal-avatar :data='item'></genal-avatar>
@@ -31,8 +31,8 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue'
-import { namespace } from 'vuex-class'
 import { Message } from 'ant-design-vue/types/message';
+import { namespace } from 'vuex-class'
 const chatModule = namespace('chat')
 const appModule = namespace('app')
 
@@ -55,7 +55,7 @@ export default class GenalMessage extends Vue {
 
   @Watch('activeRoom', {deep: true})
   changeActiveRoom() {
-    this.messageCount = 20
+    this.messageCount = 15
     this.loading = true;
     this.getPagingMessage()
     setTimeout(()=>{
@@ -65,11 +65,12 @@ export default class GenalMessage extends Vue {
 
   handleScroll(event:any) {
     if (event.currentTarget) {
-      console.log("开始滚动",this.messageDom.scrollTop);
       if(this.messageDom.scrollTop === 0) {
-        this.loading = true
-        this.messageCount += 15;
-        this.getPagingMessage()
+        setTimeout(()=>{
+          this.loading = true
+          this.messageCount += 15;
+          this.getPagingMessage()
+        },60)
       }
     }
   }
@@ -83,13 +84,15 @@ export default class GenalMessage extends Vue {
       return this.pagingMessage = this.activeRoom.messages
     } 
     this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length-this.messageCount)
-    if(this.messageDom) {
-      this.messageDom.scrollTop = 60;
+    if(this.messageDom && this.messageCount != 15) {
+      setTimeout(()=>{
+        this.messageDom.scrollTop = 65;
+      },60)
     }
   }
 
   showLoading() {
-    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length > 1
+    return this.loading && this.activeRoom.messages
   }
 
   scrollToBottom() {

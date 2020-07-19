@@ -11,6 +11,11 @@ export class UserController {
   }
 
   @Post()
+  postUsers(@Body('userIds') userIds: string) {
+    return this.userService.postUsers(userIds)
+  }
+
+  @Post('/regist')
   addUser(@Body() user) {
     user.createTime = parseInt(user.createTime)
     return this.userService.addUser(user)

@@ -1,8 +1,8 @@
 <template>
   <div class="room">
     <div
-      v-for='(chat,index) in chatArr'
-      :key='index'
+      v-for='(chat, index) in chatArr'
+      :key='(chat.userId || chat.groupId) + index'
     >
       <div 
         v-if='chat.groupId'
@@ -10,17 +10,23 @@
         :class="{'active': activeRoom && activeRoom.groupId === chat.groupId}"
         @click="changeActiveRoom(chat)"
       >
-        <div class="room-card-name">{{chat.groupName}}</div>
-        <div class='room-card-new' v-if='chat.messages'>{{chat.messages[chat.messages.length-1].content}}</div>
+        <img class='room-card-type' src="~@/assets/group.png" alt="">
+        <div class='room-card-message'>
+          <div class="room-card-name">{{chat.groupName}}</div>
+          <div class='room-card-new' v-if='chat.messages'>{{chat.messages[chat.messages.length-1].content}}</div>
+        </div>
       </div>
       <div 
         v-else
         class="room-card" 
-        :class="{'active': activeRoom && activeRoom.userId === chat.userId}"
+        :class="{'active': activeRoom && !activeRoom.groupId && activeRoom.userId === chat.userId}"
         @click="changeActiveRoom(chat)"
       >
-        <div class="room-card-name">{{chat.username}}</div>
-        <div class='room-card-new' v-if='chat.messages'>{{chat.messages[chat.messages.length-1].content}}</div>
+        <img class='room-card-type' :src="friendGather[chat.userId].avatar" alt="">
+        <div class='room-card-message'>
+          <div class="room-card-name">{{chat.username}}</div>
+          <div class='room-card-new' v-if='chat.messages'>{{chat.messages[chat.messages.length-1].content}}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -78,8 +84,7 @@ export default class GenalRoom extends Vue {
     .room-card {
       min-height: 60px;
       display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
+      align-items: center;
       background-color: rgba(54, 50, 50, 0.1);
       padding: 5px 10px;
       text-align: left;
@@ -91,18 +96,29 @@ export default class GenalRoom extends Vue {
       &.active {
         background-color: rgb(0, 0, 0,.3);
       }
-      .room-card-name {
-        overflow:hidden; //超出的文本隐藏
-        text-overflow:ellipsis; //溢出用省略号显示
-        white-space:nowrap; //溢出不换行
+      .room-card-type {
+        width: 35px;
+        margin-right: 5px;
       }
-      .room-card-new {
-        overflow:hidden; //超出的文本隐藏
-        text-overflow:ellipsis; //溢出用省略号显示
-        white-space:nowrap; //溢出不换行
-        color: gray;
-        font-size: 14px;
+      .room-card-message {
+        flex: 1;
+        display: flex;
+        width: 75%;
+        flex-direction: column;
+        .room-card-name {
+          overflow:hidden; //超出的文本隐藏
+          text-overflow:ellipsis; //溢出用省略号显示
+          white-space:nowrap; //溢出不换行
+        }
+        .room-card-new {
+          overflow:hidden; //超出的文本隐藏
+          text-overflow:ellipsis; //溢出用省略号显示
+          white-space:nowrap; //溢出不换行
+          color: gray;
+          font-size: 14px;
+        }
       }
+
     }
   }
 </style>
