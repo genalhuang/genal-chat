@@ -55,7 +55,7 @@ export default class GenalMessage extends Vue {
 
   @Watch('activeRoom', {deep: true})
   changeActiveRoom() {
-    this.messageCount = 20
+    this.messageCount = 15
     this.loading = true;
     this.getPagingMessage()
     setTimeout(()=>{
@@ -84,7 +84,7 @@ export default class GenalMessage extends Vue {
       return this.pagingMessage = this.activeRoom.messages
     } 
     this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length-this.messageCount)
-    if(this.messageDom) {
+    if(this.messageDom && this.messageCount != 15) {
       setTimeout(()=>{
         this.messageDom.scrollTop = 65;
       },60)
