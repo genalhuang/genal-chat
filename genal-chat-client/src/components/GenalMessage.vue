@@ -1,6 +1,13 @@
 <template>
   <div class="message" v-if='activeRoom'>
-    <genal-chat-tool></genal-chat-tool>
+    <div class="message-header" v-if='activeRoom'>
+      <div v-if='groupGather[activeRoom.groupId]'> 
+        {{groupGather[activeRoom.groupId].groupName}}
+      </div>
+      <div v-else>
+        {{userGather[activeRoom.userId].username}}
+      </div>
+    </div>
     <div class='message-frame'>
       <template v-for="(item, index) in activeRoom.messages">
         <div
@@ -23,7 +30,6 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue'
-import GenalChatTool from './GenalChatTool.vue'
 import { namespace } from 'vuex-class'
 const chatModule = namespace('chat')
 const appModule = namespace('app')
@@ -31,7 +37,6 @@ const appModule = namespace('app')
 @Component({
   components: {
     GenalAvatar,
-    GenalChatTool
   }
 })
 export default class GenalMessage extends Vue {
@@ -90,6 +95,11 @@ export default class GenalMessage extends Vue {
   height: 800px;
   position: relative;
   color: #fff;
+  .message-header {
+    height: 60px;
+    line-height: 60px;
+    background-color: rgb(0, 0, 0,.3);
+  }
   .message-frame {
     height: calc(100% - 115px);
     overflow: auto;

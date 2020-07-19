@@ -21,7 +21,7 @@
         <a-avatar :src='user.avatar' :size='100'></a-avatar>
         <div class='tool-user-name'>
           <div class='tool-user-name-title'>更改用户名</div>
-          <a-input size='normal' v-model='username' placeholder="请输入用户名"></a-input>
+          <a-input v-model='username' placeholder="请输入用户名"></a-input>
           <a-button @click='changeUser'>确认</a-button>
         </div>
       </div>

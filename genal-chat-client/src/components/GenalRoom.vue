@@ -1,56 +1,25 @@
 <template>
   <div class="room">
-    <div class='room-search'>
-      <a-input></a-input>
-      <a-dropdown>
-        <div class="ant-dropdown-link" @click="e => e.preventDefault()">
-          <a-button><a-icon type="plus" /></a-button>
-        </div>
-        <a-menu slot="overlay">
-          <a-menu-item>
-            <div @click='() => visibleAddGroup =!visibleAddGroup'>创建群</div>
-          </a-menu-item>
-          <a-menu-item>
-            <div @click='() => visibleJoinGroup =!visibleJoinGroup'>加入群聊</div>
-          </a-menu-item>
-          <a-menu-item>
-            <div @click='() => visibleAddFriend =!visibleAddFriend'>添加好友</div>
-          </a-menu-item>
-        </a-menu>
-      </a-dropdown>
+    <div 
+      class="room-card" 
+      v-for='(group,groupId) in groupGather'
+      :key='groupId'
+      :class="{'active': activeRoom && activeRoom.groupId === group.groupId}"
+      @click="changeActiveRoom(group)"
+    >
+      <div class="room-card-name">{{group.groupName}}</div>
+      <div class='room-card-new' v-if='group.messages'>{{group.messages[group.messages.length-1].content}}</div>
     </div>
-    <div>
-      <div 
-        class="room-card" 
-        v-for='(group,groupId) in groupGather'
-        :key='groupId'
-        :class="{'active': activeRoom && activeRoom.groupId === group.groupId}"
-        @click="changeActiveRoom(group)"
-      >
-        <div class="room-card-name">{{group.groupName}}</div>
-        <div class='room-card-new' v-if='group.messages'>{{group.messages[group.messages.length-1].content}}</div>
-      </div>
-      <div
-        class="room-card"
-        v-for='(friend,userId) in friendGather'
-        :key='userId'
-        :class="{'active': activeRoom && activeRoom.userId === friend.userId}"
-        @click="changeActiveRoom(friend)"
-      >
-        <div class="room-card-name">{{friend.username}}</div>
-        <div class='room-card-new' v-if='friend.messages'>{{friend.messages[friend.messages.length-1].content}}</div>
-      </div>
+    <div
+      class="room-card"
+      v-for='(friend,userId) in friendGather'
+      :key='userId'
+      :class="{'active': activeRoom && activeRoom.userId === friend.userId}"
+      @click="changeActiveRoom(friend)"
+    >
+      <div class="room-card-name">{{friend.username}}</div>
+      <div class='room-card-new' v-if='friend.messages'>{{friend.messages[friend.messages.length-1].content}}</div>
     </div>
-    
-    <a-modal v-model="visibleAddGroup" title="Basic Modal" @ok="addGroup">
-      <a-input v-model='groupName' placeholder="群"></a-input>
-    </a-modal>
-    <a-modal v-model="visibleJoinGroup" title="Basic Modal" @ok="joinGroup">
-      <a-input v-model='groupId' placeholder="加入的群名字"></a-input>
-    </a-modal>
-    <a-modal v-model="visibleAddFriend" title="Basic Modal" @ok="addFriend">
-      <a-input v-model='friendname' placeholder="好友"></a-input>
-    </a-modal>
   </div>
 </template>
 
@@ -61,32 +30,9 @@ const chatModule = namespace('chat')
 
 @Component
 export default class GenalRoom extends Vue {
-
   @chatModule.State('activeRoom') activeRoom: Group & Friend;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('friendGather') friendGather: FriendGather;
-  
-  visibleAddGroup:boolean =false;
-  visibleJoinGroup:boolean =false;
-  visibleAddFriend:boolean =false;
-  groupName: string = ''
-  groupId: string = ''
-  friendname: string = ''
-
-  addGroup() {
-    this.visibleAddGroup=false
-    this.$emit('addGroup', this.groupName)
-  }
-
-  joinGroup() {
-    this.visibleJoinGroup = false;
-    this.$emit('joinGroup', this.groupId)
-  }
-
-  addFriend() {
-    this.visibleAddFriend=false
-    this.$emit('addFriend', this.friendname)
-  }
 
   changeActiveRoom(activeRoom: User & Group) {
     this.$emit('setActiveRoom', activeRoom)
@@ -95,14 +41,8 @@ export default class GenalRoom extends Vue {
 </script>
 <style lang="scss" scoped>
   .room {
-    height: 100%;
+    height: calc(100% - 60px);
     overflow: auto;
-    .room-search {
-      display: flex;
-      height: 60px;
-      padding: 10px;
-      align-items: center;
-    }
     .room-card {
       min-height: 60px;
       display: flex;

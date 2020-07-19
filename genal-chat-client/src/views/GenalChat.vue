@@ -7,12 +7,14 @@
         ></genal-tool>
       </div>
       <div class='chat-part2'>
-        <genal-room
+        <genal-search
           @addGroup='addGroup'
           @joinGroup='joinGroup'
           @addFriend='addFriend'
           @setActiveRoom='setActiveRoom'
-        ></genal-room>
+        >
+        </genal-search>
+        <genal-room @setActiveRoom='setActiveRoom'></genal-room>
       </div>
       <div class='chat-part3'>
         <genal-message @sendMessage='sendMessage'></genal-message>
@@ -29,6 +31,7 @@ import GenalTool from '@/components/GenalTool.vue'
 import GenalJoin from '@/components/GenalJoin.vue'
 import GenalRoom from '@/components/GenalRoom.vue'
 import GenalMessage from '@/components/GenalMessage.vue'
+import GenalSearch from '@/components/GenalSearch.vue'
 import { namespace } from 'vuex-class'
 const appModule = namespace('app')
 const chatModule = namespace('chat')
@@ -39,7 +42,8 @@ import { processReturn } from '@/utils/common.ts';
     GenalTool,
     GenalJoin,
     GenalRoom,
-    GenalMessage
+    GenalMessage,
+    GenalSearch
   },
 })
 export default class GenalChat extends Vue {
@@ -336,7 +340,7 @@ export default class GenalChat extends Vue {
         context.fill();
       }
 
-      function drawShootingStar(p:any) {
+      function drawShootingStar(p: any) {
         var x = p.x,
           y = p.y,
           currentTrailLength = (maxTrailLength * p.trailLengthDelta),

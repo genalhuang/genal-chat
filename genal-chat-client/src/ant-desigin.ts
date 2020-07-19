@@ -13,7 +13,8 @@ import {
   Dropdown,
   Menu,
   Avatar,
-  Card
+  Card,
+  Select
 } from 'ant-design-vue';
 
 Vue.use(Avatar)
@@ -28,4 +29,5 @@ Vue.use(Popover);
 Vue.use(Dropdown);
 Vue.use(Menu);
 Vue.use(Card);
+Vue.use(Select);
 Vue.prototype.$message = message;
