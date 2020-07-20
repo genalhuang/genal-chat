@@ -44,7 +44,7 @@
         <a-select
           show-search
           placeholder="搜索群组"
-          style="width: 100%"
+          style="width: 90%"
           :default-active-first-option="false"
           :show-arrow="false"
           :filter-option="false"
@@ -56,7 +56,7 @@
             <div>{{group.groupName}}</div>
           </a-select-option>
         </a-select>
-        <a-button @click="joinGroup">添加群组</a-button>
+        <a-button @click="joinGroup" type='primary'>确定</a-button>
       </div>
     </a-modal>
     <a-modal v-model="visibleAddFriend" footer='' title="添加好友">
@@ -64,7 +64,7 @@
         <a-select
           show-search
           placeholder="搜索用户"
-          style="width: 100%"
+          style="width: 90%"
           :default-active-first-option="false"
           :show-arrow="false"
           :filter-option="false"
@@ -76,7 +76,7 @@
             <div>{{user.username}}</div>
           </a-select-option>
         </a-select>
-        <a-button @click="addFriend">添加好友</a-button>
+        <a-button @click="addFriend" type='primary'>确定</a-button>
       </div>
     </a-modal>
   </div>
