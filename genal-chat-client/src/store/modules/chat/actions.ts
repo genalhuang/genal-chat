@@ -64,6 +64,7 @@ const actions: ActionTree<ChatState, RootState> = {
   // 初始化socket连接和监听socket事件
   async connectSocket({commit, state, dispatch, rootState}, callback) {
     let user = rootState.app.user
+    let friendGather = state.friendGather
     let socket = io.connect(`/chat?userId=${user.userId}`);
     socket.on('connect', async () => {
       console.log('连接成功')
@@ -110,6 +111,15 @@ const actions: ActionTree<ChatState, RootState> = {
         let group: Group = res.data.group
         if (newUser.userId != user.userId) {
           commit(SET_USER_GATHER, newUser)
+          if(friendGather[newUser.userId]) {
+            // 当用户的好友更新了用户信息
+            let messages;
+            if(friendGather[newUser.userId].messages) {
+              messages = friendGather[newUser.userId].messages
+            }
+            commit(SET_FRIEND_GATHER, newUser)
+            commit(SET_FRIEND_MESSAGES, messages)
+          }
           return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupName}`)
         } else {
           if (!state.groupGather[group.groupId]) {
@@ -229,7 +239,6 @@ const actions: ActionTree<ChatState, RootState> = {
 
   // 处理所有群的所有用户的用户信息
   async handleGroupUsers({commit, dispatch, state, rootState}) {
-    let userGather = state.userGather;
     let groupGather = state.groupGather
     let params = {userIds:''}
     for (let groupId in groupGather) {
