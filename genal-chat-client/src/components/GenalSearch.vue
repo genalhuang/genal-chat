@@ -3,8 +3,7 @@
     <div class='search-select'>
       <a-select
         show-search
-        :value="searchText"
-        placeholder="input search text"
+        placeholder="搜索聊天组"
         style="width: 200px"
         :default-active-first-option="false"
         :show-arrow="false"
@@ -18,6 +17,7 @@
           <div v-if='chat.groupName'>{{chat.groupName}}</div>
         </a-select-option>
       </a-select>
+
       <a-dropdown>
         <div class="ant-dropdown-link" @click="e => e.preventDefault()">
           <a-button><a-icon type="plus" /></a-button>
@@ -66,31 +66,39 @@ export default class GenalSearch extends Vue {
   groupId: string = ''
   friendname: string = ''
   searchData: Array<Group | Friend> = []
-  searchText: string = ''
+
+  @Watch('groupGather')
+  changeGroupGather() {
+    this.searchData = [...Object.values(this.groupGather), ...Object.values(this.friendGather)];
+  }
+
+  @Watch('friendGather')
+  changeFriendGather() {
+    this.searchData = [...Object.values(this.groupGather), ...Object.values(this.friendGather)];
+  }
 
   handleSearch(value: string) {
-    console.log('search',value,this.searchData)
-    this.searchData = []
-    let allChat: ChatGather = {
-      ...this.groupGather,
-      ...this.friendGather
-    }
-    for(let chatId in allChat) {
+    this.searchData = [...Object.values(this.groupGather), ...Object.values(this.friendGather)];
+    let mySearchData = []
+    for(let chat of this.searchData) {
       // @ts-ignore
-      if(this.isContainStr(value,allChat[chatId].username) || this.isContainStr(value,allChat[chatId].groupName)) {
-        this.searchData.push(allChat[chatId])
+      if(chat.username) {
+        // @ts-ignore
+        if(this.isContainStr(value, chat.username)) {
+          mySearchData.push(chat)
+        }
+      // @ts-ignore
+      } else if (this.isContainStr(value, chat.groupName)) {
+        mySearchData.push(chat)
       }
     }
+    this.searchData = mySearchData
   }
 
   handleChange(value: string) {
-    console.log('change', value)
   }
   
   isContainStr(str1:string, str2:string) {
-    if(str2 === undefined || !str1) {
-      return false
-    }
     return str2.indexOf(str1) >= 0
   }
 
