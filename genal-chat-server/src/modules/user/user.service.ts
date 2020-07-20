@@ -18,7 +18,10 @@ export class UserService {
     try {
       let data;
       if(userId) {
-        data = await this.userRepository.findOne({userId: userId})
+        data = await this.userRepository.findOne({
+          select: ['userId','username','avatar','role','tag','createTime'],
+          where:{userId: userId}
+        })
         return {code: 0, message:'获取用户成功', data}
       }
       data = await this.userRepository.find()
@@ -35,11 +38,14 @@ export class UserService {
         let userArr = []
         for(let userId of userIdArr) {
           if(userId) {
-            const data = await this.userRepository.findOne({userId: userId})
+            const data = await this.userRepository.findOne({
+              select: ['userId','username','avatar','role','tag','createTime'],
+              where:{userId: userId}
+            })
             userArr.push(data)
           }
         }
-        return {code: 0, message:'获取用户信息成功', data: userArr}
+        return {code: 0, message:'获取用户信息1成功', data: userArr}
       }
       return {code: 1, message:'获取用户信息失败', data: null}
     } catch(e) {
@@ -109,7 +115,10 @@ export class UserService {
   async getUsersByName(username: string) {
     try {
       if(username) {
-        let users = await this.userRepository.find({username: Like(`%${username}%`)})
+        let users = await this.userRepository.find({
+          select: ['userId','username','avatar','role','tag','createTime'],
+          where:{username: Like(`%${username}%`)}
+        })
         return {code: 0, message:'获取用户信息成功', data: users}
       }
       return {code: 1, message:'请输入用户名', data: null}
