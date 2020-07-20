@@ -39,11 +39,45 @@
     <a-modal v-model="visibleAddGroup" cancelText='取消' okText='确定' title="创建群聊" @ok="addGroup">
       <a-input v-model='groupName' placeholder="请输入群昵称"></a-input>
     </a-modal>
-    <a-modal v-model="visibleJoinGroup" cancelText='取消' okText='确定' title="加入群聊" @ok="joinGroup">
-      <a-input v-model='groupId' placeholder="请输入群昵称"></a-input>
+    <a-modal v-model="visibleJoinGroup" footer='' title="加入群聊">
+      <div style='display:flex'>
+        <a-select
+          show-search
+          placeholder="搜索群组"
+          style="width: 100%"
+          :default-active-first-option="false"
+          :show-arrow="false"
+          :filter-option="false"
+          :not-found-content="null"
+          @search="handleGroupSearch"
+          @change='handleGroupChange'
+        >
+          <a-select-option v-for="(group,index) in groupArr" :key="index" @click='handleGroupSelect(group)'>
+            <div>{{group.groupName}}</div>
+          </a-select-option>
+        </a-select>
+        <a-button @click="joinGroup">添加群组</a-button>
+      </div>
     </a-modal>
-    <a-modal v-model="visibleAddFriend" cancelText='取消' okText='确定' title="添加好友" @ok="addFriend">
-      <a-input v-model='friendname' placeholder="请输入好友昵称"></a-input>
+    <a-modal v-model="visibleAddFriend" footer='' title="添加好友">
+      <div style='display:flex'>
+        <a-select
+          show-search
+          placeholder="搜索用户"
+          style="width: 100%"
+          :default-active-first-option="false"
+          :show-arrow="false"
+          :filter-option="false"
+          :not-found-content="null"
+          @search="handleUserSearch"
+          @change='handleUserChange'
+        >
+          <a-select-option v-for="(user,index) in userArr" :key="index" @click='handleUserSelect(user)'>
+            <div>{{user.username}}</div>
+          </a-select-option>
+        </a-select>
+        <a-button @click="addFriend">添加好友</a-button>
+      </div>
     </a-modal>
   </div>
 </template>
@@ -51,6 +85,8 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class'
+import { isContainStr, processReturn } from '@/utils/common.ts';
+import * as apis from '@/api/apis'
 const chatModule = namespace('chat')
 
 @Component
@@ -63,9 +99,11 @@ export default class GenalSearch extends Vue {
   visibleJoinGroup:boolean =false;
   visibleAddFriend:boolean =false;
   groupName: string = ''
-  groupId: string = ''
-  friendname: string = ''
   searchData: Array<Group | Friend> = []
+  groupId: string = ''
+  groupArr: Array<Group> = []
+  friendId: string = ''
+  userArr: Array<User> = []
 
   @Watch('groupGather')
   changeGroupGather() {
@@ -84,11 +122,11 @@ export default class GenalSearch extends Vue {
       // @ts-ignore
       if(chat.username) {
         // @ts-ignore
-        if(this.isContainStr(value, chat.username)) {
+        if(isContainStr(value, chat.username)) {
           mySearchData.push(chat)
         }
       // @ts-ignore
-      } else if (this.isContainStr(value, chat.groupName)) {
+      } else if (isContainStr(value, chat.groupName)) {
         mySearchData.push(chat)
       }
     }
@@ -97,9 +135,39 @@ export default class GenalSearch extends Vue {
 
   handleChange(value: string) {
   }
-  
-  isContainStr(str1:string, str2:string) {
-    return str2.indexOf(str1) >= 0
+
+  async handleGroupSearch(value: string) {
+    if(!value) {
+      return;
+    }
+    let res = await apis.getGroupsByName(value)
+    let data = processReturn(res)
+    this.groupArr = data;
+  }
+
+  handleGroupSelect(group: Group) {
+    this.groupId = group.groupId
+  }
+
+  handleGroupChange() {
+    this.groupArr = []
+  }
+
+  async handleUserSearch(value: string) {
+    if(!value) {
+      return;
+    }
+    let res = await apis.getUsersByName(value)
+    let data = processReturn(res)
+    this.userArr = data;
+  }
+
+  handleUserSelect(friend: Friend) {
+    this.friendId = friend.userId
+  }
+
+  handleUserChange() {
+    this.userArr = []
   }
 
   selectChat(activeRoom: User & Group) {
@@ -118,7 +186,7 @@ export default class GenalSearch extends Vue {
 
   addFriend() {
     this.visibleAddFriend=false
-    this.$emit('addFriend', this.friendname)
+    this.$emit('addFriend', this.friendId)
   }
 
 }

@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, Connection, getRepository } from 'typeorm';
+import { Repository, Connection, getRepository, Like } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Group, GroupMap } from './entity/group.entity';
 import { GroupMessage } from './entity/groupMessage.entity'
+import { getConnection } from "typeorm";
 
 @Injectable()
 export class GroupService {
@@ -68,6 +69,18 @@ export class GroupService {
       return {code: 0, message: '获取所有群消息成功', data: await this.gmRepository.find()}
     } catch (e) {
       return {code: 1, message:'获取群消息失败', data: e}
+    }
+  }
+
+  async getGroupsByName(groupName: string) {
+    try {
+      if(groupName) {
+        let groups = await this.groupRepository.find({groupName: Like(`%${groupName}%`)})
+        return {code: 0, message:'获取群信息成功', data: groups}
+      }
+      return {code: 1, message:'请输入群昵称', data: null}
+    } catch(e) {
+      return {code: 2, message:'查找群错误', data: null}
     }
   }
 }

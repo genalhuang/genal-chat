@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, Connection, getRepository } from 'typeorm';
+import { Repository, Connection, getRepository, Like } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { UserDto } from './dto/user.dto';
@@ -106,4 +106,15 @@ export class UserService {
     }
   }
 
+  async getUsersByName(username: string) {
+    try {
+      if(username) {
+        let users = await this.userRepository.find({username: Like(`%${username}%`)})
+        return {code: 0, message:'获取用户信息成功', data: users}
+      }
+      return {code: 1, message:'请输入用户名', data: null}
+    } catch(e) {
+      return {code: 2, message:'查找用户错误', data: null}
+    }
+  }
 }

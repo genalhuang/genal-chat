@@ -27,3 +27,11 @@ export const patchUser = (params: User) => {
     ...params
   });
 };
+
+/**
+ * 用户名模糊搜索用户
+ * @param string
+ */
+export function getUsersByName(username: string) {
+  return fetch.get(`/user/findByName?username=${username}`)
+}

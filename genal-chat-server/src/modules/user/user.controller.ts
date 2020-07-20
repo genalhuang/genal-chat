@@ -36,4 +36,9 @@ export class UserController {
   login(@Body() user) {
     return this.userService.login(user)
   }
+
+  @Get('/findByName')
+  getUsersByName(@Query('username') username: string) {
+    return this.userService.getUsersByName(username)
+  }
 }

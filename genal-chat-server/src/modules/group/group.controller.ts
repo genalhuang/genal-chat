@@ -25,4 +25,9 @@ export class GroupController {
   getGroupMessages(@Query('groupId') groupId: string) {
     return this.groupService.getGroupMessages(groupId);
   }
+
+  @Get('/findByName')
+  getGroupsByName(@Query('groupName') groupName: string) {
+    return this.groupService.getGroupsByName(groupName);
+  }
 }

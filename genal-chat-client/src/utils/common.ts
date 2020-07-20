@@ -14,3 +14,8 @@ export function processReturn(res: AxiosResponse<any>) {
   }
   return data;
 }
+
+// 判断一个字符串是否包含另外一个字符串
+export function isContainStr(str1:string, str2:string) {
+  return str2.indexOf(str1) >= 0
+}
