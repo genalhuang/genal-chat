@@ -11,9 +11,9 @@ export class GroupService {
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
     @InjectRepository(GroupMap)
-    private readonly guRepository: Repository<GroupMap>,
+    private readonly groupUserRepository: Repository<GroupMap>,
     @InjectRepository(GroupMessage)
-    private readonly gmRepository: Repository<GroupMessage>,
+    private readonly groupMessageRepository: Repository<GroupMessage>,
   ) {}
 
   async postGroups(groupIds: string) {
@@ -37,10 +37,10 @@ export class GroupService {
     try {
       let data;
       if(userId) {
-        data = await this.guRepository.find({userId: userId})
+        data = await this.groupUserRepository.find({userId: userId})
         return {code: 0, message:'获取用户所有群成功', data}
       }
-      data = await this.guRepository.find()
+      data = await this.groupUserRepository.find()
       return {code: 0, message:'获取系统所有群成功', data}
     } catch (e) {
       return {code: 1, message:'获取用户的群失败',data: e}
@@ -51,7 +51,7 @@ export class GroupService {
     try {
       let data;
       if(groupId) {
-        data = await this.guRepository.find({groupId: groupId})
+        data = await this.groupUserRepository.find({groupId: groupId})
         return {code: 0, message:'获取群的所有用户成功', data}
       }
     } catch (e) {
@@ -63,10 +63,10 @@ export class GroupService {
     try {
       let data;
       if(groupId) {
-        data = await this.gmRepository.find({groupId: groupId})
+        data = await this.groupMessageRepository.find({groupId: groupId})
         return {code: 0, message: '获取群消息成功', data}
       }
-      return {code: 0, message: '获取所有群消息成功', data: await this.gmRepository.find()}
+      return {code: 0, message: '获取所有群消息成功', data: await this.groupMessageRepository.find()}
     } catch (e) {
       return {code: 1, message:'获取群消息失败', data: e}
     }

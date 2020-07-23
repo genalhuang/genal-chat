@@ -30,7 +30,7 @@ interface GroupMessage {
   userId: string;
   groupId: string;
   content: string;
-  time: string;
+  time: number;
 }
 
 // 所有好友的好友信息
@@ -46,7 +46,7 @@ interface Friend {
   role?: string;
   tag?: string;
   messages: FriendMessage[];
-  createTime: string;
+  createTime: number;
 }
 
 // 用户与好友关联表
@@ -60,7 +60,7 @@ interface FriendMessage {
   userId: string;
   friendId: string;
   content: string;
-  time: string;
+  time: number;
   type?: string;
 }
 

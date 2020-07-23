@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Repository, Connection, getRepository, Like } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
-import { UserDto } from './dto/user.dto';
 import { GroupMap } from '../group/entity/group.entity';
 
 @Injectable()
@@ -11,7 +10,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(GroupMap)
-    private readonly guRepository: Repository<GroupMap>,
+    private readonly groupUserRepository: Repository<GroupMap>,
   ) {}
 
   async getUser(userId: string) {
@@ -65,7 +64,7 @@ export class UserService {
 
       const data = await this.userRepository.save(user)
 
-      await this.guRepository.save({
+      await this.groupUserRepository.save({
         userId: data.userId,
         groupId: 'public',
       })
