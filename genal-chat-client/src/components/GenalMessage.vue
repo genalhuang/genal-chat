@@ -17,12 +17,13 @@
           :class="{'text-right': item.userId === user.userId}"
         >
           <genal-avatar :data='item'></genal-avatar>
-          <div class='message-frame-text'>{{ item.content }}</div>
+          <div class='message-frame-text' v-html='item.content'></div>
         </div>
       </template>
     </div>
     <div class='message-input'>
-      <a-input type="text" placeholder="好好说话..." v-model="message" @keyup.enter="sendMessage" />
+      <genal-emoji @addEmoji='addEmoji'></genal-emoji>
+      <a-input type="text" placeholder="好好说话..." v-model="message" ref='input' autoFocus style='color:#000;' @pressEnter="sendMessage" />
       <img class='message-input-button' @click="sendMessage" src="~@/assets/send.png" alt="">
     </div>
   </div>
@@ -31,6 +32,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue'
+import GenalEmoji from './GenalEmoji.vue'
 import { Message } from 'ant-design-vue/types/message';
 import { namespace } from 'vuex-class'
 const chatModule = namespace('chat')
@@ -39,6 +41,7 @@ const appModule = namespace('app')
 @Component({
   components: {
     GenalAvatar,
+    GenalEmoji
   }
 })
 export default class GenalMessage extends Vue {
@@ -121,6 +124,13 @@ export default class GenalMessage extends Vue {
     //@ts-ignore
     return this.$moment(time).format('HH:mm:ss')
   }
+
+  addEmoji(emoji: string) {
+    console.log(emoji)
+    this.message += emoji
+    // @ts-ignore
+    this.$refs.input.focus()
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -159,8 +169,10 @@ export default class GenalMessage extends Vue {
         display: inline-block;
         background-color: rgb(0, 200, 255, .4);
         padding: 5px 10px;
-        font-size: 14px;
+        font-size: 16px;
         border-radius: 5px;
+        text-align: left;
+        word-break: break-all;
       }
     }
   }

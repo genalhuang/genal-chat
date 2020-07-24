@@ -56,14 +56,14 @@ export default class GenalAvatar extends Vue {
     margin-left: 2px;
   }
   .avatar-time {
-    font-size: 13px;
+    font-size: 14px;
     color: rgba(219, 213, 213, 1);
     margin-left: 5px;
   }
 }
 .avatar-card {
   display: flex;
-  font-size: 16px;
+  font-size: 18px;
   flex-direction: column;
   align-items: center;
   > div {
