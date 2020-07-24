@@ -16,7 +16,7 @@ import { GroupMessage } from '../group/entity/groupMessage.entity'
 import { UserMap } from '../friend/entity/friend.entity'
 import { FriendMessage } from '../friend/entity/friendMessage.entity'
 
-@WebSocketGateway({namespace:'chat'})
+@WebSocketGateway()
 export class ChatGateway {
   constructor(
     @InjectRepository(User)

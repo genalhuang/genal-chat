@@ -45,10 +45,14 @@ import { namespace } from 'vuex-class'
 import * as apis  from '@/api/apis'
 import { processReturn } from '@/utils/common.ts';
 const appModule = namespace('app')
+const chatModule = namespace('chat')
 
 @Component
 export default class GenalTool extends Vue {
   @appModule.Getter('user') user: User;
+  @appModule.Mutation('set_user') setUser: Function;
+  @chatModule.Getter('socket') socket: any;
+
   showSetModal: boolean = false;
   showUserModal: boolean = false;
   username: string = ''
@@ -80,7 +84,15 @@ export default class GenalTool extends Vue {
     let res = await apis.patchUser(user)
     let data = processReturn(res)
     if(data) {
-      this.logout()
+      console.log(data)
+      this.setUser(data)
+      // 为了通告所有用户自己改名了
+      this.socket.emit('joinGroupSocket', {
+        groupId: 'public',
+        userId: data.userId
+      })
+    } else {
+      this.username = ''
     }
   }
 }

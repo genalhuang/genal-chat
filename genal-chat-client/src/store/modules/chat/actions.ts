@@ -21,7 +21,7 @@ const actions: ActionTree<ChatState, RootState> = {
   async connectSocket({commit, state, dispatch, rootState}, callback) {
     let user = rootState.app.user
     let friendGather = state.friendGather
-    let socket = io.connect(`/chat?userId=${user.userId}`);
+    let socket = io.connect(`/?userId=${user.userId}`);
     socket.on('connect', async () => {
       console.log('连接成功')
 
@@ -84,6 +84,7 @@ const actions: ActionTree<ChatState, RootState> = {
           if (!state.groupGather[group.groupId]) {
             commit(SET_GROUP_GATHER, group)
           }
+          commit(SET_USER_GATHER, newUser)
         }
       })
 
