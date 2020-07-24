@@ -214,41 +214,55 @@ export class ChatGateway {
       let friendArr: FriendDto[] = [];
       let userArr: FriendDto[] = []
       let groupMap: GroupMap[] = await this.groupUserRepository.find({userId: user.userId}) 
+      let friendMap: UserMap[] = await this.friendRepository.find({userId: user.userId})
 
-      // 获取用户所有群
-      for(let item of groupMap) {
-        let group: GroupDto = await this.groupRepository.findOne({groupId: item.groupId})
-        group.messages = await this.groupMessageRepository.find({groupId: item.groupId})
-        groupArr.push(group)
-
-        // 获取所有群用户
-        let userMap: GroupMap[] = await this.groupUserRepository.find({groupId: group.groupId})
+      let groupPromise = groupMap.map(async (item) => {
+        return await this.groupRepository.findOne({groupId: item.groupId})
+      })
+      let groupMessagePromise = groupMap.map(async (item) => {
+        return await this.groupMessageRepository.find({groupId: item.groupId})
+      })
+      let groupUserPromise = groupMap.map(async (item) => {
+        let userMap = await this.groupUserRepository.find({groupId: item.groupId})
         for(let item of userMap) {
-          let user: any = await this.userRepository.findOne({
-            select: ['userId','username','avatar','role','tag','createTime'],
-            where:{userId: item.userId}
-          })
+          let user = await this.userRepository.findOne({userId: item.userId})
           userArr.push(user)
         }
-      }
-      // 获取用户所有好友
-      let friendMap: UserMap[] = await this.friendRepository.find({userId: user.userId})
-      for(let item of friendMap) {
-        let friend: FriendDto = await this.userRepository.findOne({
+      })
+      let friendPromise = friendMap.map(async (item) => {
+        return await this.userRepository.findOne({
           select: ['userId','username','avatar','role','tag','createTime'],
           where:{userId: item.friendId}
         })
-        const userMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: user.userId, friendId: friend.userId });
-        const friendMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: friend.userId, friendId: user.userId });
+      })
+      let friendMessagePromise = friendMap.map(async (item) => {
+        const userMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: user.userId, friendId: item.friendId });
+        const friendMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: item.friendId, friendId: user.userId });
         let data = [...userMessages, ...friendMessages]
         // 得到私聊消息后先排个序
         data.sort((a:any,b:any)=>{
           return a.time - b.time;
         })
-        friend.messages = data
-        friendArr.push(friend)
-        userArr.push(friend)
-      }
+        return data
+      })
+
+      let groups: GroupDto[]  = await Promise.all(groupPromise)
+      let groupsMessage: Array<GroupMessageDto[]> = await Promise.all(groupMessagePromise)
+      groups.map((group,index)=>{
+        group.messages = groupsMessage[index]
+      })
+      groupArr = groups
+
+      let friends: FriendDto[] = await Promise.all(friendPromise)
+      let friendsMessage: Array<FriendMessageDto[]> = await Promise.all(friendMessagePromise)
+      friends.map((friend, index) => {
+        friend.messages = friendsMessage[index]
+      })
+      friendArr = friends
+      
+      await Promise.all(groupUserPromise)
+      userArr = userArr.concat(friendArr)
+      
       this.server.to(user.userId).emit('chatData', {code:0, message: '获取聊天数据成功', data: {
         groupData: groupArr,
         friendData: friendArr,
