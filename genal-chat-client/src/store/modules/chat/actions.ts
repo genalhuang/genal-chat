@@ -56,7 +56,7 @@ const actions: ActionTree<ChatState, RootState> = {
           if (!state.groupGather[group.groupId]) {
             commit(SET_GROUP_GATHER, group)
             // 获取群里面所有用户的用户信息
-            await dispatch('handleGroupUsers')
+            socket.emit('chatData', user)
           }
         }
       })
