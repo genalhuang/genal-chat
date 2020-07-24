@@ -225,7 +225,10 @@ export class ChatGateway {
       let groupUserPromise = groupMap.map(async (item) => {
         let userMap = await this.groupUserRepository.find({groupId: item.groupId})
         for(let item of userMap) {
-          let user = await this.userRepository.findOne({userId: item.userId})
+          let user = await this.userRepository.findOne({
+            select: ['userId','username','avatar','role','tag','createTime'],
+            where:{userId: item.userId}
+          })
           userArr.push(user)
         }
       })
