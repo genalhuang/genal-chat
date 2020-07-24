@@ -81,8 +81,13 @@ export class UserService {
       const oldUser = await this.userRepository.findOne({userId: userId})
       console.log(userId)
       if(user.password === oldUser.password) {
-        const data = await this.userRepository.update(oldUser,user)
-        return {code: 0, message:'更新用户信息成功', data}
+        const isHaveName = await this.userRepository.findOne({username: user.username})
+        if(isHaveName) {
+          return {code: 1, message:'用户名重复', data: ''}
+        }
+        await this.userRepository.update(oldUser,user)
+        let newUser = await this.userRepository.findOne({userId: userId})
+        return {code: 0, message:'更新用户信息成功', data: newUser}
       } 
       return {code: 1, message:'密码错误', data: ''}
     } catch(e) {
