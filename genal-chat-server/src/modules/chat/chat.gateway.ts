@@ -252,14 +252,18 @@ export class ChatGateway {
       let groups: GroupDto[]  = await Promise.all(groupPromise)
       let groupsMessage: Array<GroupMessageDto[]> = await Promise.all(groupMessagePromise)
       groups.map((group,index)=>{
-        group.messages = groupsMessage[index]
+        if(groupsMessage[index] && groupsMessage[index].length) {
+          group.messages = groupsMessage[index]
+        }
       })
       groupArr = groups
 
       let friends: FriendDto[] = await Promise.all(friendPromise)
       let friendsMessage: Array<FriendMessageDto[]> = await Promise.all(friendMessagePromise)
       friends.map((friend, index) => {
-        friend.messages = friendsMessage[index]
+        if(friendsMessage[index] && friendsMessage[index].length) {
+          friend.messages = friendsMessage[index]
+        }
       })
       friendArr = friends
       
