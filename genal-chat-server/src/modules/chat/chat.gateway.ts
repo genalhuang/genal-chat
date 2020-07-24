@@ -262,7 +262,7 @@ export class ChatGateway {
       
       await Promise.all(groupUserPromise)
       userArr = userArr.concat(friendArr)
-      
+
       this.server.to(user.userId).emit('chatData', {code:0, message: '获取聊天数据成功', data: {
         groupData: groupArr,
         friendData: friendArr,
@@ -275,6 +275,5 @@ export class ChatGateway {
         userData: []
       }})
     }
-
   }
 }
