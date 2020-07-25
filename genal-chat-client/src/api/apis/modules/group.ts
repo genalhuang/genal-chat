@@ -1,11 +1,9 @@
 import fetch from '@/api/fetch';
 
-// /**
-//  * 用户加入添加群組
-//  * @param Group
-//  */
-// export const userJoinGroup = (params: Group) => {
-//   return fetch.post('/group', {
-//     ...params,
-//   });
-// };
+/**
+ * 群名模糊搜索用户
+ * @param string
+ */
+export function getGroupsByName(groupName: string) {
+  return fetch.get(`/group/findByName?groupName=${groupName}`)
+}

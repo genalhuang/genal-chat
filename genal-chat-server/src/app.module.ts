@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GroupModule } from './modules/group/group.module';
 import { UserModule } from './modules/user/user.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { FriendModule } from './modules/friend/friend.module';
+import { GroupModule } from './modules/group/group.module'
 
 @Module({
   imports: [
@@ -15,12 +16,14 @@ import { ChatModule } from './modules/chat/chat.module';
       username: 'root',
       password: '123456',
       database: 'chat',
+      charset: "utf8mb4", // 设置chatset编码为utf8mb4
       autoLoadEntities: true,
       synchronize: true
     }),
-    GroupModule,
     UserModule,
-    ChatModule
+    ChatModule,
+    FriendModule,
+    GroupModule
   ],
 })
 export class AppModule {}

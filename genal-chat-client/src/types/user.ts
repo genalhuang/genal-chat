@@ -1,5 +1,9 @@
 interface User {
-  name: string;
+  userId: string;
+  username: string;
   password: string;
   avatar: string;
+  role?: string;
+  tag?: string;
+  createTime: number;
 }
