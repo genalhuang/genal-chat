@@ -14,7 +14,7 @@ import {
   Menu,
   Avatar,
   Card,
-  Select
+  Select,
 } from 'ant-design-vue';
 
 Vue.use(Avatar)

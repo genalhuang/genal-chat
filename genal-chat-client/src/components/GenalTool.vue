@@ -10,7 +10,7 @@
     <div class="tool-set">
       <a-icon class='tool-set-icon' type="setting" @click='showModal("showSetModal")'/>
     </div>
-
+    <a href="https://github.com/genaller" target="_blank" class='github'><a-icon type="github" /></a>
     <a-modal
       title="用户信息"
       :visible="showUserModal"
@@ -130,6 +130,12 @@ export default class GenalTool extends Vue {
     position: absolute;
     bottom: 0px;
     left: 13px;
+  }
+  .github {
+    position: absolute;
+    font-size: 25px;
+    bottom: 60px;
+    left: 25px;
   }
 }
 .tool-user {
