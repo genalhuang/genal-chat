@@ -16,8 +16,7 @@ import { GroupMessage } from '../group/entity/groupMessage.entity'
 import { UserMap } from '../friend/entity/friend.entity'
 import { FriendMessage } from '../friend/entity/friendMessage.entity'
 
-
-@WebSocketGateway({namespace:'chat'})
+@WebSocketGateway()
 export class ChatGateway {
   constructor(
     @InjectRepository(User)
@@ -25,13 +24,13 @@ export class ChatGateway {
     @InjectRepository(Group)
     private readonly groupRepository: Repository<Group>,
     @InjectRepository(GroupMap)
-    private readonly guRepository: Repository<GroupMap>,
+    private readonly groupUserRepository: Repository<GroupMap>,
     @InjectRepository(GroupMessage)
-    private readonly gmRepository: Repository<GroupMessage>,
+    private readonly groupMessageRepository: Repository<GroupMessage>,
     @InjectRepository(UserMap)
     private readonly friendRepository: Repository<UserMap>,
     @InjectRepository(FriendMessage)
-    private readonly fmRepository: Repository<FriendMessage>,
+    private readonly friendMessageRepository: Repository<FriendMessage>,
   ) {}
 
   @WebSocketServer()
@@ -68,7 +67,7 @@ export class ChatGateway {
       }
       data = await this.groupRepository.save(data)
       client.join(data.groupId)
-      const group = await this.guRepository.save(data)
+      const group = await this.groupUserRepository.save(data)
       this.server.to(group.groupId).emit('addGroup', {code: 0, message: `成功创建群${data.groupName}`, data:group})
     } catch(e) {
       this.server.to(data.userId).emit('addGroup', {code: 2, message:'创建群失败', data:e})
@@ -79,14 +78,13 @@ export class ChatGateway {
   @SubscribeMessage('joinGroup')
   async joinGroup(@ConnectedSocket() client: Socket, @MessageBody() data: GroupMap) {
     try {
-      console.log('11111111111')
       const group = await this.groupRepository.findOne({groupId: data.groupId})
-      let userGroup = await this.guRepository.findOne({groupId: group.groupId, userId: data.userId})
+      let userGroup = await this.groupUserRepository.findOne({groupId: group.groupId, userId: data.userId})
       const user = await this.userRepository.findOne({userId: data.userId})
       if(group) {
         if(!userGroup) {
           data.groupId = group.groupId
-          userGroup = await this.guRepository.save(data)
+          userGroup = await this.groupUserRepository.save(data)
         }
         client.join(group.groupId)
         let res = { group: group, user: user}
@@ -105,7 +103,6 @@ export class ChatGateway {
     try {
       const group = await this.groupRepository.findOne({groupId: data.groupId})
       const user = await this.userRepository.findOne({userId: data.userId})
-      console.log(group,data)
       if(group) {
         client.join(group.groupId)
         let res = { group: group, user: user}
@@ -122,13 +119,12 @@ export class ChatGateway {
   @SubscribeMessage('groupMessage')
   async sendGroupMessage(@MessageBody() data: GroupMessage) {
     try {
-      console.log(data)
-      let isUserInGroup = await this.guRepository.findOne({userId: data.userId, groupId: data.groupId})
+      let isUserInGroup = await this.groupUserRepository.findOne({userId: data.userId, groupId: data.groupId})
       if(!isUserInGroup) {
         return this.server.to(data.userId).emit('groupMessage',{code:1, message:'群消息发送错误', data: ''})
       } 
       if(data.groupId) {
-        this.gmRepository.save(data);
+        this.groupMessageRepository.save(data);
         this.server.to(data.groupId).emit('groupMessage', {code: 0, message:'', data: data})
       }
     } catch(e) {
@@ -181,7 +177,6 @@ export class ChatGateway {
   @SubscribeMessage('joinFriendSocket')
   async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: UserMap) {
     try {
-      console.log('joinFriendSocket',data)
       if(data.friendId && data.userId) {
         const isUserInFriend = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId })
         let roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
@@ -201,15 +196,91 @@ export class ChatGateway {
   @SubscribeMessage('friendMessage')
   async friendMessage(@ConnectedSocket() client: Socket, @MessageBody() data: FriendMessage) {
     try {
-      console.log('friendMessage',data)
       if(data.userId && data.friendId) {
         let roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId
         client.join(roomId)
-        await this.fmRepository.save(data)
+        await this.friendMessageRepository.save(data)
         this.server.to(roomId).emit('friendMessage', {code: 0, message:'', data})
       }
     } catch(e) {
       this.server.to(data.userId).emit('friendMessage', {code: 2, message:'消息发送失败', data})
+    }
+  }
+
+  @SubscribeMessage('chatData') 
+  async getAllData(@ConnectedSocket() client: Socket,  @MessageBody() user: User) {
+    try {
+      let groupArr: GroupDto[] = [];
+      let friendArr: FriendDto[] = [];
+      let userArr: FriendDto[] = []
+      let groupMap: GroupMap[] = await this.groupUserRepository.find({userId: user.userId}) 
+      let friendMap: UserMap[] = await this.friendRepository.find({userId: user.userId})
+
+      let groupPromise = groupMap.map(async (item) => {
+        return await this.groupRepository.findOne({groupId: item.groupId})
+      })
+      let groupMessagePromise = groupMap.map(async (item) => {
+        return await this.groupMessageRepository.find({groupId: item.groupId})
+      })
+      let groupUserPromise = groupMap.map(async (item) => {
+        let userMap = await this.groupUserRepository.find({groupId: item.groupId})
+        for(let item of userMap) {
+          let user = await this.userRepository.findOne({
+            select: ['userId','username','avatar','role','tag','createTime'],
+            where:{userId: item.userId}
+          })
+          userArr.push(user)
+        }
+      })
+      let friendPromise = friendMap.map(async (item) => {
+        return await this.userRepository.findOne({
+          select: ['userId','username','avatar','role','tag','createTime'],
+          where:{userId: item.friendId}
+        })
+      })
+      let friendMessagePromise = friendMap.map(async (item) => {
+        const userMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: user.userId, friendId: item.friendId });
+        const friendMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: item.friendId, friendId: user.userId });
+        let data = [...userMessages, ...friendMessages]
+        // 得到私聊消息后先排个序
+        data.sort((a:any,b:any)=>{
+          return a.time - b.time;
+        })
+        return data
+      })
+
+      let groups: GroupDto[]  = await Promise.all(groupPromise)
+      let groupsMessage: Array<GroupMessageDto[]> = await Promise.all(groupMessagePromise)
+      groups.map((group,index)=>{
+        if(groupsMessage[index] && groupsMessage[index].length) {
+          group.messages = groupsMessage[index]
+        }
+      })
+      groupArr = groups
+
+      let friends: FriendDto[] = await Promise.all(friendPromise)
+      let friendsMessage: Array<FriendMessageDto[]> = await Promise.all(friendMessagePromise)
+      friends.map((friend, index) => {
+        if(friendsMessage[index] && friendsMessage[index].length) {
+          friend.messages = friendsMessage[index]
+        }
+      })
+      friendArr = friends
+      
+      await Promise.all(groupUserPromise)
+      userArr = userArr.concat(friendArr)
+
+      this.server.to(user.userId).emit('chatData', {code:0, message: '获取聊天数据成功', data: {
+        groupData: groupArr,
+        friendData: friendArr,
+        userData: userArr
+      }})
+    } catch (e) {
+      this.server.to(user.userId).emit('chatData', {code:1, message:'获取聊天数据失败', data: {
+        groupData: [],
+        friendData: [],
+        userData: []
+      }})
     }
   }
 }

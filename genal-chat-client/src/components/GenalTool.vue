@@ -10,7 +10,7 @@
     <div class="tool-set">
       <a-icon class='tool-set-icon' type="setting" @click='showModal("showSetModal")'/>
     </div>
-
+    <a href="https://github.com/genaller" target="_blank" class='github'><a-icon type="github" /></a>
     <a-modal
       title="用户信息"
       :visible="showUserModal"
@@ -18,7 +18,7 @@
       @cancel='handleCancel("showUserModal")'
     >
       <div class='tool-user'>
-        <a-avatar :src='user.avatar' :size='100'></a-avatar>
+        <a-avatar :src='user.avatar' class='tool-user-avater' :size='100'></a-avatar>
         <div class='tool-user-name'>
           <div class='tool-user-name-title'>更改用户名</div>
           <a-input v-model='username' placeholder="请输入用户名"></a-input>
@@ -45,10 +45,14 @@ import { namespace } from 'vuex-class'
 import * as apis  from '@/api/apis'
 import { processReturn } from '@/utils/common.ts';
 const appModule = namespace('app')
+const chatModule = namespace('chat')
 
 @Component
 export default class GenalTool extends Vue {
   @appModule.Getter('user') user: User;
+  @appModule.Mutation('set_user') setUser: Function;
+  @chatModule.Getter('socket') socket: any;
+
   showSetModal: boolean = false;
   showUserModal: boolean = false;
   username: string = ''
@@ -67,6 +71,7 @@ export default class GenalTool extends Vue {
   }
 
   showModal(modalType: 'showSetModal' | 'showUserModal') {
+    this.username = this.user.username
     this[modalType] = true;
   }
 
@@ -75,12 +80,23 @@ export default class GenalTool extends Vue {
   }
 
   async changeUser() {
+    if(!this.username.length) {
+      return this.$message.error('不能输入空昵称!')
+    }
     let user: User = JSON.parse(JSON.stringify(this.user))
     user.username = this.username
     let res = await apis.patchUser(user)
     let data = processReturn(res)
     if(data) {
-      this.logout()
+      console.log(data)
+      this.setUser(data)
+      // 为了通告所有用户自己改名了
+      this.socket.emit('joinGroupSocket', {
+        groupId: 'public',
+        userId: data.userId
+      })
+    } else {
+      this.username = ''
     }
   }
 }
@@ -115,10 +131,19 @@ export default class GenalTool extends Vue {
     bottom: 0px;
     left: 13px;
   }
+  .github {
+    position: absolute;
+    font-size: 25px;
+    bottom: 60px;
+    left: 25px;
+  }
 }
 .tool-user {
   text-align: center;
   font-size: 16px;
+  .tool-user-avater {
+    margin-bottom: 24px;
+  }
   .tool-user-name {
     display: flex;
     align-items: center;

@@ -13,7 +13,10 @@
         <img class='room-card-type' src="~@/assets/group.png" alt="">
         <div class='room-card-message'>
           <div class="room-card-name">{{chat.groupName}}</div>
-          <div class='room-card-new' v-if='chat.messages'>{{chat.messages[chat.messages.length-1].content}}</div>
+          <div class='room-card-new' 
+            v-if='chat.messages'
+            v-html='chat.messages[chat.messages.length-1].content'
+          ></div>
         </div>
       </div>
       <div 
@@ -25,7 +28,10 @@
         <img class='room-card-type' :src="friendGather[chat.userId].avatar" alt="">
         <div class='room-card-message'>
           <div class="room-card-name">{{chat.username}}</div>
-          <div class='room-card-new' v-if='chat.messages'>{{chat.messages[chat.messages.length-1].content}}</div>
+          <div class='room-card-new' v-if='chat.messages'
+            v-html='chat.messages[chat.messages.length-1].content'
+          >
+          </div>
         </div>
       </div>
     </div>

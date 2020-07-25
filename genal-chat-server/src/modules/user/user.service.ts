@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Repository, Connection, getRepository, Like } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
-import { UserDto } from './dto/user.dto';
 import { GroupMap } from '../group/entity/group.entity';
 
 @Injectable()
@@ -11,14 +10,17 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(GroupMap)
-    private readonly guRepository: Repository<GroupMap>,
+    private readonly groupUserRepository: Repository<GroupMap>,
   ) {}
 
   async getUser(userId: string) {
     try {
       let data;
       if(userId) {
-        data = await this.userRepository.findOne({userId: userId})
+        data = await this.userRepository.findOne({
+          select: ['userId','username','avatar','role','tag','createTime'],
+          where:{userId: userId}
+        })
         return {code: 0, message:'获取用户成功', data}
       }
       data = await this.userRepository.find()
@@ -35,11 +37,14 @@ export class UserService {
         let userArr = []
         for(let userId of userIdArr) {
           if(userId) {
-            const data = await this.userRepository.findOne({userId: userId})
+            const data = await this.userRepository.findOne({
+              select: ['userId','username','avatar','role','tag','createTime'],
+              where:{userId: userId}
+            })
             userArr.push(data)
           }
         }
-        return {code: 0, message:'获取用户信息成功', data: userArr}
+        return {code: 0, message:'获取用户信息1成功', data: userArr}
       }
       return {code: 1, message:'获取用户信息失败', data: null}
     } catch(e) {
@@ -59,7 +64,7 @@ export class UserService {
 
       const data = await this.userRepository.save(user)
 
-      await this.guRepository.save({
+      await this.groupUserRepository.save({
         userId: data.userId,
         groupId: 'public',
       })
@@ -76,8 +81,13 @@ export class UserService {
       const oldUser = await this.userRepository.findOne({userId: userId})
       console.log(userId)
       if(user.password === oldUser.password) {
-        const data = await this.userRepository.update(oldUser,user)
-        return {code: 0, message:'更新用户信息成功', data}
+        const isHaveName = await this.userRepository.findOne({username: user.username})
+        if(isHaveName) {
+          return {code: 1, message:'用户名重复', data: ''}
+        }
+        await this.userRepository.update(oldUser,user)
+        let newUser = await this.userRepository.findOne({userId: userId})
+        return {code: 0, message:'更新用户信息成功', data: newUser}
       } 
       return {code: 1, message:'密码错误', data: ''}
     } catch(e) {
@@ -109,7 +119,10 @@ export class UserService {
   async getUsersByName(username: string) {
     try {
       if(username) {
-        let users = await this.userRepository.find({username: Like(`%${username}%`)})
+        let users = await this.userRepository.find({
+          select: ['userId','username','avatar','role','tag','createTime'],
+          where:{username: Like(`%${username}%`)}
+        })
         return {code: 0, message:'获取用户信息成功', data: users}
       }
       return {code: 1, message:'请输入用户名', data: null}
