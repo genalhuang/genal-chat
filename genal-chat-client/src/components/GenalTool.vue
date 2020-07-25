@@ -18,7 +18,7 @@
       @cancel='handleCancel("showUserModal")'
     >
       <div class='tool-user'>
-        <a-avatar :src='user.avatar' :size='100'></a-avatar>
+        <a-avatar :src='user.avatar' class='tool-user-avater' :size='100'></a-avatar>
         <div class='tool-user-name'>
           <div class='tool-user-name-title'>更改用户名</div>
           <a-input v-model='username' placeholder="请输入用户名"></a-input>
@@ -71,6 +71,7 @@ export default class GenalTool extends Vue {
   }
 
   showModal(modalType: 'showSetModal' | 'showUserModal') {
+    this.username = this.user.username
     this[modalType] = true;
   }
 
@@ -79,6 +80,9 @@ export default class GenalTool extends Vue {
   }
 
   async changeUser() {
+    if(!this.username.length) {
+      return this.$message.error('不能输入空昵称!')
+    }
     let user: User = JSON.parse(JSON.stringify(this.user))
     user.username = this.username
     let res = await apis.patchUser(user)
@@ -131,6 +135,9 @@ export default class GenalTool extends Vue {
 .tool-user {
   text-align: center;
   font-size: 16px;
+  .tool-user-avater {
+    margin-bottom: 24px;
+  }
   .tool-user-name {
     display: flex;
     align-items: center;

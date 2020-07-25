@@ -1,7 +1,7 @@
 <template>
   <a-popover title="Emoji">
     <template slot="content">
-      <div style='color:#000;font-size:20px;'>
+      <div class='emoji-content'>
         <div>
           <span @click='addEmoji("😃")'>😃</span>
           <span @click='addEmoji("😁")'>😁</span>
@@ -34,17 +34,6 @@
           <span @click='addEmoji("😚")'>😚</span>
           <span @click='addEmoji("😜")'>😜</span>
           <span @click='addEmoji("😝")'>😝</span>
-        </div>
-        <div>
-          <span @click='addEmoji("😔")'>😔</span>
-          <span @click='addEmoji("😕")'>😕</span>
-          <span @click='addEmoji("😖")'>😖</span>
-          <span @click='addEmoji("😗")'>😗</span>
-          <span @click='addEmoji("😘")'>😘</span>
-          <span @click='addEmoji("😙")'>😙</span>
-          <span @click='addEmoji("😚")'>😚</span>
-          <span @click='addEmoji("😜")'>😜</span>
-          <span @click='addEmoji("😛")'>😛</span>
         </div>
         <div>
           <span @click='addEmoji("😞")'>😞</span>
@@ -104,9 +93,9 @@
       </div>
 
     </template>
-    <a-button trigger="click" class='genal-emoji'>
+    <div trigger="click" class='genal-emoji'>
       😃
-    </a-button>
+    </div>
   </a-popover>
 </template>
 
@@ -124,5 +113,23 @@ export default class GenalMessage extends Vue {
 <style lang="scss" scoped>
 .genal-emoji {
   height: 40px;
+  width: 45px;
+  position: absolute;
+  cursor: pointer;
+  left: 0px;
+  top: 0px;
+  z-index: 999;
+  line-height: 40px;
+  transition: .2s all linear;
+  &:hover {
+    background-color: rgb(135, 206, 235, .2);
+  }
+}
+.emoji-content {
+  color:#000;
+  font-size:20px;
+  span {
+    cursor: pointer;
+  }
 }
 </style>

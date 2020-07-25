@@ -195,4 +195,9 @@ export default class GenalMessage extends Vue {
     }
   }
 }
+
+//输入框样式
+.ant-input {
+  padding: 0 50px 0 45px;
+}
 </style>
