@@ -3,6 +3,8 @@ import { Repository, Connection, getRepository, Like } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { GroupMap } from '../group/entity/group.entity';
+import { createWriteStream } from 'fs';
+import { join } from 'path'
 
 @Injectable()
 export class UserService {
@@ -130,4 +132,19 @@ export class UserService {
       return {code: 2, message:'查找用户错误', data: null}
     }
   }
+
+  async setUserAvatar(user: User, file) {
+    try {
+      let random = Math.round(Math.random()*1000).toString() + '&'
+      let writeSream = createWriteStream(join('public/static', random +file.originalname))
+      writeSream.write(file.buffer)
+      let newUser = await this.userRepository.findOne({userId: user.userId})
+      newUser.avatar = `static/${random}${file.originalname}`
+      await this.userRepository.save(newUser)
+      return {code: 0, message: '修改头像成功', data: newUser}
+    } catch (e) {
+      return {code: 2, message: '修改头像失败', data: e}
+    }
+  }
+
 }
