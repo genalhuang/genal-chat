@@ -135,8 +135,8 @@ export class UserService {
 
   async setUserAvatar(user: User, file) {
     try {
-      let random = Math.round(Math.random()*1000).toString() + '&'
-      let writeSream = createWriteStream(join('public/static', random +file.originalname))
+      let random = Date.now() + '&'
+      let writeSream = createWriteStream(join('public/static', random + file.originalname))
       writeSream.write(file.buffer)
       let newUser = await this.userRepository.findOne({userId: user.userId})
       newUser.avatar = `static/${random}${file.originalname}`
