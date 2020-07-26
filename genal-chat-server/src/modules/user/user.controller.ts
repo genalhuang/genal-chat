@@ -1,5 +1,9 @@
-import { Controller, Post, HttpCode, Get, Body, Query, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, HttpCode, Get, 
+  Body, Query, Patch, Param, Delete, UseInterceptors,
+  UploadedFile } from '@nestjs/common';
 import { UserService } from './user.service'
+import { FileInterceptor } from '@nestjs/platform-express'
+
 
 @Controller('user')
 export class UserController {
@@ -41,4 +45,11 @@ export class UserController {
   getUsersByName(@Query('username') username: string) {
     return this.userService.getUsersByName(username)
   }
+
+  @Post('/avatar')
+  @UseInterceptors(FileInterceptor('avatar'))
+  setUserAvatar(@Body() user, @UploadedFile() file) {
+    return this.userService.setUserAvatar(user, file)
+  }
+
 }

@@ -35,3 +35,17 @@ export const patchUser = (params: User) => {
 export function getUsersByName(username: string) {
   return fetch.get(`/user/findByName?username=${username}`)
 }
+
+/**
+ * 用户头像上传
+ * @param file
+ */
+export function setUserAvatar(params: any) {
+  return fetch.post(`/user/avatar`,
+    params
+  , {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+  });
+}

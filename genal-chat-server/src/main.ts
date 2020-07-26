@@ -16,8 +16,8 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // 配置静态资源
-  app.useStaticAssets(join(__dirname, '../public/', 'static'), {
-    prefix: '/static/', 
+  app.useStaticAssets(join(__dirname, '../public', '/'), {
+    prefix: '/', 
   });
 
   await app.listen(3000);
