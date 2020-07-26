@@ -18,11 +18,30 @@
       @cancel='handleCancel("showUserModal")'
     >
       <div class='tool-user'>
-        <a-avatar :src='user.avatar' class='tool-user-avater' :size='100'></a-avatar>
+        <a-avatar :src='user.avatar' class='tool-user-img' :size='100'></a-avatar>
+        <div class='tool-user-avatar'>
+          <div class='tool-user-avatar-title'>更改头像</div>
+          <a-upload style='margin-left: 17px;' :show-upload-list="false" :before-upload="beforeUpload">
+            <div class='upload'> 
+              <a-icon type="upload" style='margin-right: 4px;'/> 
+              {{avatar.name ? avatar.name : '请选择' }} 
+            </div>
+          </a-upload>
+          <a-button
+            class='button'
+            type="primary"
+            :disabled='!avatar'
+            :loading="uploading"
+            @click="handleUpload"
+          >
+            {{ uploading ? '更换中' : '确定' }}
+          </a-button>
+        </div>
+
         <div class='tool-user-name'>
           <div class='tool-user-name-title'>更改用户名</div>
           <a-input v-model='username' placeholder="请输入用户名"></a-input>
-          <a-button @click='changeUser'>确认</a-button>
+          <a-button type="primary" @click='changeUser'>确认</a-button>
         </div>
       </div>
     </a-modal>
@@ -40,6 +59,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { setUserAvatar } from '@/api/apis'
 import {mapMutations, mapGetters} from "vuex";
 import { namespace } from 'vuex-class'
 import * as apis  from '@/api/apis'
@@ -90,13 +110,45 @@ export default class GenalTool extends Vue {
     if(data) {
       console.log(data)
       this.setUser(data)
-      // 为了通告所有用户自己改名了
+      // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
         groupId: 'public',
         userId: data.userId
       })
     } else {
       this.username = ''
+    }
+  }
+
+  uploading:boolean = false;
+  avatar: any = ''
+  beforeUpload(file: any) {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
+    if (!isJpgOrPng) {
+      return this.$message.error('请上传jpeg/jpg/png格式的图片!');
+    }
+    const isLt1M = file.size / 1024 / 1024 < 0.5;
+    if (!isLt1M) {
+      return this.$message.error('图片必须小于500K!');
+    }
+    this.avatar = file
+    return false;
+  }
+  async handleUpload() {
+    this.uploading = true;
+    const formData = new FormData();
+    formData.append('avatar', this.avatar);
+    formData.append('userId', this.user.userId);
+
+    let data = processReturn(await setUserAvatar(formData))
+    if(data) {
+      this.setUser(data)
+      this.uploading = false;
+      // 通知其他用户个人信息改变
+      this.socket.emit('joinGroupSocket', {
+        groupId: 'public',
+        userId: data.userId
+      })
     }
   }
 }
@@ -110,10 +162,14 @@ export default class GenalTool extends Vue {
   .tool-avatar {
     .tool-avatar-img {
       margin: 0 auto;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
       img {
-        cursor: pointer;
-        width: 90%;
-        border-radius: 3px;
+        width: 100%;
+        height: 100%;
       }
     }
     .tool-avatar-name {
@@ -141,8 +197,38 @@ export default class GenalTool extends Vue {
 .tool-user {
   text-align: center;
   font-size: 16px;
-  .tool-user-avater {
-    margin-bottom: 24px;
+  .tool-user-img {
+    margin-bottom: 24px;  
+  }
+  .tool-user-avatar {
+    display: flex;
+    margin-bottom: 15px;
+    .upload {
+      display: flex;
+      flex-wrap: nowrap;
+      cursor: pointer;
+      align-items: center;
+      border: 1px solid #d9d9d9;
+      height: 33px;
+      padding: 0 5px;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow:ellipsis;
+      border-radius: 5px;
+      transition: .1s all linear;
+      &:hover {
+        border: 1px solid skyblue;
+        color: skyblue;
+      }
+    }
+    .tool-user-avatar-title {
+      font-weight: bold;
+      word-break: keep-all;
+      margin-right: 15px;
+    }
+    .button {
+      margin-left: 5px;
+    }
   }
   .tool-user-name {
     display: flex;

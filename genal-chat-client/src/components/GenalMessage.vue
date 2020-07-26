@@ -173,6 +173,7 @@ export default class GenalMessage extends Vue {
         border-radius: 5px;
         text-align: left;
         word-break: break-all;
+        margin-top: 4px;
       }
     }
   }

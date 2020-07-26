@@ -15,6 +15,7 @@ import {
   Avatar,
   Card,
   Select,
+  Upload
 } from 'ant-design-vue';
 
 Vue.use(Avatar)
@@ -30,4 +31,5 @@ Vue.use(Dropdown);
 Vue.use(Menu);
 Vue.use(Card);
 Vue.use(Select);
+Vue.use(Upload);
 Vue.prototype.$message = message;
