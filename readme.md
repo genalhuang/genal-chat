@@ -1,6 +1,6 @@
 
 #### 项目界面
-![](./assets/2.png)
+![](./assets/genal.gif)
 
 ### 项目描述
 前端: vue+vue-router+vuex+socket.io+typescript
