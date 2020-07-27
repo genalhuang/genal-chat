@@ -53,7 +53,7 @@ export default class GenalAvatar extends Vue {
     width: 35px;
   }
   .avatar-name {
-    margin-left: 2px;
+    margin-left: 5px;
   }
   .avatar-time {
     font-size: 14px;
