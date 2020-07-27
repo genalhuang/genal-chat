@@ -104,6 +104,7 @@ export default class GenalRoom extends Vue {
       }
       .room-card-type {
         width: 35px;
+        height: 35px;
         margin-right: 5px;
         border-radius: 50%;
       }
