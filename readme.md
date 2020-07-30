@@ -6,16 +6,6 @@
 ### 项目界面
 ![](./assets/genal.gif)
 
-### 项目技术
-```
-前端: vue + vue-router + vuex + socket.io + typescript + antd
-
-后端: nestjs + nestjs/websocket + typescript 
-```
-
-### 数据库表结构设计
-![](./assets/database.png)
-
 ### 功能介绍
 - 更改用户名/头像上传
 - 群聊/私聊
@@ -23,6 +13,13 @@
 - 添加好友/模糊搜索好友
 - 表情包
 - 消息分页
+
+### 项目技术
+```
+前端: vue + vue-router + vuex + socket.io + typescript + antd
+
+后端: nestjs + nestjs/websocket + typescript 
+```
 
 ### 环境配置
 - 数据库mysql 以及 chat数据库
@@ -39,6 +36,9 @@ npm run serve
 cd genal-chat-server
 npm run start:dev
 ```
+
+### 数据库表结构设计
+![](./assets/database.png)
 
 ### 系统迭代记录
 #### v1.0.0
