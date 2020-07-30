@@ -8,7 +8,6 @@ import {
 import { Server, Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
 import { User } from '../user/entity/user.entity';
 import { Group, GroupMap } from '../group/entity/group.entity';
 import { GroupMessage } from '../group/entity/groupMessage.entity';
@@ -37,7 +36,7 @@ export class ChatGateway {
 
   // socket连接钩子
   async handleConnection(client: Socket): Promise<string> {
-    let userRoom = client.handshake.query.userId;
+    const userRoom = client.handshake.query.userId;
     const defaultGroup = await this.groupRepository.find({
       groupName: 'public',
     });
@@ -63,30 +62,26 @@ export class ChatGateway {
   async addGroup(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: Group,
-  ) {
+  ): Promise<boolean> {
     try {
       const isHaveGroup = await this.groupRepository.findOne({
         groupName: data.groupName,
       });
       if (isHaveGroup) {
-        return this.server
-          .to(data.userId)
-          .emit('addGroup', {
-            code: 1,
-            message: '该群名字已存在',
-            data: isHaveGroup,
-          });
+        return this.server.to(data.userId).emit('addGroup', {
+          code: 1,
+          message: '该群名字已存在',
+          data: isHaveGroup,
+        });
       }
       data = await this.groupRepository.save(data);
       client.join(data.groupId);
       const group = await this.groupUserRepository.save(data);
-      this.server
-        .to(group.groupId)
-        .emit('addGroup', {
-          code: 0,
-          message: `成功创建群${data.groupName}`,
-          data: group,
-        });
+      this.server.to(group.groupId).emit('addGroup', {
+        code: 0,
+        message: `成功创建群${data.groupName}`,
+        data: group,
+      });
     } catch (e) {
       this.server
         .to(data.userId)
@@ -99,7 +94,7 @@ export class ChatGateway {
   async joinGroup(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: GroupMap,
-  ) {
+  ): Promise<void> {
     try {
       const group = await this.groupRepository.findOne({
         groupId: data.groupId,
@@ -115,14 +110,12 @@ export class ChatGateway {
           userGroup = await this.groupUserRepository.save(data);
         }
         client.join(group.groupId);
-        let res = { group: group, user: user };
-        this.server
-          .to(group.groupId)
-          .emit('joinGroup', {
-            code: 0,
-            message: `${user.username}加入群${group.groupName}`,
-            data: res,
-          });
+        const res = { group: group, user: user };
+        this.server.to(group.groupId).emit('joinGroup', {
+          code: 0,
+          message: `${user.username}加入群${group.groupName}`,
+          data: res,
+        });
       } else {
         this.server
           .to(data.userId)
@@ -140,7 +133,7 @@ export class ChatGateway {
   async joinGroupSocket(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: GroupMap,
-  ) {
+  ): Promise<void> {
     try {
       const group = await this.groupRepository.findOne({
         groupId: data.groupId,
@@ -148,22 +141,18 @@ export class ChatGateway {
       const user = await this.userRepository.findOne({ userId: data.userId });
       if (group) {
         client.join(group.groupId);
-        let res = { group: group, user: user };
-        this.server
-          .to(group.groupId)
-          .emit('joinGroupSocket', {
-            code: 0,
-            message: `${user.username}加入群${group.groupName}`,
-            data: res,
-          });
+        const res = { group: group, user: user };
+        this.server.to(group.groupId).emit('joinGroupSocket', {
+          code: 0,
+          message: `${user.username}加入群${group.groupName}`,
+          data: res,
+        });
       } else {
-        this.server
-          .to(data.userId)
-          .emit('joinGroupSocket', {
-            code: 1,
-            message: '该群不存在',
-            data: '',
-          });
+        this.server.to(data.userId).emit('joinGroupSocket', {
+          code: 1,
+          message: '该群不存在',
+          data: '',
+        });
       }
     } catch (e) {
       this.server
@@ -174,20 +163,18 @@ export class ChatGateway {
 
   // 发送群消息
   @SubscribeMessage('groupMessage')
-  async sendGroupMessage(@MessageBody() data: GroupMessage) {
+  async sendGroupMessage(@MessageBody() data: GroupMessage): Promise<boolean> {
     try {
-      let isUserInGroup = await this.groupUserRepository.findOne({
+      const isUserInGroup = await this.groupUserRepository.findOne({
         userId: data.userId,
         groupId: data.groupId,
       });
       if (!isUserInGroup) {
-        return this.server
-          .to(data.userId)
-          .emit('groupMessage', {
-            code: 1,
-            message: '群消息发送错误',
-            data: '',
-          });
+        return this.server.to(data.userId).emit('groupMessage', {
+          code: 1,
+          message: '群消息发送错误',
+          data: '',
+        });
       }
       if (data.groupId) {
         this.groupMessageRepository.save(data);
@@ -207,77 +194,67 @@ export class ChatGateway {
   async addFriend(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: UserMap,
-  ) {
-    try {
-      if (data.friendId && data.userId) {
-        if (data.userId === data.friendId) {
-          return this.server
-            .to(data.userId)
-            .emit('addFriend', {
-              code: 1,
-              message: '不能添加自己为好友',
-              data: '',
-            });
-        }
-        const isHave1 = await this.friendRepository.find({
-          userId: data.userId,
-          friendId: data.friendId,
+  ): Promise<boolean> {
+    if (data.friendId && data.userId) {
+      if (data.userId === data.friendId) {
+        return this.server.to(data.userId).emit('addFriend', {
+          code: 1,
+          message: '不能添加自己为好友',
+          data: '',
         });
-        const isHave2 = await this.friendRepository.find({
-          userId: data.friendId,
-          friendId: data.userId,
+      }
+      const isHave1 = await this.friendRepository.find({
+        userId: data.userId,
+        friendId: data.friendId,
+      });
+      const isHave2 = await this.friendRepository.find({
+        userId: data.friendId,
+        friendId: data.userId,
+      });
+      const roomId =
+        data.userId > data.friendId
+          ? data.userId + data.friendId
+          : data.friendId + data.userId;
+
+      if (isHave1.length || isHave2.length) {
+        this.server.emit('addFriend', {
+          code: 1,
+          message: '已经有该好友',
+          data: data,
         });
-        const roomId =
-          data.userId > data.friendId
-            ? data.userId + data.friendId
-            : data.friendId + data.userId;
+        return;
+      }
 
-        if (isHave1.length || isHave2.length) {
-          this.server.emit('addFriend', {
-            code: 1,
-            message: '已经有该好友',
-            data: data,
-          });
-          return;
-        }
-
-        const friend = await this.userRepository.findOne({
-          userId: data.friendId,
-        });
-        const user = await this.userRepository.findOne({ userId: data.userId });
-        if (!friend) {
-          this.server
-            .to(data.userId)
-            .emit('addFriend', { code: 1, message: '该好友不存在', data: '' });
-          return;
-        }
-
-        // 双方都添加好友 并存入数据库
-        await this.friendRepository.save(data);
-        let friendData = JSON.parse(JSON.stringify(data));
-        const friendId = friendData.friendId;
-        friendData.friendId = friendData.userId;
-        friendData.userId = friendId;
-        delete friendData._id;
-        await this.friendRepository.save(friendData);
-        client.join(roomId);
+      const friend = await this.userRepository.findOne({
+        userId: data.friendId,
+      });
+      const user = await this.userRepository.findOne({ userId: data.userId });
+      if (!friend) {
         this.server
           .to(data.userId)
-          .emit('addFriend', {
-            code: 0,
-            message: '添加好友成功',
-            data: friend,
-          });
-        this.server
-          .to(data.friendId)
-          .emit('addFriend', {
-            code: 0,
-            message: '你正被一个人添加',
-            data: user,
-          });
+          .emit('addFriend', { code: 1, message: '该好友不存在', data: '' });
+        return;
       }
-    } catch (e) {
-      return { code: 2, message: '添加好友失败', data: e };
+
+      // 双方都添加好友 并存入数据库
+      await this.friendRepository.save(data);
+      const friendData = JSON.parse(JSON.stringify(data));
+      const friendId = friendData.friendId;
+      friendData.friendId = friendData.userId;
+      friendData.userId = friendId;
+      delete friendData._id;
+      await this.friendRepository.save(friendData);
+      client.join(roomId);
+      this.server.to(data.userId).emit('addFriend', {
+        code: 0,
+        message: '添加好友成功',
+        data: friend,
+      });
+      this.server.to(data.friendId).emit('addFriend', {
+        code: 0,
+        message: '你正被一个人添加',
+        data: user,
+      });
     }
   }
 
@@ -286,44 +263,38 @@ export class ChatGateway {
   async joinFriend(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: UserMap,
-  ) {
+  ): Promise<boolean> {
     try {
       if (data.friendId && data.userId) {
         const isUserInFriend = await this.friendRepository.findOne({
           userId: data.userId,
           friendId: data.friendId,
         });
-        let roomId =
+        const roomId =
           data.userId > data.friendId
             ? data.userId + data.friendId
             : data.friendId + data.userId;
         if (isUserInFriend) {
           client.join(roomId);
-          this.server
-            .to(data.userId)
-            .emit('joinFriendSocket', {
-              code: 0,
-              message: '进入私聊socket成功',
-              data: isUserInFriend,
-            });
-          this.server
-            .to(data.friendId)
-            .emit('joinFriendSocket', {
-              code: 0,
-              message: '进入私聊socket成功',
-              data: isUserInFriend,
-            });
+          this.server.to(data.userId).emit('joinFriendSocket', {
+            code: 0,
+            message: '进入私聊socket成功',
+            data: isUserInFriend,
+          });
+          this.server.to(data.friendId).emit('joinFriendSocket', {
+            code: 0,
+            message: '进入私聊socket成功',
+            data: isUserInFriend,
+          });
           return;
         }
       }
     } catch (e) {
-      this.server
-        .to(data.userId)
-        .emit('joinFriendSocket', {
-          code: 1,
-          message: '进入私聊socket失败',
-          data: e,
-        });
+      this.server.to(data.userId).emit('joinFriendSocket', {
+        code: 1,
+        message: '进入私聊socket失败',
+        data: e,
+      });
     }
   }
 
@@ -332,10 +303,10 @@ export class ChatGateway {
   async friendMessage(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: FriendMessage,
-  ) {
+  ): Promise<void> {
     try {
       if (data.userId && data.friendId) {
-        let roomId =
+        const roomId =
           data.userId > data.friendId
             ? data.userId + data.friendId
             : data.friendId + data.userId;
@@ -356,32 +327,32 @@ export class ChatGateway {
   async getAllData(
     @ConnectedSocket() client: Socket,
     @MessageBody() user: User,
-  ) {
+  ): Promise<void> {
     try {
       let groupArr: GroupDto[] = [];
       let friendArr: FriendDto[] = [];
       let userArr: FriendDto[] = [];
-      let groupMap: GroupMap[] = await this.groupUserRepository.find({
+      const groupMap: GroupMap[] = await this.groupUserRepository.find({
         userId: user.userId,
       });
-      let friendMap: UserMap[] = await this.friendRepository.find({
+      const friendMap: UserMap[] = await this.friendRepository.find({
         userId: user.userId,
       });
 
-      let groupPromise = groupMap.map(async item => {
+      const groupPromise = groupMap.map(async item => {
         return await this.groupRepository.findOne({ groupId: item.groupId });
       });
-      let groupMessagePromise = groupMap.map(async item => {
+      const groupMessagePromise = groupMap.map(async item => {
         return await this.groupMessageRepository.find({
           groupId: item.groupId,
         });
       });
-      let groupUserPromise = groupMap.map(async item => {
-        let userMap = await this.groupUserRepository.find({
+      const groupUserPromise = groupMap.map(async item => {
+        const userMap = await this.groupUserRepository.find({
           groupId: item.groupId,
         });
-        for (let item of userMap) {
-          let user = await this.userRepository.findOne({
+        for (const item of userMap) {
+          const user = await this.userRepository.findOne({
             select: [
               'userId',
               'username',
@@ -395,20 +366,20 @@ export class ChatGateway {
           userArr.push(user);
         }
       });
-      let friendPromise = friendMap.map(async item => {
+      const friendPromise = friendMap.map(async item => {
         return await this.userRepository.findOne({
           select: ['userId', 'username', 'avatar', 'role', 'tag', 'createTime'],
           where: { userId: item.friendId },
         });
       });
-      let friendMessagePromise = friendMap.map(async item => {
+      const friendMessagePromise = friendMap.map(async item => {
         const userMessages: FriendMessageDto[] = await this.friendMessageRepository.find(
           { userId: user.userId, friendId: item.friendId },
         );
         const friendMessages: FriendMessageDto[] = await this.friendMessageRepository.find(
           { userId: item.friendId, friendId: user.userId },
         );
-        let data = [...userMessages, ...friendMessages];
+        const data = [...userMessages, ...friendMessages];
         // 得到私聊消息后先排个序
         data.sort((a: any, b: any) => {
           return a.time - b.time;
@@ -416,8 +387,8 @@ export class ChatGateway {
         return data;
       });
 
-      let groups: GroupDto[] = await Promise.all(groupPromise);
-      let groupsMessage: Array<GroupMessageDto[]> = await Promise.all(
+      const groups: GroupDto[] = await Promise.all(groupPromise);
+      const groupsMessage: Array<GroupMessageDto[]> = await Promise.all(
         groupMessagePromise,
       );
       groups.map((group, index) => {
@@ -427,8 +398,8 @@ export class ChatGateway {
       });
       groupArr = groups;
 
-      let friends: FriendDto[] = await Promise.all(friendPromise);
-      let friendsMessage: Array<FriendMessageDto[]> = await Promise.all(
+      const friends: FriendDto[] = await Promise.all(friendPromise);
+      const friendsMessage: Array<FriendMessageDto[]> = await Promise.all(
         friendMessagePromise,
       );
       friends.map((friend, index) => {
