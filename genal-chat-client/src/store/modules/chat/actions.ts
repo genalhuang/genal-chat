@@ -13,7 +13,8 @@ import {
   SET_FRIEND_MESSAGES,
   SET_GROUP_GATHER,
   SET_FRIEND_GATHER,
-  SET_USER_GATHER
+  SET_USER_GATHER,
+  SET_ACTIVE_ROOM
 } from './mutation-types'
 
 const actions: ActionTree<ChatState, RootState> = {
@@ -139,6 +140,7 @@ const actions: ActionTree<ChatState, RootState> = {
   async handleChatData({commit, dispatch, state, rootState}, payload) {
     let user = rootState.app.user
     let socket = state.socket
+    let groupGather = state.groupGather
     let groupArr = payload.groupData
     let friendArr = payload.friendData
     let userArr = payload.userData
@@ -165,6 +167,8 @@ const actions: ActionTree<ChatState, RootState> = {
         commit(SET_USER_GATHER, user)
       }
     }
+    // 更新完数据设置默认active群为public
+    commit(SET_ACTIVE_ROOM, groupGather.public)
   }
 }
 

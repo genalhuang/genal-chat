@@ -14,12 +14,12 @@
 ```
 
 ### 数据库表结构设计
-![](./assets/3.png)
+![](./assets/database.png)
 
 ### 功能介绍
 - 更改用户名/头像上传
 - 群聊/私聊
-- 新增群/加入群聊/模糊搜索群
+- 创建群/加入群聊/模糊搜索群
 - 添加好友/模糊搜索好友
 - 表情包
 - 消息分页
@@ -62,3 +62,6 @@ npm run start:dev
 
 ### 作者
 github: [edison](https://github.com/genaller)
+
+### 项目实现细节
+[nestjs+vue+ts打造一个酷炫的星空聊天室](https://github.com/genaller/strong-frontend/blob/master/learnNode/nest/%E8%81%8A%E5%A4%A9%E5%AE%A4/genal%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0.md)
