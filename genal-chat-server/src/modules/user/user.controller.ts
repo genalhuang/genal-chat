@@ -1,9 +1,17 @@
-import { Controller, Post, HttpCode, Get, 
-  Body, Query, Patch, Param, Delete, UseInterceptors,
-  UploadedFile } from '@nestjs/common';
-import { UserService } from './user.service'
-import { FileInterceptor } from '@nestjs/platform-express'
-
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
+import { UserService } from './user.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
@@ -11,24 +19,24 @@ export class UserController {
 
   @Get()
   getUsers(@Query('userId') userId: string) {
-    return this.userService.getUser(userId)
+    return this.userService.getUser(userId);
   }
 
   @Post()
   postUsers(@Body('userIds') userIds: string) {
-    return this.userService.postUsers(userIds)
+    return this.userService.postUsers(userIds);
   }
 
   @Post('/regist')
   addUser(@Body() user) {
-    user.createTime = parseInt(user.createTime)
-    return this.userService.addUser(user)
+    user.createTime = parseInt(user.createTime);
+    return this.userService.addUser(user);
   }
 
   @Patch(':userId')
   updateUser(@Param('userId') userId, @Body() user) {
-    console.log(userId, user)
-    return this.userService.updateUser(userId, user)
+    console.log(userId, user);
+    return this.userService.updateUser(userId, user);
   }
 
   @Delete()
@@ -38,18 +46,17 @@ export class UserController {
 
   @Post('/login')
   login(@Body() user) {
-    return this.userService.login(user)
+    return this.userService.login(user);
   }
 
   @Get('/findByName')
   getUsersByName(@Query('username') username: string) {
-    return this.userService.getUsersByName(username)
+    return this.userService.getUsersByName(username);
   }
 
   @Post('/avatar')
   @UseInterceptors(FileInterceptor('avatar'))
   setUserAvatar(@Body() user, @UploadedFile() file) {
-    return this.userService.setUserAvatar(user, file)
+    return this.userService.setUserAvatar(user, file);
   }
-
 }
