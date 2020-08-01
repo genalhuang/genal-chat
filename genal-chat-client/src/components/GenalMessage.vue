@@ -17,7 +17,10 @@
           :class="{'text-right': item.userId === user.userId}"
         >
           <genal-avatar :data='item'></genal-avatar>
-          <div class='message-frame-text' v-html='item.content'></div>
+          <div>
+            <div class='message-frame-text' v-html='item.content' v-if='item.messageType === "string"'></div>
+            <div class='message-frame-text'  v-if='item.messageType === "image"'>图片</div>
+          </div>
         </div>
       </template>
     </div>
@@ -113,9 +116,9 @@ export default class GenalMessage extends Vue {
       return
     }
     if(this.activeRoom.groupId) {
-      this.$emit('sendMessage', {type: 'group', message: this.message})
+      this.$emit('sendMessage', {type: 'group', message: this.message, messageType: 'image'})
     } else {
-      this.$emit('sendMessage', {type: 'friend', message: this.message})
+      this.$emit('sendMessage', {type: 'friend', message: this.message, messageType: 'string'})
     }
     this.message = ''
   }

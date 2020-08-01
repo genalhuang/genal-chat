@@ -106,6 +106,7 @@ export default class GenalChat extends Vue {
         userId: this.user.userId,
         groupId: this.activeRoom.groupId,
         content: data.message,
+        messageType: data.messageType,
         time: new Date().valueOf()
       })
     } else {
@@ -113,6 +114,7 @@ export default class GenalChat extends Vue {
         userId: this.user.userId,
         friendId: this.activeRoom.userId,
         content: data.message,
+        messageType: data.messageType,
         time: new Date().valueOf()
       })
     }

@@ -30,6 +30,7 @@ interface GroupMessage {
   userId: string;
   groupId: string;
   content: string;
+  messageType: MessageType;
   time: number;
 }
 
@@ -60,6 +61,7 @@ interface FriendMessage {
   userId: string;
   friendId: string;
   content: string;
+  messageType: MessageType;
   time: number;
   type?: string;
 }
@@ -67,8 +69,14 @@ interface FriendMessage {
 interface SendMessage {
   type: string;
   message: string;
+  messageType: MessageType;
 }
 
+// 消息类型
+enum MessageType {
+  string = 'string',
+  image = 'image'
+}
 
 
 

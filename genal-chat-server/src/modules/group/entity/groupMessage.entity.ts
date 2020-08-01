@@ -14,6 +14,9 @@ export class GroupMessage {
   @Column()
   content: string;
 
+  @Column()
+  messageType: string;
+
   @Column('double')
   time: number;
 }
