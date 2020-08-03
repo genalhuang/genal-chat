@@ -62,7 +62,7 @@ export class UserService {
       }
 
       let index = Math.round(Math.random()*19 +1)
-      user.avatar = `static/avatar(${index}).png`
+      user.avatar = `avatar/avatar(${index}).png`
 
       const data = await this.userRepository.save(user)
 

@@ -128,7 +128,7 @@ export default class GenalMessage extends Vue {
   scrollToBottom() {
     setTimeout(() => {
       this.messageDom.scrollTop=this.messageDom.scrollHeight;
-    }, 350);
+    }, 20);
   }
 
   getPagingMessage() {
@@ -143,7 +143,7 @@ export default class GenalMessage extends Vue {
     if(this.messageDom && this.messageCount != 15) {
       setTimeout(()=>{
         this.messageDom.scrollTop = 65;
-      },60)
+      },20)
     }
   }
 
@@ -220,8 +220,11 @@ export default class GenalMessage extends Vue {
         margin-top: 4px;
       }
       .message-frame-image {
+        max-height: 300px;
+        max-width: 500px;
         img {
-          max-width: 600px;
+          max-width: 485px;
+          max-height: 285px;
         }
       }
     }
