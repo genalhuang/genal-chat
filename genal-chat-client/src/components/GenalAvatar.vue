@@ -51,6 +51,7 @@ export default class GenalAvatar extends Vue {
   .avatar-img {
     cursor: pointer;
     width: 35px;
+    height: 35px;
   }
   .avatar-name {
     margin-left: 5px;

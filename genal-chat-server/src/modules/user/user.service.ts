@@ -136,15 +136,14 @@ export class UserService {
   async setUserAvatar(user: User, file) {
     try {
       let random = Date.now() + '&'
-      let writeSream = createWriteStream(join('public/static', random + file.originalname))
+      let writeSream = createWriteStream(join('public/avatar', random + file.originalname))
       writeSream.write(file.buffer)
       let newUser = await this.userRepository.findOne({userId: user.userId})
-      newUser.avatar = `static/${random}${file.originalname}`
+      newUser.avatar = `avatar/${random}${file.originalname}`
       await this.userRepository.save(newUser)
       return {code: 0, msg: '修改头像成功', data: newUser}
     } catch (e) {
       return {code: 2, msg: '修改头像失败', data: e}
     }
   }
-
 }

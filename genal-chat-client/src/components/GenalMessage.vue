@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class='message-frame' ref='messages'>
-      <a-icon type="sync" spin class='message-frame-loading' v-if='showLoading()' />
+      <a-icon type="sync" spin class='message-frame-loading' v-if='showLoading' />
       <template v-for="(item,index) in pagingMessage">
         <div
           class='message-frame-message'
@@ -20,7 +20,7 @@
           <div>
             <div class='message-frame-text' v-html='item.content' v-if='item.messageType === "text"'></div>
             <div class='message-frame-image'  v-if='item.messageType === "image"'>
-              <img :src="'static/' + item.content" alt="">
+              <img :src="'static/' + item.content" ref='images' alt="">
             </div>
           </div>
         </div>
@@ -56,13 +56,30 @@ export default class GenalMessage extends Vue {
   @chatModule.Getter('userGather') userGather: FriendGather;
 
   message: string = '';
-  loading: boolean = true
-  messageDom: Element = document.getElementsByClassName('message-frame')[0];
+  loading: boolean = false
+  messageDom: Element;
   pagingMessage: Array<GroupMessage | FriendMessage> = [];
   messageCount: number = 15;
   imageFile: File | null;
 
-  created() {
+  mounted() {
+    this.initPaste()
+  }
+
+  @Watch('activeRoom', {deep: true})
+  changeActiveRoom() {
+    this.messageCount = 15
+    this.loading = true;
+    this.getPagingMessage()
+    this.initScroll()
+    this.scrollToBottom()
+  }
+
+
+  /**
+   * 监听图片粘贴事件
+   */
+  initPaste() {
     document.addEventListener('paste', (event) => {
     var items = event.clipboardData && event.clipboardData.items;
     var file = null;
@@ -80,26 +97,38 @@ export default class GenalMessage extends Vue {
     });
   }
 
-  @Watch('activeRoom', {deep: true})
-  changeActiveRoom() {
-    this.messageCount = 15
-    this.loading = true;
-    this.getPagingMessage()
-    setTimeout(()=>{
-      this.scrollToBottom()
-    }, 0)
+  initScroll() {
+    let that = this;
+    setTimeout(() => {
+      this.messageDom = this.$refs.messages as Element;
+      this.messageDom.addEventListener("scroll", this.handleScroll);
+      // @ts-ignore
+      this.$refs.images.map((image: Element) => {
+        image.addEventListener('load', function() {
+          if(that.messageCount === 15) {
+            that.scrollToBottom()
+          }
+        })
+      })
+    },0)
   }
 
   handleScroll(event:any) {
     if (event.currentTarget) {
       if(this.messageDom.scrollTop === 0) {
+        this.loading = true
         setTimeout(()=>{
-          this.loading = true
           this.messageCount += 15;
           this.getPagingMessage()
         },60)
       }
     }
+  }
+
+  scrollToBottom() {
+    setTimeout(() => {
+      this.messageDom.scrollTop=this.messageDom.scrollHeight;
+    }, 350);
   }
 
   getPagingMessage() {
@@ -118,20 +147,12 @@ export default class GenalMessage extends Vue {
     }
   }
 
-  showLoading() {
+  get showLoading() {
     return this.loading && this.activeRoom.messages
   }
 
-  scrollToBottom() {
-    this.messageDom = document.getElementsByClassName('message-frame')[0];
-    this.messageDom.addEventListener("scroll", this.handleScroll);
-    this.messageDom.scrollTop=this.messageDom.scrollHeight;
-  }
-
   sendMessage() {
-    setTimeout(() => {
-      this.scrollToBottom()
-    }, 350);
+    this.scrollToBottom()
     if(!this.message.trim()) {
       this.$message.error('不能发送空消息!')
       return
@@ -150,7 +171,6 @@ export default class GenalMessage extends Vue {
   }
 
   addEmoji(emoji: string) {
-    console.log(emoji)
     this.message += emoji
     // @ts-ignore
     this.$refs.input.focus()
@@ -180,7 +200,7 @@ export default class GenalMessage extends Vue {
       }
     }
     .message-frame-loading {
-      margin: 15px auto;
+      margin: 10px auto;
       font-size: 20px;
       padding: 8px;
       border-radius: 50%;
@@ -189,7 +209,7 @@ export default class GenalMessage extends Vue {
     .message-frame-message {
       text-align: left;
       margin: 10px 20px;
-      .message-frame-text {
+      .message-frame-text, .message-frame-image {
         display: inline-block;
         background-color: rgb(0, 200, 255, .4);
         padding: 6px;
@@ -199,7 +219,7 @@ export default class GenalMessage extends Vue {
         word-break: break-all;
         margin-top: 4px;
       }
-      .message-frame-image{
+      .message-frame-image {
         img {
           max-width: 600px;
         }
