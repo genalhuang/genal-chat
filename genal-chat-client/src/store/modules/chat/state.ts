@@ -1,9 +1,9 @@
 export interface ChatState {
   socket: any;
-  activeRoom: Group & Friend | null,
-  groupGather: GroupGather,
-  userGather: FriendGather,
-  friendGather: FriendGather
+  activeRoom: (Group & Friend) | null;
+  groupGather: GroupGather;
+  userGather: FriendGather;
+  friendGather: FriendGather;
 }
 
 const chatState: ChatState = {
@@ -11,7 +11,7 @@ const chatState: ChatState = {
   activeRoom: null,
   groupGather: {},
   userGather: {},
-  friendGather: {}
-}
+  friendGather: {},
+};
 
 export default chatState;

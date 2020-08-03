@@ -5,5 +5,5 @@ import fetch from '@/api/fetch';
  * @param string
  */
 export function getGroupsByName(groupName: string) {
-  return fetch.get(`/group/findByName?groupName=${groupName}`)
+  return fetch.get(`/group/findByName?groupName=${groupName}`);
 }

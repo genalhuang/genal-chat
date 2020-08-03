@@ -24,7 +24,7 @@ export const getUser = () => {
  */
 export const patchUser = (params: User) => {
   return fetch.patch(`/user/${params.userId}`, {
-    ...params
+    ...params,
   });
 };
 
@@ -33,7 +33,7 @@ export const patchUser = (params: User) => {
  * @param string
  */
 export function getUsersByName(username: string) {
-  return fetch.get(`/user/findByName?username=${username}`)
+  return fetch.get(`/user/findByName?username=${username}`);
 }
 
 /**
@@ -41,11 +41,9 @@ export function getUsersByName(username: string) {
  * @param file
  */
 export function setUserAvatar(params: any) {
-  return fetch.post(`/user/avatar`,
-    params
-  , {
+  return fetch.post(`/user/avatar`, params, {
     headers: {
-      'Content-Type': 'multipart/form-data'
+      'Content-Type': 'multipart/form-data',
     },
   });
 }
