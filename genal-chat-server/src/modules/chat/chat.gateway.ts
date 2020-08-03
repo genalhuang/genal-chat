@@ -119,15 +119,15 @@ export class ChatGateway {
 
   // 发送群消息
   @SubscribeMessage('groupMessage')
-  async sendGroupMessage(@MessageBody() data: GroupMessage) {
+  async sendGroupMessage(@MessageBody() data: GroupMessageDto) {
     try {
       let isUserInGroup = await this.groupUserRepository.findOne({userId: data.userId, groupId: data.groupId})
       if(!isUserInGroup) {
         return this.server.to(data.userId).emit('groupMessage',{code:1, msg:'群消息发送错误', data: ''})
       } 
       if(data.groupId) {
-        let randomName = Date.now() + '&' + data.userId + '.png'
         if(data.messageType === 'image') {
+          let randomName = `${Date.now()}$${data.userId}$${data.width}$${data.height}`
           let writeSream = createWriteStream(join('public/static', randomName))
           writeSream.write(data.content)
           data.content = randomName;
@@ -187,13 +187,11 @@ export class ChatGateway {
   async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: UserMap) {
     try {
       if(data.friendId && data.userId) {
-        const isUserInFriend = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId })
+        const relation = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId })
         let roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
-        if(isUserInFriend) {
+        if(relation) {
           client.join(roomId)
-          this.server.to(data.userId).emit('joinFriendSocket',{code:0, msg:'进入私聊socket成功', data: isUserInFriend })
-          this.server.to(data.friendId).emit('joinFriendSocket',{code:0, msg:'进入私聊socket成功', data: isUserInFriend})
-          return 
+          this.server.to(data.userId).emit('joinFriendSocket',{ code:0, msg:'进入私聊socket成功', data: relation })
         } 
       }
     } catch(e) {
@@ -203,11 +201,16 @@ export class ChatGateway {
 
   // 发送私聊消息
   @SubscribeMessage('friendMessage')
-  async friendMessage(@ConnectedSocket() client: Socket, @MessageBody() data: FriendMessage) {
+  async friendMessage(@ConnectedSocket() client: Socket, @MessageBody() data: FriendMessageDto) {
     try {
       if(data.userId && data.friendId) {
         let roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId
-        client.join(roomId)
+        if(data.messageType === 'image') {
+          let randomName = `${Date.now()}$${roomId}$${data.width}$${data.height}`
+          let writeSream = createWriteStream(join('public/static', randomName))
+          writeSream.write(data.content)
+          data.content = randomName;
+        }
         await this.friendMessageRepository.save(data)
         this.server.to(roomId).emit('friendMessage', {code: 0, msg:'', data})
       }
