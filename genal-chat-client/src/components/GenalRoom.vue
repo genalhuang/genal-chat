@@ -46,7 +46,7 @@
             <div
               class='image'
               v-if='chat.messages[chat.messages.length-1].messageType === "image"'
-            >图片</div>
+            >[图片]</div>
           </div>
         </div>
       </div>

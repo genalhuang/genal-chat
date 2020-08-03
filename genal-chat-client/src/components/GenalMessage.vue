@@ -20,7 +20,7 @@
           <div>
             <div class='message-frame-text' v-html='item.content' v-if='item.messageType === "text"'></div>
             <div class='message-frame-image'  v-if='item.messageType === "image"'>
-              <img :src="'static/' + item.content" ref='images' alt="">
+              <img :src="'static/' + item.content" ref='images' alt="" :style="getImageStyle(item.content)">
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default class GenalMessage extends Vue {
   imageFile: File | null;
 
   mounted() {
-    this.initPaste()
+    this.initPaste();
   }
 
   @Watch('activeRoom', {deep: true})
@@ -81,8 +81,9 @@ export default class GenalMessage extends Vue {
    */
   initPaste() {
     document.addEventListener('paste', (event) => {
-    var items = event.clipboardData && event.clipboardData.items;
-    var file = null;
+      let items = event.clipboardData && event.clipboardData.items;
+      let url = window.URL || window.webkitURL;
+      let file = null;
       if (items && items.length) {
         // 检索剪切板items
         for (var i = 0; i < items.length; i++) {
@@ -92,8 +93,21 @@ export default class GenalMessage extends Vue {
           }
         }
       }
-      this.imageFile = file;
-      this.$emit('sendMessage', {type: 'group', message: this.imageFile, messageType: 'image'})
+      if(file) {
+        this.imageFile = file;
+        let image = new Image()
+        image.src = url.createObjectURL(this.imageFile);
+        image.onload = ()=> {
+          let imageSize: ImageSize = this.getImageSize({width: image.width, height: image.height})
+          this.$emit('sendMessage', {
+            type: this.activeRoom.groupId ? 'group': 'friend', 
+            message: this.imageFile, 
+            width: imageSize.width,
+            height: imageSize.height,
+            messageType: 'image'
+          })
+        }
+      }
     });
   }
 
@@ -102,14 +116,6 @@ export default class GenalMessage extends Vue {
     setTimeout(() => {
       this.messageDom = this.$refs.messages as Element;
       this.messageDom.addEventListener("scroll", this.handleScroll);
-      // @ts-ignore
-      this.$refs.images.map((image: Element) => {
-        image.addEventListener('load', function() {
-          if(that.messageCount === 15) {
-            that.scrollToBottom()
-          }
-        })
-      })
     },0)
   }
 
@@ -125,12 +131,18 @@ export default class GenalMessage extends Vue {
     }
   }
 
+  /**
+   * 滚动到底部
+   */
   scrollToBottom() {
     setTimeout(() => {
       this.messageDom.scrollTop=this.messageDom.scrollHeight;
-    }, 20);
+    }, 0);
   }
 
+  /**
+   * 获取分页消息
+   */
   getPagingMessage() {
     if(!this.activeRoom.messages) {
       return this.pagingMessage = []
@@ -170,10 +182,42 @@ export default class GenalMessage extends Vue {
     return this.$moment(time).format('HH:mm:ss')
   }
 
+  /**
+   * 添加emoji到input
+   */
   addEmoji(emoji: string) {
     this.message += emoji
     // @ts-ignore
     this.$refs.input.focus()
+  }
+
+  /**
+   * 根据图片url设置消息框宽高
+   */
+  getImageStyle(src: string) {
+    let arr = src.split('$')
+    return {
+      width: `${arr[2]}px`,
+      height: `${arr[3]}px`
+    }
+  }
+
+  /**
+   * 计算图片的比例
+   */
+  getImageSize(data: ImageSize) {
+    let {width, height} = data;
+    if(width > 350 || height > 350) {
+      if(width > height) {
+        height = 350 * (height / width)
+      } else {
+        width = 350 * (width / height)
+      }
+    }
+    return {
+      width,
+      height
+    }
   }
 }
 </script>
@@ -220,11 +264,11 @@ export default class GenalMessage extends Vue {
         margin-top: 4px;
       }
       .message-frame-image {
-        max-height: 300px;
-        max-width: 500px;
+        max-height: 350px;
+        max-width: 350px;
         img {
-          max-width: 485px;
-          max-height: 285px;
+          max-width: 335px;
+          max-height: 335px;
         }
       }
     }

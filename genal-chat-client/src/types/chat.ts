@@ -69,6 +69,8 @@ interface FriendMessage {
 interface SendMessage {
   type: string;
   message: string;
+  width?: number;
+  height?: number;
   messageType: MessageType;
 }
 
@@ -78,7 +80,11 @@ enum MessageType {
   image = 'image'
 }
 
-
+// 图片尺寸
+interface ImageSize {
+  width: number;
+  height: number;
+}
 
 
 
