@@ -15,6 +15,8 @@ import { Group, GroupMap } from '../group/entity/group.entity'
 import { GroupMessage } from '../group/entity/groupMessage.entity'
 import { UserMap } from '../friend/entity/friend.entity'
 import { FriendMessage } from '../friend/entity/friendMessage.entity'
+import { createWriteStream } from 'fs';
+import { join } from 'path'
 
 @WebSocketGateway()
 export class ChatGateway {
@@ -124,10 +126,17 @@ export class ChatGateway {
         return this.server.to(data.userId).emit('groupMessage',{code:1, msg:'群消息发送错误', data: ''})
       } 
       if(data.groupId) {
+        let randomName = Date.now() + '&' + data.userId + '.png'
+        if(data.messageType === 'image') {
+          let writeSream = createWriteStream(join('public/static', randomName))
+          writeSream.write(data.content)
+          data.content = randomName;
+        }
         this.groupMessageRepository.save(data);
         this.server.to(data.groupId).emit('groupMessage', {code: 0, msg:'', data: data})
       }
     } catch(e) {
+      console.log(e)
       return this.server.to(data.userId).emit('groupMessage',{ code: 2, msg:'群消息发送错误', data: e })
     }
   }
