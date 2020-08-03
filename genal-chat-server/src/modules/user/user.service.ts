@@ -28,16 +28,16 @@ export class UserService {
       data = await this.userRepository.find()
       return {code: 0, msg:'获取所有用户成功', data}
     } catch(e) {
-      return { code: 1 , msg:'获取用户失败', data: e}
+      return { code: 1 , message:'获取用户失败', data: e}
     }
   }
 
   async postUsers(userIds: string) {
     try {
       if(userIds) {
-        let userIdArr = userIds.split(',');
-        let userArr = []
-        for(let userId of userIdArr) {
+        const userIdArr = userIds.split(',');
+        const userArr = []
+        for(const userId of userIdArr) {
           if(userId) {
             const data = await this.userRepository.findOne({
               select: ['userId','username','avatar','role','tag','createTime'],
@@ -46,7 +46,7 @@ export class UserService {
             userArr.push(data)
           }
         }
-        return {code: 0, msg:'获取用户信息1成功', data: userArr}
+        return {code: 0, msg:'获取用户信息成功', data: userArr}
       }
       return {code: 1, msg:'获取用户信息失败', data: null}
     } catch(e) {
@@ -56,12 +56,12 @@ export class UserService {
 
   async addUser(user: User) {
     try {
-      let isHave = await this.userRepository.find({username: user.username})
+      const isHave = await this.userRepository.find({username: user.username})
       if(isHave.length) {
         return {code: 1, msg:'用户名重复', data: '' }
       }
 
-      let index = Math.round(Math.random()*19 +1)
+      const index = Math.round(Math.random()*19 +1)
       user.avatar = `avatar/avatar(${index}).png`
 
       const data = await this.userRepository.save(user)
@@ -70,12 +70,10 @@ export class UserService {
         userId: data.userId,
         groupId: 'public',
       })
-      
       return {code: 0, msg:'注册成功', data }
     } catch(e) {
       return {code: 1, msg:'注册失败', data: e}
     }
-
   }
 
   async updateUser(userId: string, user: User) {
@@ -88,7 +86,7 @@ export class UserService {
           return {code: 1, msg:'用户名重复', data: ''}
         }
         await this.userRepository.update(oldUser,user)
-        let newUser = await this.userRepository.findOne({userId: userId})
+        const newUser = await this.userRepository.findOne({userId: userId})
         return {code: 0, msg:'更新用户信息成功', data: newUser}
       } 
       return {code: 1, msg:'密码错误', data: ''}
@@ -121,7 +119,7 @@ export class UserService {
   async getUsersByName(username: string) {
     try {
       if(username) {
-        let users = await this.userRepository.find({
+        const users = await this.userRepository.find({
           select: ['userId','username','avatar','role','tag','createTime'],
           where:{username: Like(`%${username}%`)}
         })
@@ -135,10 +133,10 @@ export class UserService {
 
   async setUserAvatar(user: User, file) {
     try {
-      let random = Date.now() + '&'
-      let writeSream = createWriteStream(join('public/avatar', random + file.originalname))
+      const random = Date.now() + '&'
+      const writeSream = createWriteStream(join('public/avatar', random + file.originalname))
       writeSream.write(file.buffer)
-      let newUser = await this.userRepository.findOne({userId: user.userId})
+      const newUser = await this.userRepository.findOne({userId: user.userId})
       newUser.avatar = `avatar/${random}${file.originalname}`
       await this.userRepository.save(newUser)
       return {code: 0, msg: '修改头像成功', data: newUser}

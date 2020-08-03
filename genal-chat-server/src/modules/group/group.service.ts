@@ -19,9 +19,9 @@ export class GroupService {
   async postGroups(groupIds: string) {
     try {
       if(groupIds) {
-        let groupIdArr = groupIds.split(',');
-        let groupArr = []
-        for(let groupId of groupIdArr) {
+        const groupIdArr = groupIds.split(',');
+        const groupArr = []
+        for(const groupId of groupIdArr) {
           const data = await this.groupRepository.findOne({groupId: groupId})
           groupArr.push(data)
         }
@@ -75,7 +75,7 @@ export class GroupService {
   async getGroupsByName(groupName: string) {
     try {
       if(groupName) {
-        let groups = await this.groupRepository.find({groupName: Like(`%${groupName}%`)})
+        const groups = await this.groupRepository.find({groupName: Like(`%${groupName}%`)})
         return {code: 0, msg:'获取群信息成功', data: groups}
       }
       return {code: 1, msg:'请输入群昵称', data: null}

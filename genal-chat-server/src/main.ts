@@ -3,6 +3,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { logger } from './common/middleware/logger.middleware';
+import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 import { join } from 'path'
 
 async function bootstrap() {
@@ -14,6 +15,9 @@ async function bootstrap() {
   
   // 全局过滤器
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // 配置全局拦截器
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   // 配置静态资源
   app.useStaticAssets(join(__dirname, '../public', '/'), {

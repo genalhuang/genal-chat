@@ -8,9 +8,6 @@ import { GroupModule } from './modules/group/group.module'
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      // type: 'mongodb',
-      // host: 'localhost',
-      // port: 27017,
       type: 'mysql',
       port: 3306,
       username: 'root',
