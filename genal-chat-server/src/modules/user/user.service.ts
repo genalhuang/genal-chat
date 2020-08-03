@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, Connection, getRepository, Like } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { GroupMap } from '../group/entity/group.entity';
@@ -29,7 +29,7 @@ export class UserService {
       data = await this.userRepository.find()
       return { msg:'获取所有用户成功', data }
     } catch(e) {
-      return { code: RCode.ERROR , message:'获取用户失败', data: e }
+      return { code: RCode.ERROR , msg:'获取用户失败', data: e }
     }
   }
 
