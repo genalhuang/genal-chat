@@ -33,7 +33,7 @@
             记住密码
           </a-checkbox>
           <a-button type="primary" html-type="submit" class="login-form-button">
-            登录
+            {{ buttonText }}
           </a-button>
         </a-form-item>
       </a-form>
@@ -50,6 +50,7 @@ export default class GenalJoin extends Vue {
   @Prop() showModal: boolean;
   form: any = null;
   type: string = 'login';
+  buttonText: string = '登录';
 
   created() {
     this.form = this.$form.createForm(this, { name: 'normal_login' });
@@ -57,6 +58,11 @@ export default class GenalJoin extends Vue {
 
   changeType(type: string) {
     this.type = type;
+    if (this.type === 'login') {
+      this.buttonText = '登录';
+    } else if (this.type === 'regist') {
+      this.buttonText = '注册';
+    }
   }
 
   handleSubmit(e: any) {
