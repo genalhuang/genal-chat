@@ -18,8 +18,10 @@
         >
           <genal-avatar :data='item'></genal-avatar>
           <div>
-            <div class='message-frame-text' v-html='item.content' v-if='item.messageType === "string"'></div>
-            <div class='message-frame-text'  v-if='item.messageType === "image"'>图片</div>
+            <div class='message-frame-text' v-html='item.content' v-if='item.messageType === "text"'></div>
+            <div class='message-frame-image'  v-if='item.messageType === "image"'>
+              <img :src="'static/' + item.content" alt="">
+            </div>
           </div>
         </div>
       </template>
@@ -58,6 +60,25 @@ export default class GenalMessage extends Vue {
   messageDom: Element = document.getElementsByClassName('message-frame')[0];
   pagingMessage: Array<GroupMessage | FriendMessage> = [];
   messageCount: number = 15;
+  imageFile: File | null;
+
+  created() {
+    document.addEventListener('paste', (event) => {
+    var items = event.clipboardData && event.clipboardData.items;
+    var file = null;
+      if (items && items.length) {
+        // 检索剪切板items
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type.indexOf('image') !== -1) {
+            file = items[i].getAsFile();
+            break;
+          }
+        }
+      }
+      this.imageFile = file;
+      this.$emit('sendMessage', {type: 'group', message: this.imageFile, messageType: 'image'})
+    });
+  }
 
   @Watch('activeRoom', {deep: true})
   changeActiveRoom() {
@@ -116,9 +137,9 @@ export default class GenalMessage extends Vue {
       return
     }
     if(this.activeRoom.groupId) {
-      this.$emit('sendMessage', {type: 'group', message: this.message, messageType: 'image'})
+      this.$emit('sendMessage', {type: 'group', message: this.message, messageType: 'text'})
     } else {
-      this.$emit('sendMessage', {type: 'friend', message: this.message, messageType: 'string'})
+      this.$emit('sendMessage', {type: 'friend', message: this.message, messageType: 'text'})
     }
     this.message = ''
   }
@@ -171,12 +192,17 @@ export default class GenalMessage extends Vue {
       .message-frame-text {
         display: inline-block;
         background-color: rgb(0, 200, 255, .4);
-        padding: 5px 10px;
+        padding: 6px;
         font-size: 16px;
         border-radius: 5px;
         text-align: left;
         word-break: break-all;
         margin-top: 4px;
+      }
+      .message-frame-image{
+        img {
+          max-width: 600px;
+        }
       }
     }
   }
