@@ -15,6 +15,7 @@ import { UserMap } from '../friend/entity/friend.entity';
 import { FriendMessage } from '../friend/entity/friendMessage.entity';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
+import { RCode } from 'src/common/constant/rcode';
 
 @WebSocketGateway()
 export class ChatGateway {
@@ -63,15 +64,15 @@ export class ChatGateway {
     try {
       const isHaveGroup = await this.groupRepository.findOne({groupName: data.groupName})
       if(isHaveGroup) {
-        this.server.to(data.userId).emit('addGroup', {code:1, msg: '该群名字已存在', data: isHaveGroup})
+        this.server.to(data.userId).emit('addGroup', {code:RCode.FAIL, msg: '该群名字已存在', data: isHaveGroup})
         return;
       }
       data = await this.groupRepository.save(data)
       client.join(data.groupId)
       const group = await this.groupUserRepository.save(data)
-      this.server.to(group.groupId).emit('addGroup', {code: 0, msg: `成功创建群${data.groupName}`, data:group})
+      this.server.to(group.groupId).emit('addGroup', {code: RCode.OK, msg: `成功创建群${data.groupName}`, data:group})
     } catch(e) {
-      this.server.to(data.userId).emit('addGroup', {code: 2, msg:'创建群失败', data:e})
+      this.server.to(data.userId).emit('addGroup', {code: RCode.ERROR, msg:'创建群失败', data:e})
     }
   }
 
@@ -89,12 +90,12 @@ export class ChatGateway {
         }
         client.join(group.groupId)
         const res = { group: group, user: user}
-        this.server.to(group.groupId).emit('joinGroup', {code: 0, msg:`${user.username}加入群${group.groupName}`, data: res})
+        this.server.to(group.groupId).emit('joinGroup', {code: RCode.OK, msg:`${user.username}加入群${group.groupName}`, data: res})
       } else {
-        this.server.to(data.userId).emit('joinGroup', {code:1, msg:'该群不存在', data:''})
+        this.server.to(data.userId).emit('joinGroup', {code: RCode.FAIL, msg:'该群不存在', data:''})
       }
     } catch(e) {
-      this.server.to(data.userId).emit('joinGroup', {code:2, msg:'进群失败', data:e})
+      this.server.to(data.userId).emit('joinGroup', {code: RCode.ERROR, msg:'进群失败', data:e})
     }
   }
 
@@ -107,12 +108,12 @@ export class ChatGateway {
       if(group) {
         client.join(group.groupId)
         const res = { group: group, user: user}
-        this.server.to(group.groupId).emit('joinGroupSocket', {code: 0, msg:`${user.username}加入群${group.groupName}`, data: res})
+        this.server.to(group.groupId).emit('joinGroupSocket', {code: RCode.OK, msg:`${user.username}加入群${group.groupName}`, data: res})
       } else {
-        this.server.to(data.userId).emit('joinGroupSocket', {code:1, msg:'该群不存在', data:''})
+        this.server.to(data.userId).emit('joinGroupSocket', {code:RCode.FAIL, msg:'该群不存在', data:''})
       }
     } catch(e) {
-      this.server.to(data.userId).emit('joinGroupSocket', {code:2, msg:'进群失败', data:e})
+      this.server.to(data.userId).emit('joinGroupSocket', {code:RCode.ERROR, msg:'进群失败', data:e})
     }
   }
 
@@ -122,7 +123,7 @@ export class ChatGateway {
     try {
       const isUserInGroup = await this.groupUserRepository.findOne({userId: data.userId, groupId: data.groupId})
       if(!isUserInGroup) {
-        this.server.to(data.userId).emit('groupMessage',{code:1, msg:'群消息发送错误', data: ''})
+        this.server.to(data.userId).emit('groupMessage',{code:RCode.FAIL, msg:'群消息发送错误', data: ''})
         return;
       } 
       if(data.groupId) {
@@ -133,10 +134,10 @@ export class ChatGateway {
           data.content = randomName;
         }
         this.groupMessageRepository.save(data);
-        this.server.to(data.groupId).emit('groupMessage', {code: 0, msg:'', data: data})
+        this.server.to(data.groupId).emit('groupMessage', {code: RCode.OK, msg:'', data: data})
       }
     } catch(e) {
-      this.server.to(data.userId).emit('groupMessage',{ code: 2, msg:'群消息发送错误', data: e })
+      this.server.to(data.userId).emit('groupMessage',{ code: RCode.ERROR, msg:'群消息发送错误', data: e })
     }
   }
 
@@ -146,7 +147,7 @@ export class ChatGateway {
     try {
       if(data.friendId && data.userId) {
         if(data.userId === data.friendId) {
-          this.server.to(data.userId).emit('addFriend', {code: 1, msg:'不能添加自己为好友', data: ''})
+          this.server.to(data.userId).emit('addFriend', {code: RCode.FAIL, msg:'不能添加自己为好友', data: ''})
           return;
         }
         const isHave1 = await this.friendRepository.find({userId: data.userId, friendId: data.friendId})
@@ -154,14 +155,14 @@ export class ChatGateway {
         const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
 
         if(isHave1.length || isHave2.length) {
-          this.server.emit('addFriend', {code: 1, msg:'已经有该好友', data: data})
+          this.server.emit('addFriend', {code: RCode.FAIL, msg:'已经有该好友', data: data})
           return;
         }
 
         const friend = await this.userRepository.findOne({userId: data.friendId});
         const user = await this.userRepository.findOne({userId: data.userId})
         if(!friend) {
-          this.server.to(data.userId).emit('addFriend', {code: 1, msg:'该好友不存在', data: ''})
+          this.server.to(data.userId).emit('addFriend', {code: RCode.FAIL, msg:'该好友不存在', data: ''})
           return;
         }
 
@@ -174,11 +175,11 @@ export class ChatGateway {
         delete friendData._id
         await this.friendRepository.save(friendData)
         client.join(roomId)
-        this.server.to(data.userId).emit('addFriend', {code: 0, msg:'添加好友成功', data: friend })
-        this.server.to(data.friendId).emit('addFriend', {code: 0, msg:'你正被一个人添加', data: user })
+        this.server.to(data.userId).emit('addFriend', {code: RCode.OK, msg:'添加好友成功', data: friend })
+        this.server.to(data.friendId).emit('addFriend', {code: RCode.OK, msg:'你正被一个人添加', data: user })
       }
     } catch(e) {
-      this.server.to(data.userId).emit('addFriend', {code: 0, msg:'添加好友失败', data: e })
+      this.server.to(data.userId).emit('addFriend', {code: RCode.ERROR, msg:'添加好友失败', data: e })
     }
   }
 
@@ -191,11 +192,11 @@ export class ChatGateway {
         const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
         if(relation) {
           client.join(roomId)
-          this.server.to(data.userId).emit('joinFriendSocket',{ code:0, msg:'进入私聊socket成功', data: relation })
+          this.server.to(data.userId).emit('joinFriendSocket',{ code:RCode.OK, msg:'进入私聊socket成功', data: relation })
         } 
       }
     } catch(e) {
-      this.server.to(data.userId).emit('joinFriendSocket',{ code:1, msg:'进入私聊socket失败', data: e })
+      this.server.to(data.userId).emit('joinFriendSocket',{ code:RCode.ERROR, msg:'进入私聊socket失败', data: e })
     }
   }
 
@@ -212,10 +213,10 @@ export class ChatGateway {
           data.content = randomName;
         }
         await this.friendMessageRepository.save(data)
-        this.server.to(roomId).emit('friendMessage', {code: 0, msg:'', data})
+        this.server.to(roomId).emit('friendMessage', {code: RCode.OK, msg:'', data})
       }
     } catch(e) {
-      this.server.to(data.userId).emit('friendMessage', {code: 2, msg:'消息发送失败', data})
+      this.server.to(data.userId).emit('friendMessage', {code: RCode.ERROR, msg:'消息发送失败', data})
     }
   }
 
@@ -282,13 +283,13 @@ export class ChatGateway {
       await Promise.all(groupUserPromise)
       userArr = userArr.concat(friendArr)
 
-      this.server.to(user.userId).emit('chatData', {code:0, msg: '获取聊天数据成功', data: {
+      this.server.to(user.userId).emit('chatData', {code:RCode.OK, msg: '获取聊天数据成功', data: {
         groupData: groupArr,
         friendData: friendArr,
         userData: userArr
       }})
     } catch (e) {
-      this.server.to(user.userId).emit('chatData', {code:1, msg:'获取聊天数据失败', data: {
+      this.server.to(user.userId).emit('chatData', {code:RCode.ERROR, msg:'获取聊天数据失败', data: {
         groupData: [],
         friendData: [],
         userData: []

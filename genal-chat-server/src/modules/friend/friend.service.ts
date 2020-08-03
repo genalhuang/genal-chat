@@ -3,6 +3,7 @@ import { Repository, Connection, getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserMap } from './entity/friend.entity';
 import { FriendMessage } from './entity/friendMessage.entity';
+import { RCode } from 'src/common/constant/rcode';
 
 @Injectable()
 export class FriendService {
@@ -16,13 +17,12 @@ export class FriendService {
   async getFriends(userId: string) {
     try {
       if(userId) {
-        return {code: 0, msg:'获取用户好友成功', data: await this.friendRepository.find({userId: userId}) }
+        return { msg:'获取用户好友成功', data: await this.friendRepository.find({userId: userId}) }
       } else {
-        return {code: 0, msg:'获取用户好友失败', data: await this.friendRepository.find()}
+        return { msg:'获取用户好友失败', data: await this.friendRepository.find() }
       }
-
     } catch(e) {
-      return { code:1, msg:'获取用户好友失败', data:e}
+      return { code:RCode.ERROR, msg:'获取用户好友失败', data:e }
     }
   }
 
@@ -36,10 +36,9 @@ export class FriendService {
       data.sort((a:any,b:any)=>{
         return a.time - b.time;
       })
-
-      return {code: 0, data: data}
+      return { data: data }
     } catch(e) {
-      return { code:1, msg:'获取好友消息失败', data:e}
+      return { code:RCode.ERROR, msg:'获取好友消息失败', data:e }
     }
   }
 }
