@@ -19,6 +19,7 @@
     "sass": "^1.26.9",
     "sass-loader": "^8.0.2",
     "socket.io-client": "^2.3.0",
+    "v-viewer": "^1.5.1",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.2",

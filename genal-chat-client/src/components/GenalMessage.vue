@@ -16,7 +16,9 @@
           <div>
             <div class="message-frame-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
             <div class="message-frame-image" v-if="item.messageType === 'image'">
-              <img :src="'static/' + item.content" alt="" :style="getImageStyle(item.content)" />
+              <viewer>
+                <img :src="'static/' + item.content" alt="" :style="getImageStyle(item.content)" />
+              </viewer>
             </div>
           </div>
         </div>
@@ -33,7 +35,7 @@
         style="color:#000;"
         @pressEnter="sendMessage"
       />
-      <img class="message-input-button" @click="sendMessage" src="~@/assets/send.png" alt="" />
+      <img class="message-input-button" @click.self="sendMessage" src="~@/assets/send.png" alt="" />
     </div>
   </div>
 </template>
@@ -275,6 +277,7 @@ export default class GenalMessage extends Vue {
         max-height: 350px;
         max-width: 350px;
         img {
+          cursor: pointer;
           max-width: 335px;
           max-height: 335px;
         }
