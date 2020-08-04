@@ -14,9 +14,9 @@
         <div class="message-frame-message" :key="item.userId + index" :class="{ 'text-right': item.userId === user.userId }">
           <genal-avatar :data="item"></genal-avatar>
           <div>
-            <div class="message-frame-text" v-html="item.content" v-if="item.messageType === 'text'"></div>
+            <div class="message-frame-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
             <div class="message-frame-image" v-if="item.messageType === 'image'">
-              <img :src="'static/' + item.content" ref="images" alt="" :style="getImageStyle(item.content)" />
+              <img :src="'static/' + item.content" alt="" :style="getImageStyle(item.content)" />
             </div>
           </div>
         </div>
@@ -46,6 +46,7 @@ import { Message } from 'ant-design-vue/types/message';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
 const appModule = namespace('app');
+import { parseText } from '@/utils/common';
 
 @Component({
   components: {
@@ -221,6 +222,10 @@ export default class GenalMessage extends Vue {
       width,
       height,
     };
+  }
+
+  _parseText(text: string) {
+    return parseText(text);
   }
 }
 </script>

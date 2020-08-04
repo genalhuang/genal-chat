@@ -13,7 +13,7 @@
           <div class="room-card-new" v-if="chat.messages">
             <div
               class="text"
-              v-html="chat.messages[chat.messages.length - 1].content"
+              v-html="_parseText(chat.messages[chat.messages.length - 1].content)"
               v-if="chat.messages[chat.messages.length - 1].messageType === 'text'"
             ></div>
             <div class="image" v-if="chat.messages[chat.messages.length - 1].messageType === 'image'">[图片]</div>
@@ -32,7 +32,7 @@
           <div class="room-card-new" v-if="chat.messages">
             <div
               class="text"
-              v-html="chat.messages[chat.messages.length - 1].content"
+              v-html="_parseText(chat.messages[chat.messages.length - 1].content)"
               v-if="chat.messages[chat.messages.length - 1].messageType === 'text'"
             ></div>
             <div class="image" v-if="chat.messages[chat.messages.length - 1].messageType === 'image'">[图片]</div>
@@ -47,6 +47,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
+import { parseText } from '@/utils/common';
 
 @Component
 export default class GenalRoom extends Vue {
@@ -85,6 +86,10 @@ export default class GenalRoom extends Vue {
 
   changeActiveRoom(activeRoom: User & Group) {
     this.$emit('setActiveRoom', activeRoom);
+  }
+
+  _parseText(text: string) {
+    return parseText(text);
   }
 }
 </script>
