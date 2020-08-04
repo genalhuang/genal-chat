@@ -10,8 +10,8 @@
     </div>
     <div class="message-frame" ref="messages">
       <a-icon type="sync" spin class="message-frame-loading" v-if="showLoading" />
-      <template v-for="(item, index) in pagingMessage">
-        <div class="message-frame-message" :key="item.userId + index" :class="{ 'text-right': item.userId === user.userId }">
+      <template v-for="item in pagingMessage">
+        <div class="message-frame-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
           <genal-avatar :data="item"></genal-avatar>
           <div>
             <div class="message-frame-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
@@ -42,7 +42,6 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue';
 import GenalEmoji from './GenalEmoji.vue';
-import { Message } from 'ant-design-vue/types/message';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
 const appModule = namespace('app');
