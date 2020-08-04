@@ -264,13 +264,14 @@ export default class GenalMessage extends Vue {
       margin: 10px 20px;
       .message-frame-text,
       .message-frame-image {
+        max-width: 600px;
         display: inline-block;
         background-color: rgb(0, 200, 255, 0.4);
         padding: 6px;
         font-size: 16px;
         border-radius: 5px;
         text-align: left;
-        word-break: break-all;
+        word-break: break-word;
         margin-top: 4px;
       }
       .message-frame-image {
