@@ -25,17 +25,30 @@
       </template>
     </div>
     <div class="message-input">
-      <genal-emoji @addEmoji="addEmoji"></genal-emoji>
-      <a-input
-        type="text"
-        placeholder="好好说话..."
-        v-model="message"
-        ref="input"
-        autoFocus
-        style="color:#000;"
-        @pressEnter="sendMessage"
-      />
-      <img class="message-input-button" @click.self="sendMessage" src="~@/assets/send.png" alt="" />
+      <a-popover placement="topLeft" trigger="focus" class='message-popver'>
+        <template slot="content">
+          <div class='message-tool' @click='focusInput'>
+            <div class='message-tool-item'>
+              <genal-emoji @addEmoji="addEmoji"></genal-emoji>
+            </div>
+            <div class='message-tool-item'>
+              <a-upload style="margin-left: 17px;" :show-upload-list="false" :before-upload="beforeImgUpload">
+                <img src="~@/assets/photo.png" alt="">
+              </a-upload>
+            </div>
+          </div>
+        </template>
+        <a-input
+          type="text"
+          placeholder="好好说话..."
+          v-model="message"
+          ref="input"
+          autoFocus
+          style="color:#000;"
+          @pressEnter="sendMessage"
+        />
+      </a-popover>
+      <img class="message-input-button" @click="sendMessage" src="~@/assets/send.png" alt="" />
     </div>
   </div>
 </template>
@@ -66,7 +79,6 @@ export default class GenalMessage extends Vue {
   messageDom: Element;
   pagingMessage: Array<GroupMessage | FriendMessage> = [];
   messageCount: number = 15;
-  imageFile: File | null;
 
   mounted() {
     this.initPaste();
@@ -99,19 +111,7 @@ export default class GenalMessage extends Vue {
         }
       }
       if (file) {
-        this.imageFile = file;
-        let image = new Image();
-        image.src = url.createObjectURL(this.imageFile);
-        image.onload = () => {
-          let imageSize: ImageSize = this.getImageSize({ width: image.width, height: image.height });
-          this.$emit('sendMessage', {
-            type: this.activeRoom.groupId ? 'group' : 'friend',
-            message: this.imageFile,
-            width: imageSize.width,
-            height: imageSize.height,
-            messageType: 'image',
-          });
-        };
+        this.handleImgUpload(file)
       }
     });
   }
@@ -192,6 +192,10 @@ export default class GenalMessage extends Vue {
    */
   addEmoji(emoji: string) {
     this.message += emoji;
+    this.focusInput()
+  }
+
+  focusInput() {
     // @ts-ignore
     this.$refs.input.focus();
   }
@@ -225,8 +229,49 @@ export default class GenalMessage extends Vue {
     };
   }
 
+  /**
+   * 文本转译/校验
+   * @params text
+   */
   _parseText(text: string) {
     return parseText(text);
+  }
+
+  /**
+   * 点击图片校验
+   * @params file
+   */
+  beforeImgUpload(file: File) {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/gif';
+    if (!isJpgOrPng) {
+      return this.$message.error('请选择jpeg/jpg/png/gif格式的图片!');
+    }
+    const isLt1M = file.size / 1024 / 1024 < 0.5;
+    if (!isLt1M) {
+      return this.$message.error('图片必须小于500K!');
+    }
+    this.handleImgUpload(file)
+    return false;
+  }
+
+  /**
+   * 图片消息发送
+   * @params file
+   */
+  async handleImgUpload(imageFile: File) {
+    let image = new Image();
+    let url = window.URL || window.webkitURL;
+    image.src = url.createObjectURL(imageFile);
+    image.onload = () => {
+      let imageSize: ImageSize = this.getImageSize({ width: image.width, height: image.height });
+      this.$emit('sendMessage', {
+        type: this.activeRoom.groupId ? 'group' : 'friend',
+        message: imageFile,
+        width: imageSize.width,
+        height: imageSize.height,
+        messageType: 'image',
+      });
+    };
   }
 }
 </script>
@@ -307,6 +352,27 @@ export default class GenalMessage extends Vue {
 
 //输入框样式
 .ant-input {
-  padding: 0 50px 0 45px;
+  padding: 0 50px 0 10px;
 }
+
+.message-tool {
+  display: flex;
+  width: 60px;
+  height: 20px;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: none!important;
+  .message-tool-item {
+    width: 40px;
+    font-size: 16px;
+    text-align: center;
+    padding: 0;
+    img {
+      width: 20px;
+      margin: -3px 4px 0 0;
+      cursor: pointer;
+    }
+  }
+}
+
 </style>

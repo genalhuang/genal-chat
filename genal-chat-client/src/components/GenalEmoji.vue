@@ -110,18 +110,7 @@ export default class GenalMessage extends Vue {
 </script>
 <style lang="scss" scoped>
 .genal-emoji {
-  height: 40px;
-  width: 45px;
-  position: absolute;
   cursor: pointer;
-  left: 0px;
-  top: 0px;
-  z-index: 999;
-  line-height: 40px;
-  transition: 0.2s all linear;
-  &:hover {
-    background-color: rgb(135, 206, 235, 0.2);
-  }
 }
 .emoji-content {
   color: #000;
