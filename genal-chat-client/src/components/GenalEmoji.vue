@@ -1,101 +1,94 @@
 <template>
-  <a-popover title="Emoji">
-    <template slot="content">
-      <div class="emoji-content">
-        <div>
-          <span @click="addEmoji('😃')">😃</span>
-          <span @click="addEmoji('😁')">😁</span>
-          <span @click="addEmoji('😂')">😂</span>
-          <span @click="addEmoji('😄')">😄</span>
-          <span @click="addEmoji('😅')">😅</span>
-          <span @click="addEmoji('😆')">😆</span>
-          <span @click="addEmoji('😇')">😇</span>
-          <span @click="addEmoji('😈')">😈</span>
-          <span @click="addEmoji('😉')">😉</span>
-        </div>
-        <div>
-          <span @click="addEmoji('😊')">😊</span>
-          <span @click="addEmoji('😋')">😋</span>
-          <span @click="addEmoji('😌')">😌</span>
-          <span @click="addEmoji('😍')">😍</span>
-          <span @click="addEmoji('😎')">😎</span>
-          <span @click="addEmoji('😏')">😏</span>
-          <span @click="addEmoji('😐')">😐</span>
-          <span @click="addEmoji('😒')">😒</span>
-          <span @click="addEmoji('😓')">😓</span>
-        </div>
-        <div>
-          <span @click="addEmoji('😔')">😔</span>
-          <span @click="addEmoji('😕')">😕</span>
-          <span @click="addEmoji('😖')">😖</span>
-          <span @click="addEmoji('😗')">😗</span>
-          <span @click="addEmoji('😘')">😘</span>
-          <span @click="addEmoji('😙')">😙</span>
-          <span @click="addEmoji('😚')">😚</span>
-          <span @click="addEmoji('😜')">😜</span>
-          <span @click="addEmoji('😝')">😝</span>
-        </div>
-        <div>
-          <span @click="addEmoji('😞')">😞</span>
-          <span @click="addEmoji('😟')">😟</span>
-          <span @click="addEmoji('😠')">😠</span>
-          <span @click="addEmoji('😡')">😡</span>
-          <span @click="addEmoji('😢')">😢</span>
-          <span @click="addEmoji('😣')">😣</span>
-          <span @click="addEmoji('😤')">😤</span>
-          <span @click="addEmoji('😥')">😥</span>
-          <span @click="addEmoji('😦')">😦</span>
-        </div>
-        <div>
-          <span @click="addEmoji('😨')">😨</span>
-          <span @click="addEmoji('😩')">😩</span>
-          <span @click="addEmoji('😪')">😪</span>
-          <span @click="addEmoji('😫')">😫</span>
-          <span @click="addEmoji('😬')">😬</span>
-          <span @click="addEmoji('😭')">😭</span>
-          <span @click="addEmoji('😮')">😮</span>
-          <span @click="addEmoji('😯')">😯</span>
-          <span @click="addEmoji('😰')">😰</span>
-        </div>
-        <div>
-          <span @click="addEmoji('😲')">😲</span>
-          <span @click="addEmoji('😳')">😳</span>
-          <span @click="addEmoji('😴')">😴</span>
-          <span @click="addEmoji('😵')">😵</span>
-          <span @click="addEmoji('🧐')">🧐</span>
-          <span @click="addEmoji('😷')">😷</span>
-          <span @click="addEmoji('🙁')">🙁</span>
-          <span @click="addEmoji('🙂')">🙂</span>
-          <span @click="addEmoji('🙃')">🙃</span>
-        </div>
-        <div>
-          <span @click="addEmoji('🤐')">🤐</span>
-          <span @click="addEmoji('🤑')">🤑</span>
-          <span @click="addEmoji('🤒')">🤒</span>
-          <span @click="addEmoji('🤓')">🤓</span>
-          <span @click="addEmoji('🤔')">🤔</span>
-          <span @click="addEmoji('🤕')">🤕</span>
-          <span @click="addEmoji('🤠')">🤠</span>
-          <span @click="addEmoji('🤡')">🤡</span>
-          <span @click="addEmoji('🤢')">🤢</span>
-        </div>
-        <div>
-          <span @click="addEmoji('🤤')">🤤</span>
-          <span @click="addEmoji('🤥')">🤥</span>
-          <span @click="addEmoji('🤧')">🤧</span>
-          <span @click="addEmoji('🤨')">🤨</span>
-          <span @click="addEmoji('🤩')">🤩</span>
-          <span @click="addEmoji('🤪')">🤪</span>
-          <span @click="addEmoji('🤫')">🤫</span>
-          <span @click="addEmoji('🤬')">🤬</span>
-          <span @click="addEmoji('🤭')">🤭</span>
-        </div>
-      </div>
-    </template>
-    <div trigger="click" class="genal-emoji">
-      😃
+  <div class="emoji-content">
+    <div>
+      <span @click="addEmoji('😃')">😃</span>
+      <span @click="addEmoji('😁')">😁</span>
+      <span @click="addEmoji('😂')">😂</span>
+      <span @click="addEmoji('😄')">😄</span>
+      <span @click="addEmoji('😅')">😅</span>
+      <span @click="addEmoji('😆')">😆</span>
+      <span @click="addEmoji('😇')">😇</span>
+      <span @click="addEmoji('😈')">😈</span>
+      <span @click="addEmoji('😉')">😉</span>
     </div>
-  </a-popover>
+    <div>
+      <span @click="addEmoji('😊')">😊</span>
+      <span @click="addEmoji('😋')">😋</span>
+      <span @click="addEmoji('😌')">😌</span>
+      <span @click="addEmoji('😍')">😍</span>
+      <span @click="addEmoji('😎')">😎</span>
+      <span @click="addEmoji('😏')">😏</span>
+      <span @click="addEmoji('😐')">😐</span>
+      <span @click="addEmoji('😒')">😒</span>
+      <span @click="addEmoji('😓')">😓</span>
+    </div>
+    <div>
+      <span @click="addEmoji('😔')">😔</span>
+      <span @click="addEmoji('😕')">😕</span>
+      <span @click="addEmoji('😖')">😖</span>
+      <span @click="addEmoji('😗')">😗</span>
+      <span @click="addEmoji('😘')">😘</span>
+      <span @click="addEmoji('😙')">😙</span>
+      <span @click="addEmoji('😚')">😚</span>
+      <span @click="addEmoji('😜')">😜</span>
+      <span @click="addEmoji('😝')">😝</span>
+    </div>
+    <div>
+      <span @click="addEmoji('😞')">😞</span>
+      <span @click="addEmoji('😟')">😟</span>
+      <span @click="addEmoji('😠')">😠</span>
+      <span @click="addEmoji('😡')">😡</span>
+      <span @click="addEmoji('😢')">😢</span>
+      <span @click="addEmoji('😣')">😣</span>
+      <span @click="addEmoji('😤')">😤</span>
+      <span @click="addEmoji('😥')">😥</span>
+      <span @click="addEmoji('😦')">😦</span>
+    </div>
+    <div>
+      <span @click="addEmoji('😨')">😨</span>
+      <span @click="addEmoji('😩')">😩</span>
+      <span @click="addEmoji('😪')">😪</span>
+      <span @click="addEmoji('😫')">😫</span>
+      <span @click="addEmoji('😬')">😬</span>
+      <span @click="addEmoji('😭')">😭</span>
+      <span @click="addEmoji('😮')">😮</span>
+      <span @click="addEmoji('😯')">😯</span>
+      <span @click="addEmoji('😰')">😰</span>
+    </div>
+    <div>
+      <span @click="addEmoji('😲')">😲</span>
+      <span @click="addEmoji('😳')">😳</span>
+      <span @click="addEmoji('😴')">😴</span>
+      <span @click="addEmoji('😵')">😵</span>
+      <span @click="addEmoji('🧐')">🧐</span>
+      <span @click="addEmoji('😷')">😷</span>
+      <span @click="addEmoji('🙁')">🙁</span>
+      <span @click="addEmoji('🙂')">🙂</span>
+      <span @click="addEmoji('🙃')">🙃</span>
+    </div>
+    <div>
+      <span @click="addEmoji('🤐')">🤐</span>
+      <span @click="addEmoji('🤑')">🤑</span>
+      <span @click="addEmoji('🤒')">🤒</span>
+      <span @click="addEmoji('🤓')">🤓</span>
+      <span @click="addEmoji('🤔')">🤔</span>
+      <span @click="addEmoji('🤕')">🤕</span>
+      <span @click="addEmoji('🤠')">🤠</span>
+      <span @click="addEmoji('🤡')">🤡</span>
+      <span @click="addEmoji('🤢')">🤢</span>
+    </div>
+    <div>
+      <span @click="addEmoji('🤤')">🤤</span>
+      <span @click="addEmoji('🤥')">🤥</span>
+      <span @click="addEmoji('🤧')">🤧</span>
+      <span @click="addEmoji('🤨')">🤨</span>
+      <span @click="addEmoji('🤩')">🤩</span>
+      <span @click="addEmoji('🤪')">🤪</span>
+      <span @click="addEmoji('🤫')">🤫</span>
+      <span @click="addEmoji('🤬')">🤬</span>
+      <span @click="addEmoji('🤭')">🤭</span>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -109,12 +102,18 @@ export default class GenalMessage extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-.genal-emoji {
-  cursor: pointer;
-}
 .emoji-content {
   color: #000;
   font-size: 20px;
+  width: 250px;
+  // 禁止文字被鼠标选中
+  moz-user-select: -moz-none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   span {
     cursor: pointer;
   }

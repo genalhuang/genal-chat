@@ -62,7 +62,7 @@ export default class GenalTool extends Vue {
   username: string = '';
   uploading: boolean = false;
   avatar: any = '';
-  
+
   @Watch('user')
   userChange() {
     this.username = this.user.username;
@@ -105,7 +105,6 @@ export default class GenalTool extends Vue {
       this.username = '';
     }
   }
-
 
   beforeUpload(file: any) {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/gif';

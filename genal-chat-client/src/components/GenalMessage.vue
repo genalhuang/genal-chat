@@ -25,29 +25,33 @@
       </template>
     </div>
     <div class="message-input">
-      <a-popover placement="topLeft" trigger="focus" class='message-popver'>
+      <a-popover placement="topLeft" trigger="hover" class="message-popver">
         <template slot="content">
-          <div class='message-tool' @click='focusInput'>
-            <div class='message-tool-item'>
+          <a-tabs default-active-key="1" size="small">
+            <a-tab-pane key="1" tab="Emoji">
               <genal-emoji @addEmoji="addEmoji"></genal-emoji>
-            </div>
-            <div class='message-tool-item'>
-              <a-upload style="margin-left: 17px;" :show-upload-list="false" :before-upload="beforeImgUpload">
-                <img src="~@/assets/photo.png" alt="">
-              </a-upload>
-            </div>
-          </div>
+            </a-tab-pane>
+            <a-tab-pane key="2" tab="工具">
+              <div class="message-tool-item">
+                <a-upload :show-upload-list="false" :before-upload="beforeImgUpload">
+                  <img src="~@/assets/photo.png" class="message-tool-item-img" alt="" />
+                  <div class="message-tool-item-text">图片</div>
+                </a-upload>
+              </div>
+            </a-tab-pane>
+          </a-tabs>
         </template>
-        <a-input
-          type="text"
-          placeholder="好好说话..."
-          v-model="message"
-          ref="input"
-          autoFocus
-          style="color:#000;"
-          @pressEnter="sendMessage"
-        />
+        <a-icon class="messagte-tool-icon" type="appstore" />
       </a-popover>
+      <a-input
+        type="text"
+        placeholder="好好说话..."
+        v-model="message"
+        ref="input"
+        autoFocus
+        style="color:#000;"
+        @pressEnter="sendMessage"
+      />
       <img class="message-input-button" @click="sendMessage" src="~@/assets/send.png" alt="" />
     </div>
   </div>
@@ -111,7 +115,7 @@ export default class GenalMessage extends Vue {
         }
       }
       if (file) {
-        this.handleImgUpload(file)
+        this.handleImgUpload(file);
       }
     });
   }
@@ -174,6 +178,10 @@ export default class GenalMessage extends Vue {
       this.$message.error('不能发送空消息!');
       return;
     }
+    if (this.message.length > 500) {
+      this.$message.error('消息太长!');
+      return;
+    }
     if (this.activeRoom.groupId) {
       this.$emit('sendMessage', { type: 'group', message: this.message, messageType: 'text' });
     } else {
@@ -192,7 +200,7 @@ export default class GenalMessage extends Vue {
    */
   addEmoji(emoji: string) {
     this.message += emoji;
-    this.focusInput()
+    this.focusInput();
   }
 
   focusInput() {
@@ -250,7 +258,7 @@ export default class GenalMessage extends Vue {
     if (!isLt1M) {
       return this.$message.error('图片必须小于500K!');
     }
-    this.handleImgUpload(file)
+    this.handleImgUpload(file);
     return false;
   }
 
@@ -352,27 +360,34 @@ export default class GenalMessage extends Vue {
 
 //输入框样式
 .ant-input {
-  padding: 0 50px 0 10px;
+  padding: 0 50px 0 50px;
 }
 
-.message-tool {
-  display: flex;
-  width: 60px;
-  height: 20px;
-  justify-content: space-evenly;
-  align-items: center;
-  padding: none!important;
-  .message-tool-item {
+.messagte-tool-icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 45px;
+  font-size: 22px;
+  cursor: pointer;
+  background-color: skyblue;
+  z-index: 99;
+}
+.message-tool-item {
+  width: 0px;
+  height: 240px;
+  cursor: pointer;
+  .message-tool-item-img {
     width: 40px;
-    font-size: 16px;
+  }
+  .message-tool-item-text {
     text-align: center;
-    padding: 0;
-    img {
-      width: 20px;
-      margin: -3px 4px 0 0;
-      cursor: pointer;
+    &:hover {
+      color: skyblue;
     }
   }
 }
-
 </style>
