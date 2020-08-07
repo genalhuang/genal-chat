@@ -1,71 +1,55 @@
 <template>
   <div class="tool">
-    <div class='tool-avatar'>
-      <div class='tool-avatar-img' @click='showModal("showUserModal")'>
-        <img v-if='user' :src="user.avatar" alt="">
-        <img v-else src="@/assets/avatar.jpeg" alt="">
+    <div class="tool-avatar">
+      <div class="tool-avatar-img" @click="showModal('showUserModal')">
+        <img v-if="user" :src="user.avatar" alt="" />
+        <img v-else src="@/assets/avatar.jpeg" alt="" />
       </div>
-      <div class='tool-avatar-name'>{{user.username}}</div>
+      <div class="tool-avatar-name">{{ user.username }}</div>
     </div>
     <div class="tool-set">
-      <a-icon class='tool-set-icon' type="setting" @click='showModal("showSetModal")'/>
+      <a-icon class="tool-set-icon" type="setting" @click="showModal('showSetModal')" />
     </div>
-    <a href="https://github.com/genaller" target="_blank" class='github'><a-icon type="github" /></a>
-    <a-modal
-      title="用户信息"
-      :visible="showUserModal"
-      footer=""
-      @cancel='handleCancel("showUserModal")'
-    >
-      <div class='tool-user'>
-        <a-avatar :src='user.avatar' class='tool-user-img' :size='100'></a-avatar>
-        <div class='tool-user-avatar'>
-          <div class='tool-user-avatar-title'>更改头像</div>
-          <a-upload style='margin-left: 17px;' :show-upload-list="false" :before-upload="beforeUpload">
-            <div class='upload'> 
-              <a-icon type="upload" style='margin-right: 4px;'/> 
-              {{avatar.name ? avatar.name : '请选择' }} 
+    <a href="https://github.com/genaller" target="_blank" class="github"><a-icon type="github"/></a>
+    <a-modal title="用户信息" :visible="showUserModal" footer="" @cancel="handleCancel('showUserModal')">
+      <div class="tool-user">
+        <a-avatar :src="user.avatar" class="tool-user-img" :size="100"></a-avatar>
+        <div class="tool-user-avatar">
+          <div class="tool-user-avatar-title">更改头像</div>
+          <a-upload style="margin-left: 17px;" :show-upload-list="false" :before-upload="beforeUpload">
+            <div class="upload">
+              <a-icon type="upload" style="margin-right: 4px;" />
+              {{ avatar.name ? avatar.name : '请选择' }}
             </div>
           </a-upload>
-          <a-button
-            class='button'
-            type="primary"
-            :disabled='!avatar'
-            :loading="uploading"
-            @click="handleUpload"
-          >
+          <a-button class="button" type="primary" :disabled="!avatar" :loading="uploading" @click="handleUpload">
             {{ uploading ? '更换中' : '确定' }}
           </a-button>
         </div>
 
-        <div class='tool-user-name'>
-          <div class='tool-user-name-title'>更改用户名</div>
-          <a-input v-model='username' placeholder="请输入用户名"></a-input>
-          <a-button type="primary" @click='changeUser'>确认</a-button>
+        <div class="tool-user-name">
+          <div class="tool-user-name-title">更改用户名</div>
+          <a-input v-model="username" placeholder="请输入用户名"></a-input>
+          <a-button type="primary" @click="changeUser">确认</a-button>
         </div>
       </div>
     </a-modal>
 
-    <a-modal
-      title="设置"
-      :visible="showSetModal"
-      footer=""
-      @cancel='handleCancel("showSetModal")'
-    >
-      <div>退出 <a-icon class='tool-set-icon' type="poweroff" @click="logout"/></div>
+    <a-modal title="设置" :visible="showSetModal" footer="" @cancel="handleCancel('showSetModal')">
+      <div>退出 <a-icon class="tool-set-icon" type="poweroff" @click="logout" /></div>
     </a-modal>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
-import { setUserAvatar } from '@/api/apis'
-import {mapMutations, mapGetters} from "vuex";
-import { namespace } from 'vuex-class'
-import * as apis  from '@/api/apis'
+import { setUserAvatar } from '@/api/apis';
+import { mapMutations, mapGetters } from 'vuex';
+import { namespace } from 'vuex-class';
+import * as apis from '@/api/apis';
 import { processReturn } from '@/utils/common.ts';
-const appModule = namespace('app')
-const chatModule = namespace('chat')
+const appModule = namespace('app');
+const chatModule = namespace('chat');
 
 @Component
 export default class GenalTool extends Vue {
@@ -75,23 +59,25 @@ export default class GenalTool extends Vue {
 
   showSetModal: boolean = false;
   showUserModal: boolean = false;
-  username: string = ''
+  username: string = '';
+  uploading: boolean = false;
+  avatar: any = '';
 
-  @Watch('user') 
+  @Watch('user')
   userChange() {
-    this.username = this.user.username
+    this.username = this.user.username;
   }
 
   created() {
-    this.username = this.user.username
+    this.username = this.user.username;
   }
 
   logout() {
-    this.$emit('logout')
+    this.$emit('logout');
   }
 
   showModal(modalType: 'showSetModal' | 'showUserModal') {
-    this.username = this.user.username
+    this.username = this.user.username;
     this[modalType] = true;
   }
 
@@ -100,28 +86,26 @@ export default class GenalTool extends Vue {
   }
 
   async changeUser() {
-    if(!this.username.length) {
-      return this.$message.error('不能输入空昵称!')
+    if (!this.username.length) {
+      return this.$message.error('不能输入空昵称!');
     }
-    let user: User = JSON.parse(JSON.stringify(this.user))
-    user.username = this.username
-    let res = await apis.patchUser(user)
-    let data = processReturn(res)
-    if(data) {
-      console.log(data)
-      this.setUser(data)
+    let user: User = JSON.parse(JSON.stringify(this.user));
+    user.username = this.username;
+    let res = await apis.patchUser(user);
+    let data = processReturn(res);
+    if (data) {
+      console.log(data);
+      this.setUser(data);
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
         groupId: 'public',
-        userId: data.userId
-      })
+        userId: data.userId,
+      });
     } else {
-      this.username = ''
+      this.username = '';
     }
   }
 
-  uploading:boolean = false;
-  avatar: any = ''
   beforeUpload(file: any) {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/gif';
     if (!isJpgOrPng) {
@@ -131,7 +115,7 @@ export default class GenalTool extends Vue {
     if (!isLt1M) {
       return this.$message.error('图片必须小于500K!');
     }
-    this.avatar = file
+    this.avatar = file;
     return false;
   }
   async handleUpload() {
@@ -140,15 +124,15 @@ export default class GenalTool extends Vue {
     formData.append('avatar', this.avatar);
     formData.append('userId', this.user.userId);
 
-    let data = processReturn(await setUserAvatar(formData))
-    if(data) {
-      this.setUser(data)
+    let data = processReturn(await setUserAvatar(formData));
+    if (data) {
+      this.setUser(data);
       this.uploading = false;
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
         groupId: 'public',
-        userId: data.userId
-      })
+        userId: data.userId,
+      });
     }
   }
 }
@@ -173,9 +157,9 @@ export default class GenalTool extends Vue {
       }
     }
     .tool-avatar-name {
-      overflow:hidden; //超出的文本隐藏
-      text-overflow:ellipsis; //溢出用省略号显示
-      white-space:nowrap; //溢出不换行
+      overflow: hidden; //超出的文本隐藏
+      text-overflow: ellipsis; //溢出用省略号显示
+      white-space: nowrap; //溢出不换行
       margin-top: 2px;
     }
   }
@@ -198,7 +182,7 @@ export default class GenalTool extends Vue {
   text-align: center;
   font-size: 16px;
   .tool-user-img {
-    margin-bottom: 24px;  
+    margin-bottom: 24px;
   }
   .tool-user-avatar {
     display: flex;
@@ -213,9 +197,9 @@ export default class GenalTool extends Vue {
       padding: 0 5px;
       max-width: 300px;
       overflow: hidden;
-      text-overflow:ellipsis;
+      text-overflow: ellipsis;
       border-radius: 5px;
-      transition: .1s all linear;
+      transition: 0.1s all linear;
       &:hover {
         border: 1px solid skyblue;
         color: skyblue;

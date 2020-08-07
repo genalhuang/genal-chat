@@ -14,6 +14,9 @@ export class FriendMessage {
   @Column()
   content: string;
 
+  @Column()
+  messageType: string;
+
   @Column('double')
   time: number;
 }

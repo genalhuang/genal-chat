@@ -1,3 +1,6 @@
+@import './coverAntd.scss';
+
+// 滚动条样式
 ::-webkit-scrollbar-track-piece {
   background-color: #fff;
 }
@@ -23,13 +26,18 @@
   background-color: #878987;
 }
 
-* {
-  // 禁止文字被鼠标选中
-  moz-user-select: -moz-none;
-  -moz-user-select: none;
-  -o-user-select:none;
-  -khtml-user-select:none;
-  -webkit-user-select:none;
-  -ms-user-select:none;
-  user-select:none;
+// * {
+//   // 禁止文字被鼠标选中
+//   moz-user-select: -moz-none;
+//   -moz-user-select: none;
+//   -o-user-select:none;
+//   -khtml-user-select:none;
+//   -webkit-user-select:none;
+//   -ms-user-select:none;
+//   user-select:none;
+// }
+
+.viewer-button {
+  background-color: rgba(231, 226, 226, 0.6)!important;
 }
+

@@ -13,6 +13,9 @@ interface GroupMessageDto {
   userId: string;
   groupId: string;
   content: string;
+  width?: number;
+  height?: number;
+  messageType: string;
   time: number;
 }
 
@@ -32,5 +35,13 @@ interface FriendMessageDto {
   userId: string;
   friendId: string;
   content: string;
+  width?: number;
+  height?: number;
+  messageType: string;
   time: number;
+}
+
+enum MessageType {
+  string = 'string',
+  image = 'image'
 }

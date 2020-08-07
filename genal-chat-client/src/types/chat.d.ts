@@ -1,12 +1,12 @@
-declare module 'socket.io-client'
+declare module 'socket.io-client';
 
 interface ChatGather {
-  [x:string]: Group | Friend
+  [x: string]: Group | Friend;
 }
 
 // 所有群的群信息
 interface GroupGather {
-  [groupId:string]: Group
+  [groupId: string]: Group;
 }
 
 // 群组
@@ -30,12 +30,13 @@ interface GroupMessage {
   userId: string;
   groupId: string;
   content: string;
+  messageType: MessageType;
   time: number;
 }
 
 // 所有好友的好友信息
 interface FriendGather {
-  [userId:string]: Friend
+  [userId: string]: Friend;
 }
 
 // 好友
@@ -60,6 +61,7 @@ interface FriendMessage {
   userId: string;
   friendId: string;
   content: string;
+  messageType: MessageType;
   time: number;
   type?: string;
 }
@@ -67,11 +69,19 @@ interface FriendMessage {
 interface SendMessage {
   type: string;
   message: string;
+  width?: number;
+  height?: number;
+  messageType: MessageType;
 }
 
+// 消息类型
+declare enum MessageType {
+  string = 'string',
+  image = 'image',
+}
 
-
-
-
-
-
+// 图片尺寸
+interface ImageSize {
+  width: number;
+  height: number;
+}

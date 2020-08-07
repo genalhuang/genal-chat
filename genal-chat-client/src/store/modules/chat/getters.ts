@@ -1,23 +1,23 @@
 import { GetterTree } from 'vuex';
 import { ChatState } from './state';
-import { RootState } from '../../index'
+import { RootState } from '../../index';
 
 const getters: GetterTree<ChatState, RootState> = {
   socket(state) {
-    return state.socket
+    return state.socket;
   },
   activeRoom(state) {
-    return state.activeRoom
+    return state.activeRoom;
   },
   groupGather(state) {
-    return state.groupGather
+    return state.groupGather;
   },
   friendGather(state) {
-    return state.friendGather
+    return state.friendGather;
   },
   userGather(state) {
-    return state.userGather
+    return state.userGather;
   },
-} 
+};
 
 export default getters;

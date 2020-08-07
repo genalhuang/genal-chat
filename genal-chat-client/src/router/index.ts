@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import GenalChat from '@/views/GenalChat.vue';
-import Test from '@/views/test.vue'
+import Test from '@/views/test.vue';
 
 Vue.use(VueRouter);
 

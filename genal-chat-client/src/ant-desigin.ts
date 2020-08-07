@@ -1,24 +1,24 @@
 import Vue from 'vue';
 import 'ant-design-vue/dist/antd.less';
-import { 
-  message, 
-  Button, 
-  Input, 
-  Modal, 
-  Form, 
-  Checkbox, 
-  Icon, 
-  Tabs, 
+import {
+  message,
+  Button,
+  Input,
+  Modal,
+  Form,
+  Checkbox,
+  Icon,
+  Tabs,
   Popover,
   Dropdown,
   Menu,
   Avatar,
   Card,
   Select,
-  Upload
+  Upload,
 } from 'ant-design-vue';
 
-Vue.use(Avatar)
+Vue.use(Avatar);
 Vue.use(Button);
 Vue.use(Input);
 Vue.use(Modal);

@@ -8,8 +8,8 @@ const appState: AppState = {
     username: '',
     password: '',
     avatar: '',
-    createTime: 0
-  }
-}
+    createTime: 0,
+  },
+};
 
 export default appState;

@@ -1,25 +1,26 @@
 <template>
-  <div class="avatar" v-if='userGather[data.userId]'>
-    <a-popover v-if='data.userId != user.userId && !friendGather[data.userId]'>
-      <div slot="content" class='avatar-card'>
-        <a-avatar :size='60' :src="userGather[data.userId].avatar" />
-        <div>{{userGather[data.userId].username}}</div>
-        <a-button @click='addFriend(data.userId)' type='primary'>添加好友</a-button>
+  <div class="avatar" v-if="userGather[data.userId]">
+    <a-popover v-if="data.userId != user.userId && !friendGather[data.userId]">
+      <div slot="content" class="avatar-card">
+        <a-avatar :size="60" :src="userGather[data.userId].avatar" />
+        <div>{{ userGather[data.userId].username }}</div>
+        <a-button @click="addFriend(data.userId)" type="primary">添加好友</a-button>
       </div>
-      <a-avatar class='avatar-img' :src="userGather[data.userId].avatar" />
+      <a-avatar class="avatar-img" :src="userGather[data.userId].avatar" />
     </a-popover>
-    <a-avatar v-else class='avatar-img' :src="userGather[data.userId].avatar" />
-    <span class='avatar-name'>{{ userGather[data.userId].username }}</span>
-    <span class='avatar-time'>{{ formatTime(data.time) }}</span>
+    <a-avatar v-else class="avatar-img" :src="userGather[data.userId].avatar" />
+    <span class="avatar-name">{{ userGather[data.userId].username }}</span>
+    <span class="avatar-time">{{ _formatTime(data.time) }}</span>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as api from '@/api/apis';
-import { namespace } from 'vuex-class'
-const chatModule = namespace('chat')
-const appModule = namespace('app')
+import { namespace } from 'vuex-class';
+const chatModule = namespace('chat');
+const appModule = namespace('app');
+import { formatTime } from '@/utils/common';
 
 @Component
 export default class GenalAvatar extends Vue {
@@ -33,13 +34,12 @@ export default class GenalAvatar extends Vue {
     this.socket.emit('addFriend', {
       userId: this.user.userId,
       friendId: friendId,
-      createTime: new Date().valueOf()
-    })
+      createTime: new Date().valueOf(),
+    });
   }
 
-  formatTime(time: number) {
-    //@ts-ignore
-    return this.$moment(time).format('HH:mm:ss')
+  _formatTime(time: number) {
+    return formatTime(time)
   }
 }
 </script>
@@ -51,6 +51,7 @@ export default class GenalAvatar extends Vue {
   .avatar-img {
     cursor: pointer;
     width: 35px;
+    height: 35px;
   }
   .avatar-name {
     margin-left: 5px;
