@@ -6,9 +6,9 @@
 [![author](https://img.shields.io/github/stars/genaller/genal-chat?style=social)](https://github.com/genaller/genal-chat)
 > [码云](https://gitee.com/edison_dec/genal-chat)
 ### 项目简介
-  😛 闲暇时间想做一个聊天室复盘一下这些年学习到的技术，于是在2020年6月24号就开始了Genal聊天室的开发之旅。<br>
+  😛 闲暇时间想做一个聊天室来巩固前端技能，于是在2020年6月24号就开始了Genal聊天室的开发之旅。<br>
   😈 项目采用全typescript开发，这是为了以后的功能迭代打基础。当然，我本身也是很喜欢typescript的。<br>
-  🧐 目前聊天室的功能还处于比较简单的阶段，今后会陆续开发很多酷炫的功能，喜欢的朋友给个star鼓励一下我吧!<br>
+  🧐 目前聊天室已经具备完整的聊天功能，今后会陆续开发更多酷炫的功能，喜欢的朋友给个star鼓励一下我吧!<br>
 
 ### 项目界面
 ![](./assets/genal.gif)
@@ -52,7 +52,7 @@ npm run start:dev
 ```
 
 ### 系统迭代记录
-#### v1.0.0
+> v1.0.0
 ##### 功能
 - 新增用户
 - 新增群
@@ -60,7 +60,7 @@ npm run start:dev
 ##### v1.0.0界面
 ![](./assets/1.png)
 
-#### v2.0.0
+> v2.0.0
 ##### 功能
 - 群聊/私聊
 - 创建群/加入群聊/模糊搜索群
@@ -71,7 +71,7 @@ npm run start:dev
 ##### v2.0.0界面
 ![](./assets/2.png)
 
-#### v3.0.0
+> v3.0.0
 ##### 功能
 - 群聊/私聊
 - 创建群/加入群聊/模糊搜索群
