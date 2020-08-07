@@ -36,7 +36,7 @@ const actions: ActionTree<ChatState, RootState> = {
       socket.on('addGroup', (res: any) => {
         console.log('on addGroup', res);
         if (res.code) {
-          return Vue.prototype.$message.error(res.message);
+          return Vue.prototype.$message.error(res.msg);
         }
         commit(SET_GROUP_GATHER, res.data);
       });
@@ -44,7 +44,7 @@ const actions: ActionTree<ChatState, RootState> = {
       socket.on('joinGroup', async (res: any) => {
         console.log('on joinGroup', res);
         if (res.code) {
-          return Vue.prototype.$message.error(res.message);
+          return Vue.prototype.$message.error(res.msg);
         }
         let newUser = res.data.user;
         let group = res.data.group;
@@ -65,7 +65,7 @@ const actions: ActionTree<ChatState, RootState> = {
       socket.on('joinGroupSocket', (res: any) => {
         console.log('on joinGroupSocket', res);
         if (res.code) {
-          return Vue.prototype.$message.error(res.message);
+          return Vue.prototype.$message.error(res.msg);
         }
         let newUser: Friend = res.data.user;
         let group: Group = res.data.group;
@@ -106,7 +106,7 @@ const actions: ActionTree<ChatState, RootState> = {
             friendId: res.data.userId,
           });
         } else {
-          Vue.prototype.$message.error(res.message);
+          Vue.prototype.$message.error(res.msg);
         }
       });
 
@@ -130,7 +130,7 @@ const actions: ActionTree<ChatState, RootState> = {
 
       socket.on('chatData', (res: any) => {
         if (res.code) {
-          return Vue.prototype.$message.error(res.message);
+          return Vue.prototype.$message.error(res.msg);
         }
         dispatch('handleChatData', res.data);
       });
