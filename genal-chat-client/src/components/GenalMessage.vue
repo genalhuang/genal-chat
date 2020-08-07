@@ -91,9 +91,9 @@ export default class GenalMessage extends Vue {
 
   @Watch('activeRoom', { deep: true })
   changeActiveRoom() {
+    this.loading = false;
     this.messageOpacity = 0;
     this.messageCount = 15;
-    this.loading = true;
     this.getPagingMessage();
     this.initScroll();
     this.scrollToBottom();
@@ -133,7 +133,6 @@ export default class GenalMessage extends Vue {
   handleScroll(event: any) {
     if (event.currentTarget) {
       if (this.messageDom.scrollTop === 0) {
-        this.loading = true;
         setTimeout(() => {
           this.messageCount += 15;
           this.getPagingMessage();
@@ -163,6 +162,7 @@ export default class GenalMessage extends Vue {
       this.loading = false;
       return (this.pagingMessage = this.activeRoom.messages);
     }
+    this.loading = true;
     this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
     if (this.messageDom && this.messageCount != 15) {
       setTimeout(() => {
@@ -172,7 +172,7 @@ export default class GenalMessage extends Vue {
   }
 
   get showLoading() {
-    return this.loading && this.activeRoom.messages;
+    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
   }
 
   sendMessage() {
@@ -193,10 +193,6 @@ export default class GenalMessage extends Vue {
     this.message = '';
   }
 
-  formatTime(time: number) {
-    //@ts-ignore
-    return this.$moment(time).format('HH:mm:ss');
-  }
 
   /**
    * 添加emoji到input
