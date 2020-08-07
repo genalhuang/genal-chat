@@ -8,7 +8,7 @@
         {{ userGather[activeRoom.userId].username }}
       </div>
     </div>
-    <div class="message-frame" ref="messages">
+    <div class="message-frame" ref="messages" :style="{ opacity: messageOpacity }">
       <a-icon type="sync" spin class="message-frame-loading" v-if="showLoading" />
       <template v-for="item in pagingMessage">
         <div class="message-frame-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
@@ -27,7 +27,7 @@
     <div class="message-input">
       <a-popover placement="topLeft" trigger="hover" class="message-popver">
         <template slot="content">
-          <a-tabs default-active-key="1" size="small">
+          <a-tabs default-key="1" size="small">
             <a-tab-pane key="1" tab="Emoji">
               <genal-emoji @addEmoji="addEmoji"></genal-emoji>
             </a-tab-pane>
@@ -45,7 +45,7 @@
       </a-popover>
       <a-input
         type="text"
-        placeholder="好好说话..."
+        placeholder="say hello..."
         v-model="message"
         ref="input"
         autoFocus
@@ -83,6 +83,7 @@ export default class GenalMessage extends Vue {
   messageDom: Element;
   pagingMessage: Array<GroupMessage | FriendMessage> = [];
   messageCount: number = 15;
+  messageOpacity: number = 0;
 
   mounted() {
     this.initPaste();
@@ -90,8 +91,9 @@ export default class GenalMessage extends Vue {
 
   @Watch('activeRoom', { deep: true })
   changeActiveRoom() {
+    this.loading = false;
+    this.messageOpacity = 0;
     this.messageCount = 15;
-    this.loading = true;
     this.getPagingMessage();
     this.initScroll();
     this.scrollToBottom();
@@ -131,7 +133,6 @@ export default class GenalMessage extends Vue {
   handleScroll(event: any) {
     if (event.currentTarget) {
       if (this.messageDom.scrollTop === 0) {
-        this.loading = true;
         setTimeout(() => {
           this.messageCount += 15;
           this.getPagingMessage();
@@ -146,6 +147,7 @@ export default class GenalMessage extends Vue {
   scrollToBottom() {
     setTimeout(() => {
       this.messageDom.scrollTop = this.messageDom.scrollHeight;
+      this.messageOpacity = 1;
     }, 0);
   }
 
@@ -160,6 +162,7 @@ export default class GenalMessage extends Vue {
       this.loading = false;
       return (this.pagingMessage = this.activeRoom.messages);
     }
+    this.loading = true;
     this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
     if (this.messageDom && this.messageCount != 15) {
       setTimeout(() => {
@@ -169,7 +172,7 @@ export default class GenalMessage extends Vue {
   }
 
   get showLoading() {
-    return this.loading && this.activeRoom.messages;
+    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
   }
 
   sendMessage() {
@@ -190,10 +193,6 @@ export default class GenalMessage extends Vue {
     this.message = '';
   }
 
-  formatTime(time: number) {
-    //@ts-ignore
-    return this.$moment(time).format('HH:mm:ss');
-  }
 
   /**
    * 添加emoji到input
@@ -298,7 +297,6 @@ export default class GenalMessage extends Vue {
     height: calc(100% - 115px);
     overflow: auto;
     position: relative;
-    transition: 1s all linear;
     .text-right {
       text-align: right !important;
       .avatar {

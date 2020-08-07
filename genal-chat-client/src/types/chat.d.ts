@@ -75,7 +75,7 @@ interface SendMessage {
 }
 
 // 消息类型
-enum MessageType {
+declare enum MessageType {
   string = 'string',
   image = 'image',
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="emoji-content">
-    <div>
+    <div class="emoji-content-item">
       <span @click="addEmoji('😃')">😃</span>
       <span @click="addEmoji('😁')">😁</span>
       <span @click="addEmoji('😂')">😂</span>
@@ -11,7 +11,7 @@
       <span @click="addEmoji('😈')">😈</span>
       <span @click="addEmoji('😉')">😉</span>
     </div>
-    <div>
+    <div class="emoji-content-item">
       <span @click="addEmoji('😊')">😊</span>
       <span @click="addEmoji('😋')">😋</span>
       <span @click="addEmoji('😌')">😌</span>
@@ -22,7 +22,7 @@
       <span @click="addEmoji('😒')">😒</span>
       <span @click="addEmoji('😓')">😓</span>
     </div>
-    <div>
+    <div class="emoji-content-item">
       <span @click="addEmoji('😔')">😔</span>
       <span @click="addEmoji('😕')">😕</span>
       <span @click="addEmoji('😖')">😖</span>
@@ -33,7 +33,7 @@
       <span @click="addEmoji('😜')">😜</span>
       <span @click="addEmoji('😝')">😝</span>
     </div>
-    <div>
+    <div class="emoji-content-item">
       <span @click="addEmoji('😞')">😞</span>
       <span @click="addEmoji('😟')">😟</span>
       <span @click="addEmoji('😠')">😠</span>
@@ -44,7 +44,7 @@
       <span @click="addEmoji('😥')">😥</span>
       <span @click="addEmoji('😦')">😦</span>
     </div>
-    <div>
+    <div class="emoji-content-item">
       <span @click="addEmoji('😨')">😨</span>
       <span @click="addEmoji('😩')">😩</span>
       <span @click="addEmoji('😪')">😪</span>
@@ -55,7 +55,7 @@
       <span @click="addEmoji('😯')">😯</span>
       <span @click="addEmoji('😰')">😰</span>
     </div>
-    <div>
+    <div class="emoji-content-item">
       <span @click="addEmoji('😲')">😲</span>
       <span @click="addEmoji('😳')">😳</span>
       <span @click="addEmoji('😴')">😴</span>
@@ -66,7 +66,7 @@
       <span @click="addEmoji('🙂')">🙂</span>
       <span @click="addEmoji('🙃')">🙃</span>
     </div>
-    <div>
+    <div class="emoji-content-item">
       <span @click="addEmoji('🤐')">🤐</span>
       <span @click="addEmoji('🤑')">🤑</span>
       <span @click="addEmoji('🤒')">🤒</span>
@@ -77,7 +77,7 @@
       <span @click="addEmoji('🤡')">🤡</span>
       <span @click="addEmoji('🤢')">🤢</span>
     </div>
-    <div>
+    <div class="emoji-content-item">
       <span @click="addEmoji('🤤')">🤤</span>
       <span @click="addEmoji('🤥')">🤥</span>
       <span @click="addEmoji('🤧')">🤧</span>
@@ -114,8 +114,13 @@ export default class GenalMessage extends Vue {
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  span {
-    cursor: pointer;
+  .emoji-content-item {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+    span {
+      cursor: pointer;
+    }
   }
 }
 </style>

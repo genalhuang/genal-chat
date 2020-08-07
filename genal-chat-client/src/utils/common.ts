@@ -44,3 +44,9 @@ export function parseText(text: string) {
   }
   return text;
 }
+
+
+export function formatTime(time: number) {
+  //@ts-ignore
+  return Vue.prototype.$moment(time).format('HH:mm:ss');
+}

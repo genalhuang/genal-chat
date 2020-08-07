@@ -10,7 +10,7 @@
     </a-popover>
     <a-avatar v-else class="avatar-img" :src="userGather[data.userId].avatar" />
     <span class="avatar-name">{{ userGather[data.userId].username }}</span>
-    <span class="avatar-time">{{ formatTime(data.time) }}</span>
+    <span class="avatar-time">{{ _formatTime(data.time) }}</span>
   </div>
 </template>
 
@@ -20,6 +20,7 @@ import * as api from '@/api/apis';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
 const appModule = namespace('app');
+import { formatTime } from '@/utils/common';
 
 @Component
 export default class GenalAvatar extends Vue {
@@ -37,9 +38,8 @@ export default class GenalAvatar extends Vue {
     });
   }
 
-  formatTime(time: number) {
-    //@ts-ignore
-    return this.$moment(time).format('HH:mm:ss');
+  _formatTime(time: number) {
+    return formatTime(time)
   }
 }
 </script>
