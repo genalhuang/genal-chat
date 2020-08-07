@@ -17,7 +17,7 @@
             <div class="message-frame-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
             <div class="message-frame-image" v-if="item.messageType === 'image'">
               <viewer>
-                <img :src="'static/' + item.content" alt="" :style="getImageStyle(item.content)" />
+                <img :src="'api/static/' + item.content" alt="" :style="getImageStyle(item.content)" />
               </viewer>
             </div>
           </div>

@@ -63,7 +63,7 @@ export class UserService {
       }
 
       const index = Math.round(Math.random()*19 +1)
-      user.avatar = `avatar/avatar(${index}).png`
+      user.avatar = `api/avatar/avatar(${index}).png`
 
       const data = await this.userRepository.save(user)
 
@@ -137,7 +137,7 @@ export class UserService {
       const writeSream = createWriteStream(join('public/avatar', random + file.originalname))
       writeSream.write(file.buffer)
       const newUser = await this.userRepository.findOne({userId: user.userId})
-      newUser.avatar = `avatar/${random}${file.originalname}`
+      newUser.avatar = `api/avatar/${random}${file.originalname}`
       await this.userRepository.save(newUser)
       return { msg: '修改头像成功', data: newUser}
     } catch (e) {
