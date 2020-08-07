@@ -193,7 +193,6 @@ export default class GenalMessage extends Vue {
     this.message = '';
   }
 
-
   /**
    * 添加emoji到input
    */

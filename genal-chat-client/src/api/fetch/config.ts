@@ -1,1 +1,1 @@
-export const socketUrl = '/';
+export const socketUrl = '/api';

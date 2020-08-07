@@ -39,7 +39,7 @@ export default class GenalAvatar extends Vue {
   }
 
   _formatTime(time: number) {
-    return formatTime(time)
+    return formatTime(time);
   }
 }
 </script>

@@ -1,26 +1,8 @@
 import fetch from '@/api/fetch';
 
 /**
- * 登录
- * @param User
- */
-export const addUser = (params: User) => {
-  return fetch.post('/user/regist', {
-    ...params,
-  });
-};
-
-/**
- * 获取用户
- * @param User
- */
-export const getUser = () => {
-  return fetch.get('/user');
-};
-
-/**
  * 更新用户信息
- * @param User
+ * @param params
  */
 export const patchUser = (params: User) => {
   return fetch.patch(`/user/${params.userId}`, {
@@ -30,7 +12,7 @@ export const patchUser = (params: User) => {
 
 /**
  * 用户名模糊搜索用户
- * @param string
+ * @param username
  */
 export function getUsersByName(username: string) {
   return fetch.get(`/user/findByName?username=${username}`);
@@ -38,9 +20,9 @@ export function getUsersByName(username: string) {
 
 /**
  * 用户头像上传
- * @param file
+ * @param params
  */
-export function setUserAvatar(params: any) {
+export function setUserAvatar(params: FormData) {
   return fetch.post(`/user/avatar`, params, {
     headers: {
       'Content-Type': 'multipart/form-data',

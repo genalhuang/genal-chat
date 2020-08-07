@@ -23,7 +23,15 @@ module.exports = {
   devServer: {
     port: 1997,
     proxy: {
-      '/': {
+      '/api': {
+        target: Host,
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': '',
+        },
+      },
+      'socket.io': {
         target: Host,
         ws: true,
         changeOrigin: true,
