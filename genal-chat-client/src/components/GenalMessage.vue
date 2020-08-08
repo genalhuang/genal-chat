@@ -34,8 +34,10 @@
             <a-tab-pane key="2" tab="工具">
               <div class="message-tool-item">
                 <a-upload :show-upload-list="false" :before-upload="beforeImgUpload">
-                  <img src="~@/assets/photo.png" class="message-tool-item-img" alt="" />
-                  <div class="message-tool-item-text">图片</div>
+                  <div class="message-tool-contant">
+                    <img src="~@/assets/photo.png" class="message-tool-item-img" alt="" />
+                    <div class="message-tool-item-text">图片</div>
+                  </div>
                 </a-upload>
               </div>
             </a-tab-pane>
@@ -248,14 +250,6 @@ export default class GenalMessage extends Vue {
    * @params file
    */
   beforeImgUpload(file: File) {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/gif';
-    if (!isJpgOrPng) {
-      return this.$message.error('请选择jpeg/jpg/png/gif格式的图片!');
-    }
-    const isLt1M = file.size / 1024 / 1024 < 0.5;
-    if (!isLt1M) {
-      return this.$message.error('图片必须小于500K!');
-    }
     this.handleImgUpload(file);
     return false;
   }
@@ -265,6 +259,15 @@ export default class GenalMessage extends Vue {
    * @params file
    */
   async handleImgUpload(imageFile: File) {
+    const isJpgOrPng =
+      imageFile.type === 'image/jpeg' || imageFile.type === 'image/png' || imageFile.type === 'image/jpg' || imageFile.type === 'image/gif';
+    if (!isJpgOrPng) {
+      return this.$message.error('请选择jpeg/jpg/png/gif格式的图片!');
+    }
+    const isLt1M = imageFile.size / 1024 / 1024 < 0.5;
+    if (!isLt1M) {
+      return this.$message.error('图片必须小于500K!');
+    }
     let image = new Image();
     let url = window.URL || window.webkitURL;
     image.src = url.createObjectURL(imageFile);
@@ -284,7 +287,7 @@ export default class GenalMessage extends Vue {
 <style lang="scss" scoped>
 .message {
   overflow: hidden;
-  height: 800px;
+  height: 100%;
   position: relative;
   color: #fff;
   .message-header {
@@ -359,7 +362,7 @@ export default class GenalMessage extends Vue {
 .ant-input {
   padding: 0 50px 0 50px;
 }
-
+// 消息工具样式
 .messagte-tool-icon {
   position: absolute;
   left: 0;
@@ -377,13 +380,39 @@ export default class GenalMessage extends Vue {
   width: 0px;
   height: 240px;
   cursor: pointer;
-  .message-tool-item-img {
-    width: 40px;
-  }
-  .message-tool-item-text {
-    text-align: center;
+  .message-tool-contant {
+    width: 50px;
+    padding: 5px;
+    border-radius: 5px;
+    transition: all linear 0.2s;
+    .message-tool-item-img {
+      width: 40px;
+    }
+    .message-tool-item-text {
+      text-align: center;
+      font-size: 10px;
+    }
     &:hover {
-      color: skyblue;
+      background: rgba(135, 206, 235, 0.6);
+    }
+  }
+}
+
+// 移动端样式
+@media screen and (max-width: 768px) {
+  .message-input {
+    bottom: 0 !important;
+  }
+  .message-frame {
+    height: calc(100% - 102px) !important;
+    .message-frame-image {
+      width: 150px !important;
+      height: inherit !important;
+      img {
+        cursor: pointer;
+        width: 137px !important;
+        height: inherit !important;
+      }
     }
   }
 }
