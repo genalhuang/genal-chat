@@ -403,13 +403,16 @@ export default class GenalMessage extends Vue {
   .message-input {
     bottom: 0 !important;
   }
-  .message-frame-image {
-    width: 150px;
-    height: auto !important;
-    img {
-      cursor: pointer;
-      width: 137px !important;
-      height: auto !important;
+  .message-frame {
+    height: calc(100% - 102px) !important;
+    .message-frame-image {
+      width: 150px!important;
+      height: inherit !important;
+      img {
+        cursor: pointer;
+        width: 137px !important;
+        height: inherit !important;
+      }
     }
   }
 }
