@@ -3,7 +3,6 @@
     <div class="tool-avatar">
       <div class="tool-avatar-img" @click="showModal('showUserModal')">
         <img v-if="user" :src="user.avatar" alt="" />
-        <img v-else src="@/assets/avatar.jpeg" alt="" />
       </div>
       <div class="tool-avatar-name">{{ user.username }}</div>
     </div>

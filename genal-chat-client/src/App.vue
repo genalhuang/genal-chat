@@ -16,7 +16,6 @@
   color: #2c3e50;
   height: 100%;
   overflow: hidden;
-  background: url(~@/assets/2.jpg) no-repeat 50%;
   background-size: cover;
 }
 </style>
