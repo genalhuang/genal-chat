@@ -16,7 +16,7 @@ export default class GenalChat extends Vue {
   runStarrySky() {
     //Helpers
     function lineToAngle(x1: any, y1: any, length: any, radians: any) {
-      let x2 = x1 + length * Math.cos(radians),
+      var x2 = x1 + length * Math.cos(radians),
         y2 = y1 + length * Math.sin(radians);
       return { x: x2, y: y2 };
     }
@@ -30,7 +30,7 @@ export default class GenalChat extends Vue {
     }
 
     //Particle
-    let particle = {
+    var particle = {
       x: 0,
       y: 0,
       vx: 0,
@@ -38,7 +38,7 @@ export default class GenalChat extends Vue {
       radius: 0,
 
       create: function(x: any, y: any, speed: any, direction: any) {
-        let obj = Object.create(this);
+        var obj = Object.create(this);
         obj.x = x;
         obj.y = y;
         obj.vx = Math.cos(direction) * speed;
@@ -51,7 +51,7 @@ export default class GenalChat extends Vue {
       },
 
       setSpeed: function(speed: any) {
-        let heading = this.getHeading();
+        var heading = this.getHeading();
         this.vx = Math.cos(heading) * speed;
         this.vy = Math.sin(heading) * speed;
       },
@@ -61,7 +61,7 @@ export default class GenalChat extends Vue {
       },
 
       setHeading: function(heading: any) {
-        let speed = this.getSpeed();
+        var speed = this.getSpeed();
         this.vx = Math.cos(heading) * speed;
         this.vy = Math.sin(heading) * speed;
       },
@@ -73,7 +73,7 @@ export default class GenalChat extends Vue {
     };
 
     //Canvas and settings
-    let canvas: any = document.getElementById('canvas'),
+    var canvas: any = document.getElementById('canvas'),
       context = canvas.getContext('2d'),
       width = (canvas.width = window.innerWidth),
       height = (canvas.height = window.innerHeight),
@@ -99,10 +99,10 @@ export default class GenalChat extends Vue {
       paused = false;
 
     //Create all stars
-    for (let j = 0; j < layers.length; j += 1) {
-      let layer = layers[j];
-      for (let i = 0; i < layer.count; i += 1) {
-        let star = particle.create(randomRange(0, width), randomRange(0, height), 0, 0);
+    for (var j = 0; j < layers.length; j += 1) {
+      var layer = layers[j];
+      for (var i = 0; i < layer.count; i += 1) {
+        var star = particle.create(randomRange(0, width), randomRange(0, height), 0, 0);
         star.radius = starBaseRadius * layer.scale;
         star.setSpeed(layer.speed);
         star.setHeading(degreesToRads(starsAngle));
@@ -111,7 +111,7 @@ export default class GenalChat extends Vue {
     }
 
     function createShootingStar() {
-      let shootingStar = particle.create(randomRange(width / 2, width), randomRange(0, height / 2), 0, 0);
+      var shootingStar = particle.create(randomRange(width / 2, width), randomRange(0, height / 2), 0, 0);
       shootingStar.setSpeed(randomRange(shootingStarSpeed.min, shootingStarSpeed.max));
       shootingStar.setHeading(degreesToRads(starsAngle));
       shootingStar.radius = shootingStarRadius;
@@ -135,8 +135,8 @@ export default class GenalChat extends Vue {
         context.fillRect(0, 0, width, height);
         context.fill();
 
-        for (let i = 0; i < stars.length; i += 1) {
-          let star = stars[i];
+        for (var i = 0; i < stars.length; i += 1) {
+          var star = stars[i];
           star.update();
           drawStar(star);
           if (star.x > width) {
@@ -154,7 +154,7 @@ export default class GenalChat extends Vue {
         }
 
         for (i = 0; i < shootingStars.length; i += 1) {
-          let shootingStar = shootingStars[i];
+          var shootingStar = shootingStars[i];
           if (shootingStar.isSpawning) {
             shootingStar.opacity += shootingStarOpacityDelta;
             if (shootingStar.opacity >= 1.0) {
@@ -195,7 +195,7 @@ export default class GenalChat extends Vue {
     }
 
     function drawShootingStar(p: any) {
-      let x = p.x,
+      var x = p.x,
         y = p.y,
         currentTrailLength = maxTrailLength * p.trailLengthDelta,
         pos = lineToAngle(x, y, -currentTrailLength, p.getHeading());
@@ -204,7 +204,7 @@ export default class GenalChat extends Vue {
       // context.beginPath();
       // context.arc(x, y, p.radius, 0, Math.PI * 2, false);
       // context.fill();
-      let starLength = 5;
+      var starLength = 5;
       context.beginPath();
       context.moveTo(x - 1, y + 1);
 
