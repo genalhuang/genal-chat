@@ -9,6 +9,13 @@
     <div class="tool-set">
       <a-icon class="tool-set-icon" type="setting" @click="showModal('showSetModal')" />
     </div>
+    <a-tooltip placement="topLeft" arrow-point-at-center>
+      <div slot="title">
+        <div>pc端体验最佳</div>
+        <div>截图粘贴可发送图片</div>
+      </div>
+      <a-icon type="bulb" class="tip" />
+    </a-tooltip>
     <a href="https://github.com/genaller" target="_blank" class="github"><a-icon type="github"/></a>
     <a-modal title="用户信息" :visible="showUserModal" footer="" @cancel="handleCancel('showUserModal')">
       <div class="tool-user">
@@ -169,6 +176,15 @@ export default class GenalTool extends Vue {
     position: absolute;
     bottom: 0px;
     left: 13px;
+  }
+  .tip {
+    position: absolute;
+    font-size: 25px;
+    bottom: 125px;
+    left: 25px;
+    :hover {
+      color: skyblue;
+    }
   }
   .github {
     position: absolute;
