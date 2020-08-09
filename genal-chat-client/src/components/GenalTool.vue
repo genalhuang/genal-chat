@@ -52,7 +52,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import { setUserAvatar } from '@/api/apis';
 import { namespace } from 'vuex-class';
 import * as apis from '@/api/apis';
-import { processReturn, usernameVerify } from '@/utils/common.ts';
+import { processReturn, nameVerify } from '@/utils/common.ts';
 const appModule = namespace('app');
 const chatModule = namespace('chat');
 
@@ -91,7 +91,7 @@ export default class GenalTool extends Vue {
   }
 
   async changeUser() {
-    if (!usernameVerify(this.username)) {
+    if (!nameVerify(this.username)) {
       return;
     }
     let user: User = JSON.parse(JSON.stringify(this.user));

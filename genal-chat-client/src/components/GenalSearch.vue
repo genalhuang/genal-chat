@@ -87,6 +87,7 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { isContainStr, processReturn } from '@/utils/common.ts';
 import * as apis from '@/api/apis';
+import { nameVerify } from '@/utils/common';
 const chatModule = namespace('chat');
 
 @Component
@@ -175,7 +176,12 @@ export default class GenalSearch extends Vue {
 
   addGroup() {
     this.visibleAddGroup = false;
+    if (!nameVerify(this.groupName)) {
+      this.visibleAddGroup = true;
+      return;
+    }
     this.$emit('addGroup', this.groupName);
+    this.groupName = '';
   }
 
   joinGroup() {

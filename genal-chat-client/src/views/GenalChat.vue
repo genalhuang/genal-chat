@@ -24,7 +24,6 @@ import GenalSearch from '@/components/GenalSearch.vue';
 import { namespace } from 'vuex-class';
 const appModule = namespace('app');
 const chatModule = namespace('chat');
-import { processReturn } from '@/utils/common.ts';
 
 @Component({
   components: {

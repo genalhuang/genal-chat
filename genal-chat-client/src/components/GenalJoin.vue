@@ -43,7 +43,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { usernameVerify } from '@/utils/common';
+import { nameVerify } from '@/utils/common';
 
 @Component
 export default class GenalJoin extends Vue {
@@ -74,7 +74,7 @@ export default class GenalJoin extends Vue {
         }
         // @ts-ignore
         delete user.remember;
-        if (!usernameVerify(user.username)) {
+        if (!nameVerify(user.username)) {
           return;
         }
         this.$emit(this.type, user);
