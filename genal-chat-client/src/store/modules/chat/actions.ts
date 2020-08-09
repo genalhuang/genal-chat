@@ -176,8 +176,8 @@ const actions: ActionTree<ChatState, RootState> = {
         commit(SET_USER_GATHER, user);
       }
     }
-    // 更新完数据设置默认active群为'Genal聊天室'
-    commit(SET_ACTIVE_ROOM, groupGather['Genal聊天室']);
+    // 更新完数据设置默认active群为'阿童木聊天室'
+    commit(SET_ACTIVE_ROOM, groupGather['阿童木聊天室']);
   },
 };
 

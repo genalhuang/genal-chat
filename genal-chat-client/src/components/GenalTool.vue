@@ -103,7 +103,7 @@ export default class GenalTool extends Vue {
       this.setUser(data);
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
-        groupId: 'Genal聊天室',
+        groupId: '阿童木聊天室',
         userId: data.userId,
       });
     } else {
@@ -136,7 +136,7 @@ export default class GenalTool extends Vue {
       this.uploading = false;
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
-        groupId: 'Genal聊天室',
+        groupId: '阿童木聊天室',
         userId: data.userId,
       });
     }

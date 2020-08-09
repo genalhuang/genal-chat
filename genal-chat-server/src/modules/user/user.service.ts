@@ -67,7 +67,7 @@ export class UserService {
 
       await this.groupUserRepository.save({
         userId: data.userId,
-        groupId: 'Genal聊天室',
+        groupId: '阿童木聊天室',
       })
       return { msg:'注册成功', data }
     } catch(e) {
