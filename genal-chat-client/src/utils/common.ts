@@ -45,7 +45,33 @@ export function parseText(text: string) {
   return text;
 }
 
+/**
+ * 消息时间格式化
+ * @param time
+ */
 export function formatTime(time: number) {
   //@ts-ignore
   return Vue.prototype.$moment(time).format('HH:mm:ss');
+}
+
+/**
+ * 用户名校验
+ * @param username
+ */
+export function usernameVerify(username: string): boolean {
+  //用户名正则，只含有汉字、数字、字母、下划线不能以下划线开头和结尾
+  let usernameReg = /^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$/;
+  if (username.length > 10) {
+    Vue.prototype.$message.error('用户名太长');
+    return false;
+  }
+  if (username.length === 0) {
+    Vue.prototype.$message.error('请输入用户名');
+    return false;
+  }
+  if (!usernameReg.test(username)) {
+    Vue.prototype.$message.error('用户名只含有汉字、数字、字母、下划线不能以下划线开头和结尾');
+    return false;
+  }
+  return true;
 }

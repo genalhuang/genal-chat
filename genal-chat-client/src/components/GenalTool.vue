@@ -48,12 +48,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { setUserAvatar } from '@/api/apis';
-import { mapMutations, mapGetters } from 'vuex';
 import { namespace } from 'vuex-class';
 import * as apis from '@/api/apis';
-import { processReturn } from '@/utils/common.ts';
+import { processReturn, usernameVerify } from '@/utils/common.ts';
 const appModule = namespace('app');
 const chatModule = namespace('chat');
 
@@ -92,8 +91,8 @@ export default class GenalTool extends Vue {
   }
 
   async changeUser() {
-    if (!this.username.length) {
-      return this.$message.error('不能输入空昵称!');
+    if (!usernameVerify(this.username)) {
+      return;
     }
     let user: User = JSON.parse(JSON.stringify(this.user));
     user.username = this.username;
