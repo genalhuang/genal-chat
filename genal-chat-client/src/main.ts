@@ -11,10 +11,7 @@ import './ant-desigin';
 
 // 引入moment
 import moment from 'moment';
-import 'moment/locale/zh-cn';
-
 // 使用中文时间
-moment.locale('zh-cn');
 Vue.prototype.$moment = moment;
 
 // 图片预览插件

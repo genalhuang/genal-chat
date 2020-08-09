@@ -1,7 +1,5 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import GenalChat from '@/views/GenalChat.vue';
-import Test from '@/views/test.vue';
 
 Vue.use(VueRouter);
 
@@ -9,7 +7,7 @@ const routes: Array<RouteConfig> = [
   {
     path: '/',
     name: 'Chat',
-    component: GenalChat,
+    component: () => import('@/views/GenalChat.vue'),
     // component: Test,
   },
 ];
