@@ -43,7 +43,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { mapMutations, mapGetters } from 'vuex';
+import { nameVerify } from '@/utils/common';
 
 @Component
 export default class GenalJoin extends Vue {
@@ -67,14 +67,17 @@ export default class GenalJoin extends Vue {
 
   handleSubmit(e: any) {
     e.preventDefault();
-    this.form.validateFields((err: any, values: User) => {
+    this.form.validateFields((err: any, user: User) => {
       if (!err) {
         if (this.type === 'regist') {
-          values.createTime = new Date().valueOf();
+          user.createTime = new Date().valueOf();
         }
         // @ts-ignore
-        delete values.remember;
-        this.$emit(this.type, values);
+        delete user.remember;
+        if (!nameVerify(user.username)) {
+          return;
+        }
+        this.$emit(this.type, user);
       }
     });
   }

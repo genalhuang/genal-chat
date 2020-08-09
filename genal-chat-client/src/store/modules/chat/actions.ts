@@ -59,6 +59,8 @@ const actions: ActionTree<ChatState, RootState> = {
             // 获取群里面所有用户的用户信息
             socket.emit('chatData', user);
           }
+          Vue.prototype.$message.info(`成功加入群${group.groupName}`);
+          commit(SET_ACTIVE_ROOM, state.groupGather[group.groupId]);
         }
       });
 
@@ -80,6 +82,12 @@ const actions: ActionTree<ChatState, RootState> = {
             commit(SET_FRIEND_GATHER, newUser);
             commit(SET_FRIEND_MESSAGES, messages);
           }
+          // @ts-ignore 解决重复进群消息问题
+          if (window.msg === newUser.userId) {
+            return;
+          }
+          // @ts-ignore
+          window.msg = newUser.userId;
           return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupName}`);
         } else {
           if (!state.groupGather[group.groupId]) {
@@ -101,6 +109,7 @@ const actions: ActionTree<ChatState, RootState> = {
         if (!res.code) {
           commit(SET_FRIEND_GATHER, res.data);
           commit(SET_USER_GATHER, res.data);
+          Vue.prototype.$message.info(`${res.data.username}添加你为好友`);
           socket.emit('joinFriendSocket', {
             userId: user.userId,
             friendId: res.data.userId,
@@ -167,8 +176,8 @@ const actions: ActionTree<ChatState, RootState> = {
         commit(SET_USER_GATHER, user);
       }
     }
-    // 更新完数据设置默认active群为public
-    commit(SET_ACTIVE_ROOM, groupGather.public);
+    // 更新完数据设置默认active群为'Genal聊天室'
+    commit(SET_ACTIVE_ROOM, groupGather['Genal聊天室']);
   },
 };
 

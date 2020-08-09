@@ -26,8 +26,6 @@ export class UserService {
         })
         return { msg:'获取用户成功', data }
       }
-      data = await this.userRepository.find()
-      return { msg:'获取所有用户成功', data }
     } catch(e) {
       return { code: RCode.ERROR , msg:'获取用户失败', data: e }
     }
@@ -69,7 +67,7 @@ export class UserService {
 
       await this.groupUserRepository.save({
         userId: data.userId,
-        groupId: 'public',
+        groupId: 'Genal聊天室',
       })
       return { msg:'注册成功', data }
     } catch(e) {
@@ -122,7 +120,7 @@ export class UserService {
         const users = await this.userRepository.find({
           select: ['userId','username','avatar','role','tag','createTime'],
           where:{username: Like(`%${username}%`)}
-        })
+        });
         return { msg:'获取用户信息成功', data: users}
       }
       return {code: RCode.FAIL, msg:'请输入用户名', data: null}

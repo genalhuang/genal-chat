@@ -52,9 +52,9 @@
         ref="input"
         autoFocus
         style="color:#000;"
-        @pressEnter="sendMessage"
+        @pressEnter="throttle(sendMessage)"
       />
-      <img class="message-input-button" @click="sendMessage" src="~@/assets/send.png" alt="" />
+      <img class="message-input-button" @click="throttle(sendMessage)" src="~@/assets/send.png" alt="" />
     </div>
   </div>
 </template>
@@ -86,6 +86,7 @@ export default class GenalMessage extends Vue {
   pagingMessage: Array<GroupMessage | FriendMessage> = [];
   messageCount: number = 15;
   messageOpacity: number = 0;
+  lastTime: number = 0;
 
   mounted() {
     this.initPaste();
@@ -119,7 +120,7 @@ export default class GenalMessage extends Vue {
         }
       }
       if (file) {
-        this.handleImgUpload(file);
+        this.throttle(this.handleImgUpload, file);
       }
     });
   }
@@ -175,6 +176,18 @@ export default class GenalMessage extends Vue {
 
   get showLoading() {
     return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
+  }
+
+  /**
+   * 消息发送节流
+   */
+  throttle(fn: Function, file?: File) {
+    let nowTime = +new Date();
+    if (nowTime - this.lastTime < 500) {
+      return this.$message.error('消息发送太频繁！');
+    }
+    fn(file);
+    this.lastTime = nowTime;
   }
 
   sendMessage() {
@@ -250,7 +263,7 @@ export default class GenalMessage extends Vue {
    * @params file
    */
   beforeImgUpload(file: File) {
-    this.handleImgUpload(file);
+    this.throttle(this.handleImgUpload, file);
     return false;
   }
 

@@ -40,17 +40,17 @@ export class ChatGateway {
   // socket连接钩子
   async handleConnection(client: Socket): Promise<string> {
     const userRoom = client.handshake.query.userId
-    const defaultGroup = await this.groupRepository.find({groupName: 'public'})
+    const defaultGroup = await this.groupRepository.find({groupName: 'Genal聊天室'})
     if(!defaultGroup.length) {
       this.groupRepository.save({
-        groupId: 'public',
-        groupName: 'public',
+        groupId: 'Genal聊天室',
+        groupName: 'Genal聊天室',
         userId: 'admin',
         createTime: new Date().valueOf()
       })
     }
-    // 连接默认加入public房间
-    client.join('public')
+    // 连接默认加入"Genal聊天室"房间
+    client.join('Genal聊天室')
     // 用户独有消息房间 根据userId
     if(userRoom) {
       client.join(userRoom)

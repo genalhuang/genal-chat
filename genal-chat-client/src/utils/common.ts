@@ -45,7 +45,49 @@ export function parseText(text: string) {
   return text;
 }
 
+/**
+ * 消息时间格式化
+ * @param time
+ */
 export function formatTime(time: number) {
-  //@ts-ignore
-  return Vue.prototype.$moment(time).format('HH:mm:ss');
+  let moment = Vue.prototype.$moment;
+  // 大于昨天
+  if (
+    moment()
+      .add(-1, 'days')
+      .startOf('day') > time
+  ) {
+    return moment(time).format('M/D HH:mm');
+  }
+  // 昨天
+  if (moment().startOf('day') > time) {
+    return '昨天 ' + moment(time).format('HH:mm');
+  }
+  // 大于五分钟不显示秒
+  if (new Date().valueOf() > time + 300000) {
+    return moment(time).format('HH:mm');
+  }
+  return moment(time).format('HH:mm:ss');
+}
+
+/**
+ * 群名/用户名校验
+ * @param name
+ */
+export function nameVerify(name: string): boolean {
+  //名字正则，只含有汉字、数字、字母、下划线不能以下划线开头和结尾
+  let nameReg = /^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$/;
+  if (name.length > 10) {
+    Vue.prototype.$message.error('名字太长');
+    return false;
+  }
+  if (name.length === 0) {
+    Vue.prototype.$message.error('请输入名字');
+    return false;
+  }
+  if (!nameReg.test(name)) {
+    Vue.prototype.$message.error('名字只含有汉字、数字、字母、下划线不能以下划线开头和结尾');
+    return false;
+  }
+  return true;
 }

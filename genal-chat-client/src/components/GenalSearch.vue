@@ -87,6 +87,7 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 import { isContainStr, processReturn } from '@/utils/common.ts';
 import * as apis from '@/api/apis';
+import { nameVerify } from '@/utils/common';
 const chatModule = namespace('chat');
 
 @Component
@@ -140,8 +141,7 @@ export default class GenalSearch extends Vue {
       return;
     }
     let res = await apis.getGroupsByName(value);
-    let data = processReturn(res);
-    this.groupArr = data;
+    this.groupArr = res.data.data;
   }
 
   handleGroupSelect(group: Group) {
@@ -175,17 +175,24 @@ export default class GenalSearch extends Vue {
 
   addGroup() {
     this.visibleAddGroup = false;
+    if (!nameVerify(this.groupName)) {
+      this.visibleAddGroup = true;
+      return;
+    }
     this.$emit('addGroup', this.groupName);
+    this.groupName = '';
   }
 
   joinGroup() {
     this.visibleJoinGroup = false;
     this.$emit('joinGroup', this.groupId);
+    this.groupId = '';
   }
 
   addFriend() {
     this.visibleAddFriend = false;
     this.$emit('addFriend', this.friendId);
+    this.friendId = '';
   }
 }
 </script>

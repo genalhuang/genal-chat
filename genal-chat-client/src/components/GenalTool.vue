@@ -48,12 +48,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { setUserAvatar } from '@/api/apis';
-import { mapMutations, mapGetters } from 'vuex';
 import { namespace } from 'vuex-class';
 import * as apis from '@/api/apis';
-import { processReturn } from '@/utils/common.ts';
+import { processReturn, nameVerify } from '@/utils/common.ts';
 const appModule = namespace('app');
 const chatModule = namespace('chat');
 
@@ -92,8 +91,8 @@ export default class GenalTool extends Vue {
   }
 
   async changeUser() {
-    if (!this.username.length) {
-      return this.$message.error('不能输入空昵称!');
+    if (!nameVerify(this.username)) {
+      return;
     }
     let user: User = JSON.parse(JSON.stringify(this.user));
     user.username = this.username;
@@ -104,7 +103,7 @@ export default class GenalTool extends Vue {
       this.setUser(data);
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
-        groupId: 'public',
+        groupId: 'Genal聊天室',
         userId: data.userId,
       });
     } else {
@@ -124,6 +123,7 @@ export default class GenalTool extends Vue {
     this.avatar = file;
     return false;
   }
+
   async handleUpload() {
     this.uploading = true;
     const formData = new FormData();
@@ -136,7 +136,7 @@ export default class GenalTool extends Vue {
       this.uploading = false;
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
-        groupId: 'public',
+        groupId: 'Genal聊天室',
         userId: data.userId,
       });
     }
