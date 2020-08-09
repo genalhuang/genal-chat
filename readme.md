@@ -84,6 +84,9 @@ npm run start:dev
 ### 作者
 github： [edison](https://github.com/genaller)
 
+### 如何部署
+[阿童木聊天室部署说明](./阿童木聊天室部署说明.md)
+
 ### 更多细节
 [nestjs+vue+ts打造一个酷炫的星空聊天室](https://github.com/genaller/strong-frontend/blob/master/learnNode/nest/%E8%81%8A%E5%A4%A9%E5%AE%A4/genal%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0.md)
 
