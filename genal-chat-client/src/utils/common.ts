@@ -50,8 +50,24 @@ export function parseText(text: string) {
  * @param time
  */
 export function formatTime(time: number) {
-  //@ts-ignore
-  return Vue.prototype.$moment(time).format('HH:mm:ss');
+  let moment = Vue.prototype.$moment;
+  // 大于昨天
+  if (
+    moment()
+      .add(-1, 'days')
+      .startOf('day') > time
+  ) {
+    return moment(time).format('M/D HH:mm');
+  }
+  // 昨天
+  if (moment().startOf('day') > time) {
+    return '昨天 ' + moment(time).format('HH:mm');
+  }
+  // 大于五分钟不显示秒
+  if (new Date().valueOf() > time + 300000) {
+    return moment(time).format('HH:mm');
+  }
+  return moment(time).format('HH:mm:ss');
 }
 
 /**
