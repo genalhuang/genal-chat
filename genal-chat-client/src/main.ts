@@ -22,9 +22,10 @@ import 'viewerjs/dist/viewer.css';
 Vue.use(Viewer, {
   defaultOptions: {
     navbar: false,
+    title: false,
     toolbar: {
-      zoomIn: 0,
-      zoomOut: 0,
+      zoomIn: 1,
+      zoomOut: 1,
       oneToOne: 4,
       reset: 4,
       prev: 0,
