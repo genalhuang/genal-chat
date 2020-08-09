@@ -141,8 +141,7 @@ export default class GenalSearch extends Vue {
       return;
     }
     let res = await apis.getGroupsByName(value);
-    let data = processReturn(res);
-    this.groupArr = data;
+    this.groupArr = res.data.data;
   }
 
   handleGroupSelect(group: Group) {
@@ -187,11 +186,13 @@ export default class GenalSearch extends Vue {
   joinGroup() {
     this.visibleJoinGroup = false;
     this.$emit('joinGroup', this.groupId);
+    this.groupId = '';
   }
 
   addFriend() {
     this.visibleAddFriend = false;
     this.$emit('addFriend', this.friendId);
+    this.friendId = '';
   }
 }
 </script>

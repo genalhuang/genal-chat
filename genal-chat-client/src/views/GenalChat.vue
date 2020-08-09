@@ -43,12 +43,11 @@ export default class GenalChat extends Vue {
   @appModule.Action('regist') regist: Function;
 
   @chatModule.Getter('socket') socket: any;
-  @chatModule.Getter('userGather') userGather: any;
-  @chatModule.Getter('activeRoom') activeRoom: any;
+  @chatModule.Getter('userGather') userGather: FriendGather;
+  @chatModule.Getter('groupGather') groupGather: GroupGather;
+  @chatModule.Getter('activeRoom') activeRoom: Friend & Group;
   @chatModule.Mutation('set_active_room') _setActiveRoom: Function;
   @chatModule.Action('connectSocket') connectSocket: Function;
-  @chatModule.Action('getGroupAndMessages') getGroupAndMessages: Function;
-  @chatModule.Action('getFriendAndMessages') getFriendAndMessages: Function;
 
   created() {
     if (!this.user.userId) {
@@ -123,7 +122,6 @@ export default class GenalChat extends Vue {
       userId: this.user.userId,
       groupId: groupId,
     });
-    this.getGroupAndMessages();
   }
 
   // 添加好友

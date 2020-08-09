@@ -59,6 +59,8 @@ const actions: ActionTree<ChatState, RootState> = {
             // 获取群里面所有用户的用户信息
             socket.emit('chatData', user);
           }
+          Vue.prototype.$message.info(`成功加入群${group.groupName}`);
+          commit(SET_ACTIVE_ROOM, state.groupGather[group.groupId]);
         }
       });
 
@@ -107,6 +109,7 @@ const actions: ActionTree<ChatState, RootState> = {
         if (!res.code) {
           commit(SET_FRIEND_GATHER, res.data);
           commit(SET_USER_GATHER, res.data);
+          Vue.prototype.$message.info(`${res.data.username}添加你为好友`);
           socket.emit('joinFriendSocket', {
             userId: user.userId,
             friendId: res.data.userId,
