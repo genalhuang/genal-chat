@@ -8,7 +8,6 @@ const routes: Array<RouteConfig> = [
     path: '/',
     name: 'Chat',
     component: () => import('@/views/GenalChat.vue'),
-    // component: Test,
   },
 ];
 
