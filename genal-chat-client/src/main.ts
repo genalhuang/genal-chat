@@ -39,8 +39,4 @@ new Vue({
   router,
   store,
   render: (h) => h(App),
-  // 触发预渲染事件
-  mounted() {
-    document.dispatchEvent(new Event('render-event'));
-  },
 }).$mount('#app');

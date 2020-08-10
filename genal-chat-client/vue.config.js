@@ -20,10 +20,6 @@ const cdn = {
 };
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
-const path = require('path');
-const PrerenderSPAPlugin = require('prerender-spa-plugin');
-const Renderer = PrerenderSPAPlugin.PuppeteerRenderer;
-
 module.exports = {
   chainWebpack: (config) => {
     // 需要打包分析时取消注释
@@ -60,25 +56,6 @@ module.exports = {
       })
     );
     config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/));
-
-    // 预渲染
-    return {
-      plugins: [
-        // 预渲染配置
-        new PrerenderSPAPlugin({
-          // 输出预渲染文件的路径。
-          staticDir: path.join(__dirname, 'dist'),
-          // 预渲染的路由
-          routes: ['/'],
-          //必须，要使用的实际渲染器，没有则不能预编译
-          renderer: new Renderer({
-            headless: false, //渲染时显示浏览器窗口。对调试很有用。
-            //等待渲染，直到检测指定事件
-            renderAfterDocumentEvent: 'render-event',
-          }),
-        }),
-      ],
-    };
   },
   // configureWebpack: {
   //   plugins: [new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)],
