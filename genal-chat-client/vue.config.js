@@ -61,25 +61,6 @@ module.exports = {
 
     // 不打包moment的语言包
     config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/));
-
-    // 配置webpack代码分割
-    config.optimization = {
-      runtimeChunk: 'single',
-      splitChunks: {
-        chunks: 'all', // 有效值为all，async和initial。提供all特别强大
-        maxInitialRequests: Infinity,
-        minSize: 20000, // 文件最小打包体积
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name (module) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
-              return `genal.${packageName.replace('@', '')}`
-            }
-          }
-        }
-      }
-    };
   },
   css: {
     loaderOptions: {
