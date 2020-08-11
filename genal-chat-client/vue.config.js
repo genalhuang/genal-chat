@@ -1,5 +1,6 @@
 const Host = 'http://localhost:3000';
 const webpack = require('webpack');
+
 // cdn链接
 const cdn = {
   css: [
@@ -18,6 +19,7 @@ const cdn = {
     'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js',
   ],
 };
+
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 
 module.exports = {
@@ -43,6 +45,7 @@ module.exports = {
     }
   },
   configureWebpack: (config) => {
+
     // 代码 gzip
     const productionGzipExtensions = ['html', 'js', 'css'];
     config.plugins.push(
@@ -55,11 +58,29 @@ module.exports = {
         deleteOriginalAssets: false, // 删除原文件
       })
     );
+
+    // 不打包moment的语言包
     config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/));
+
+    // 配置webpack代码分割
+    config.optimization = {
+      runtimeChunk: 'single',
+      splitChunks: {
+        chunks: 'all', // 有效值为all，async和initial。提供all特别强大
+        maxInitialRequests: Infinity,
+        minSize: 20000, // 文件最小打包体积
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name (module) {
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1]
+              return `genal.${packageName.replace('@', '')}`
+            }
+          }
+        }
+      }
+    };
   },
-  // configureWebpack: {
-  //   plugins: [new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)],
-  // },
   css: {
     loaderOptions: {
       less: {
