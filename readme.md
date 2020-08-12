@@ -6,7 +6,7 @@
 [![author](https://img.shields.io/github/stars/genaller/genal-chat?style=social)](https://github.com/genaller/genal-chat)
 
 > [码云](https://gitee.com/edison_dec/genal-chat)<br>
-> 在线地址[www.genal.fun](http://www.genal.fun)
+> 在线地址[www.genal.fun](http://www.genal.fun)<br>
 > 有建议请到issues区
 
 ### 项目简介
