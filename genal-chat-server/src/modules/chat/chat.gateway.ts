@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { User } from '../user/entity/user.entity';
 import { Group, GroupMap } from '../group/entity/group.entity';
 import { GroupMessage } from '../group/entity/groupMessage.entity';
@@ -82,7 +82,10 @@ export class ChatGateway {
     try {
       const group = await this.groupRepository.findOne({groupId: data.groupId})
       let userGroup = await this.groupUserRepository.findOne({groupId: group.groupId, userId: data.userId})
-      const user = await this.userRepository.findOne({userId: data.userId})
+      const user = await this.userRepository.findOne({
+        select: ['userId','username','avatar','role','tag','createTime'],
+        where:{userId: Like(`%${data.userId}%`)}
+      });
       if(group) {
         if(!userGroup) {
           data.groupId = group.groupId
@@ -104,7 +107,10 @@ export class ChatGateway {
   async joinGroupSocket(@ConnectedSocket() client: Socket, @MessageBody() data: GroupMap) {
     try {
       const group = await this.groupRepository.findOne({groupId: data.groupId})
-      const user = await this.userRepository.findOne({userId: data.userId})
+      const user = await this.userRepository.findOne({
+        select: ['userId','username','avatar','role','tag','createTime'],
+        where:{userId: Like(`%${data.userId}%`)}
+      });
       if(group) {
         client.join(group.groupId)
         const res = { group: group, user: user}
@@ -159,8 +165,14 @@ export class ChatGateway {
           return;
         }
 
-        const friend = await this.userRepository.findOne({userId: data.friendId});
-        const user = await this.userRepository.findOne({userId: data.userId})
+        const friend = await this.userRepository.findOne({
+          select: ['userId','username','avatar','role','tag','createTime'],
+          where:{userId: Like(`%${data.friendId}%`)}
+        });;
+        const user = await this.userRepository.findOne({
+          select: ['userId','username','avatar','role','tag','createTime'],
+          where:{userId: Like(`%${data.userId}%`)}
+        });
         if(!friend) {
           this.server.to(data.userId).emit('addFriend', {code: RCode.FAIL, msg:'该好友不存在', data: ''})
           return;
