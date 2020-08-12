@@ -4,8 +4,10 @@
 [![Node.js Version](https://img.shields.io/badge/node.js-10.16.3-blue.svg)](http://nodejs.org/download)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/genaller/genal-chat/blob/master/LICENSE)
 [![author](https://img.shields.io/github/stars/genaller/genal-chat?style=social)](https://github.com/genaller/genal-chat)
-> #### [码云](https://gitee.com/edison_dec/genal-chat)<br>
-> #### 在线地址[www.genal.fun](http://www.genal.fun)
+
+> [码云](https://gitee.com/edison_dec/genal-chat)<br>
+> 在线地址[www.genal.fun](http://www.genal.fun)
+> 有建议请到issues区
 
 ### 项目简介
   😛 闲暇时间想做一个聊天室来巩固前端技能，于是在2020年6月24号就开始了阿童木聊天室的开发之旅。<br>
