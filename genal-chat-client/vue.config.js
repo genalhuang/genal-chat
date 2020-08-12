@@ -16,7 +16,7 @@ const cdn = {
     // axios
     'https://cdn.bootcdn.net/ajax/libs/axios/0.18.0/axios.min.js',
     // moment
-    'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js',
+    // 'https://cdn.bootcdn.net/ajax/libs/moment.js/2.18.1/locale/zh-cn.js',
   ],
 };
 
@@ -34,7 +34,7 @@ module.exports = {
         axios: 'axios',
         'vue-router': 'VueRouter',
         vuex: 'Vuex',
-        moment: 'moment',
+        // moment: 'moment',
       };
       config.externals(externals);
       // 通过 html-webpack-plugin 将 cdn 注入到 index.html 之中
