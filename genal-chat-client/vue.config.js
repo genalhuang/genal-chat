@@ -16,7 +16,7 @@ const cdn = {
     // axios
     'https://cdn.bootcdn.net/ajax/libs/axios/0.18.0/axios.min.js',
     // moment
-    'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js',
   ],
 };
 
