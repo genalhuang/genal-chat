@@ -60,6 +60,11 @@ module.exports = {
 
     // 不打包moment的语言包
     config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/));
+
+    // 去除console
+    if (process.env.NODE_ENV === 'production') {
+      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
+    }
   },
   css: {
     loaderOptions: {
