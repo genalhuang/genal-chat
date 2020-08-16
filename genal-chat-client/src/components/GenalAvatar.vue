@@ -1,14 +1,14 @@
 <template>
   <div class="avatar" v-if="userGather[data.userId]">
-    <a-popover v-if="data.userId != user.userId && !friendGather[data.userId]">
+    <a-popover>
       <div slot="content" class="avatar-card">
         <a-avatar :size="60" :src="userGather[data.userId].avatar" />
         <div>{{ userGather[data.userId].username }}</div>
+        <a-button v-if="user.role === 'admin'" style="margin-bottom: 5px;" @click="deleteUser(data.userId)" type="primary"> 删除用户 </a-button>
         <a-button @click="addFriend(data.userId)" type="primary">添加好友</a-button>
       </div>
       <a-avatar class="avatar-img" :src="userGather[data.userId].avatar" />
     </a-popover>
-    <a-avatar v-else class="avatar-img" :src="userGather[data.userId].avatar" />
     <span class="avatar-name">{{ userGather[data.userId].username }}</span>
     <span class="avatar-time">{{ _formatTime(data.time) }}</span>
   </div>
@@ -40,6 +40,14 @@ export default class GenalAvatar extends Vue {
 
   _formatTime(time: number) {
     return formatTime(time);
+  }
+
+  async deleteUser(userId: string) {
+    await api.deleteUser({
+      uid: this.user.userId,
+      psw: this.user.password,
+      did: userId,
+    });
   }
 }
 </script>

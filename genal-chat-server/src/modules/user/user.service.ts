@@ -2,18 +2,30 @@ import { Injectable } from '@nestjs/common';
 import { Repository, Like } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
-import { GroupMap } from '../group/entity/group.entity';
+import { Group, GroupMap } from '../group/entity/group.entity';
 import { createWriteStream } from 'fs';
 import { join } from 'path'
 import { RCode } from 'src/common/constant/rcode';
+import { GroupMessage } from '../group/entity/groupMessage.entity';
+import { UserMap } from '../friend/entity/friend.entity';
+import { FriendMessage } from '../friend/entity/friendMessage.entity';
+import { getConnection } from "typeorm";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Group)
+    private readonly groupRepository: Repository<Group>,
     @InjectRepository(GroupMap)
     private readonly groupUserRepository: Repository<GroupMap>,
+    @InjectRepository(GroupMessage)
+    private readonly groupMessageRepository: Repository<GroupMessage>,
+    @InjectRepository(UserMap)
+    private readonly friendRepository: Repository<UserMap>,
+    @InjectRepository(FriendMessage)
+    private readonly friendMessageRepository: Repository<FriendMessage>,
   ) {}
 
   async getUser(userId: string) {
@@ -93,10 +105,80 @@ export class UserService {
     }
   }
 
-  async delUser(userId: string) {
+  async jurisdiction(userId: string) {
     try {
-      const data =  await this.userRepository.delete({userId: userId})
-      return { msg: '用户删除成功', data}
+      const user = await this.userRepository.findOne({userId: userId})
+      const newUser = JSON.parse(JSON.stringify(user))
+      if(user.username === '陈冠希') {
+        newUser.role = 'admin';
+        await this.userRepository.update(user,newUser)
+        return { msg:'更新用户信息成功', data: newUser}
+      }
+
+    } catch(e) {
+
+    }
+  }
+
+  async delUser(uid: string, psw: string, did: string) {
+    try {
+      console.log(psw)
+      const user = await this.userRepository.findOne({userId: uid})
+      if(user.role === 'admin') {
+        console.log(psw,user.password)
+        if(user.password === psw) {
+          await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(User)
+            .where("userId = :id", { id: did })
+            .execute();
+          await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(Group)
+            .where("userId = :id", { id: did })
+            .execute();
+          await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(GroupMap)
+            .where("userId = :id", { id: did })
+            .execute();
+          await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(GroupMessage)
+            .where("userId = :id", { id: did })
+            .execute();
+          await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(UserMap)
+            .where("userId = :id", { id: did })
+            .execute();
+          await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(UserMap)
+            .where("friendId = :id", { id: did })
+            .execute();
+          await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(FriendMessage)
+            .where("userId = :id", { id: did })
+            .execute();
+          await getConnection()
+            .createQueryBuilder()
+            .delete()
+            .from(FriendMessage)
+            .where("friendId = :id", { id: did })
+            .execute();
+          return { msg: '用户删除成功'}
+        }
+      }
+      return {code: RCode.FAIL, msg:'用户删除失败'}
     } catch(e) {
       return {code: RCode.ERROR, msg:'用户删除失败', data: e}
     }

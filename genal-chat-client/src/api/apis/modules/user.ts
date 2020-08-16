@@ -29,3 +29,11 @@ export function setUserAvatar(params: FormData) {
     },
   });
 }
+
+/**
+ * 删除用户
+ * @param params
+ */
+export function deleteUser(params: any) {
+  return fetch.delete(`/user`, { params: params });
+}

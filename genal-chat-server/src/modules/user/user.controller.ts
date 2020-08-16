@@ -31,9 +31,14 @@ export class UserController {
     return this.userService.updateUser(userId, user)
   }
 
+  @Patch('/jurisdiction/:userId')
+  jurisdiction(@Param('userId') userId) {
+    return this.userService.jurisdiction(userId)
+  }
+
   @Delete()
-  delUser(@Query() { id }) {
-    return this.userService.delUser(id);
+  delUser(@Query() { uid, psw, did }) {
+    return this.userService.delUser(uid, psw, did);
   }
 
   @Post('/login')

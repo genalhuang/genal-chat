@@ -45,7 +45,6 @@ module.exports = {
     }
   },
   configureWebpack: (config) => {
-
     // 代码 gzip
     const productionGzipExtensions = ['html', 'js', 'css'];
     config.plugins.push(

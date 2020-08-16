@@ -17,6 +17,9 @@ export class User {
   @Column({ default: 'user' })
   role: string;
 
+  @Column({ default: 'on' })
+  status: string;
+
   @Column({ default: '' })
   tag: string;
 
