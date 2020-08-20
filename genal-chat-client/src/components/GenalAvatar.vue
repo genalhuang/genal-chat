@@ -4,7 +4,9 @@
       <div slot="content" class="avatar-card">
         <a-avatar :size="60" :src="userGather[data.userId].avatar" />
         <div>{{ userGather[data.userId].username }}</div>
-        <a-button v-if="user.role === 'admin'" style="margin-bottom: 5px;" @click="deleteUser(data.userId)" type="primary"> 删除用户 </a-button>
+        <a-button v-if="user.role === 'admin'" style="margin-bottom: 5px;" @click="deleteUser(data.userId)" type="primary">
+          删除用户
+        </a-button>
         <a-button @click="addFriend(data.userId)" type="primary">添加好友</a-button>
       </div>
       <a-avatar class="avatar-img" :src="userGather[data.userId].avatar" />
@@ -21,6 +23,7 @@ import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
 const appModule = namespace('app');
 import { formatTime } from '@/utils/common';
+import { processReturn } from '@/utils/common.ts';
 
 @Component
 export default class GenalAvatar extends Vue {
@@ -43,11 +46,12 @@ export default class GenalAvatar extends Vue {
   }
 
   async deleteUser(userId: string) {
-    await api.deleteUser({
+    let res = await api.deleteUser({
       uid: this.user.userId,
       psw: this.user.password,
       did: userId,
     });
+    let data = processReturn(res);
   }
 }
 </script>

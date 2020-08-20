@@ -1,4 +1,4 @@
-import { SET_USER, CLEAR_USER } from './mutation-types';
+import { SET_USER, CLEAR_USER, SET_TOKEN } from './mutation-types';
 import { AppState } from './state';
 import cookie from 'js-cookie';
 import { MutationTree } from 'vuex';
@@ -19,6 +19,11 @@ const mutations: MutationTree<AppState> = {
       createTime: 0,
     };
     cookie.set('user', '');
+  },
+
+  [SET_TOKEN](state, payload) {
+    state.token = payload;
+    cookie.set('token', payload);
   },
 };
 

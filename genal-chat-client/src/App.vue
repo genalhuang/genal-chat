@@ -80,9 +80,9 @@ export default class GenalChat extends Vue {
       stars: any = [],
       shootingStars: any = [],
       layers = [
-        { speed: 0.15, scale: 0.2, count: 320 },
-        { speed: 0.3, scale: 0.5, count: 50 },
-        { speed: 0.5, scale: 0.75, count: 30 },
+        { speed: 0.03, scale: 0.2, count: 320 },
+        { speed: 0.07, scale: 0.5, count: 50 },
+        { speed: 0.12, scale: 0.75, count: 30 },
       ],
       starsAngle = 145,
       shootingStarSpeed = {
@@ -91,7 +91,7 @@ export default class GenalChat extends Vue {
       },
       shootingStarOpacityDelta = 0.01,
       trailLengthDelta = 0.01,
-      shootingStarEmittingInterval = 2000,
+      shootingStarEmittingInterval = 4000,
       shootingStarLifeTime = 500,
       maxTrailLength = 300,
       starBaseRadius = 2,

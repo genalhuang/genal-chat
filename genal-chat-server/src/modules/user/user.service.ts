@@ -122,10 +122,8 @@ export class UserService {
 
   async delUser(uid: string, psw: string, did: string) {
     try {
-      console.log(psw)
       const user = await this.userRepository.findOne({userId: uid})
       if(user.role === 'admin') {
-        console.log(psw,user.password)
         if(user.password === psw) {
           await getConnection()
             .createQueryBuilder()
@@ -203,7 +201,7 @@ export class UserService {
           select: ['userId','username','avatar','role','tag','createTime'],
           where:{username: Like(`%${username}%`)}
         });
-        return { msg:'获取用户信息成功', data: users}
+        return { data: users }
       }
       return {code: RCode.FAIL, msg:'请输入用户名', data: null}
     } catch(e) {

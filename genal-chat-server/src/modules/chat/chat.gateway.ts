@@ -326,7 +326,6 @@ export class ChatGateway {
         userData: userArr
       }})
     } catch (e) {
-      console.log(e)
       this.server.to(user.userId).emit('chatData', {code:RCode.ERROR, msg:'获取聊天数据失败', data: {
         groupData: [],
         friendData: [],

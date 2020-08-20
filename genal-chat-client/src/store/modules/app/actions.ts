@@ -1,4 +1,4 @@
-import { SET_USER } from './mutation-types';
+import { SET_USER, SET_TOKEN } from './mutation-types';
 import { ActionTree } from 'vuex';
 import { AppState } from './state';
 import { RootState } from '../../index';
@@ -7,22 +7,25 @@ import { processReturn } from '@/utils/common.ts';
 
 const actions: ActionTree<AppState, RootState> = {
   async regist({ commit }, payload) {
-    let res = await fetch.post('/user/regist', {
+    let res = await fetch.post('/auth/regist', {
       ...payload,
     });
-    let user = processReturn(res);
-    if (user) {
-      commit(SET_USER, user);
-      return user;
+    let data = processReturn(res);
+    if (data) {
+      commit(SET_USER, data.user);
+      commit(SET_TOKEN, data.token);
+      return data;
     }
   },
   async login({ commit }, payload) {
-    let res = await fetch.post('/user/login', {
+    let res = await fetch.post('/auth/login', {
       ...payload,
     });
-    if (processReturn(res)) {
-      commit(SET_USER, res.data.data);
-      return res.data;
+    let data = processReturn(res);
+    if (data) {
+      commit(SET_USER, data.user);
+      commit(SET_TOKEN, data.token);
+      return data;
     }
   },
 };

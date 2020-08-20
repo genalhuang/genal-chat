@@ -1,5 +1,6 @@
 export interface AppState {
   user: User;
+  token: string;
 }
 
 const appState: AppState = {
@@ -10,6 +11,7 @@ const appState: AppState = {
     avatar: '',
     createTime: 0,
   },
+  token: '',
 };
 
 export default appState;

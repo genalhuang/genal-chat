@@ -76,7 +76,7 @@ export class GroupService {
     try {
       if(groupName) {
         const groups = await this.groupRepository.find({groupName: Like(`%${groupName}%`)})
-        return { msg:'获取群信息成功', data: groups}
+        return { data: groups}
       }
       return {code: RCode.FAIL, msg:'请输入群昵称', data: null}
     } catch(e) {

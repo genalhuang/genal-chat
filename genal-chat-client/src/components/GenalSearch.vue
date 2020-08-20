@@ -141,7 +141,8 @@ export default class GenalSearch extends Vue {
       return;
     }
     let res = await apis.getGroupsByName(value);
-    this.groupArr = res.data.data;
+    let data = processReturn(res);
+    this.groupArr = data;
   }
 
   handleGroupSelect(group: Group) {

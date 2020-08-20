@@ -4,7 +4,6 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { logger } from './common/middleware/logger.middleware';
 import { ResponseInterceptor } from './common/interceptor/response.interceptor';
-import {RolesGuard} from './common/guard/roles.guard'
 import { join } from 'path'
 
 async function bootstrap() {
@@ -13,9 +12,6 @@ async function bootstrap() {
 
   // 全局中间件
   app.use(logger)
-
-  // 全局守卫
-  app.useGlobalGuards(new RolesGuard());
 
   // 全局过滤器
   app.useGlobalFilters(new HttpExceptionFilter());

@@ -4,6 +4,7 @@ import { UserModule } from './modules/user/user.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { FriendModule } from './modules/friend/friend.module';
 import { GroupModule } from './modules/group/group.module'
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { GroupModule } from './modules/group/group.module'
     UserModule,
     ChatModule,
     FriendModule,
-    GroupModule
+    GroupModule,
+    AuthModule
   ],
 })
 export class AppModule {}
