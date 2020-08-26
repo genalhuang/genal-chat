@@ -17,6 +17,7 @@ import {
   Select,
   Upload,
   Tooltip,
+  Drawer,
 } from 'ant-design-vue';
 
 Vue.use(Avatar);
@@ -34,4 +35,5 @@ Vue.use(Card);
 Vue.use(Select);
 Vue.use(Upload);
 Vue.use(Tooltip);
+Vue.use(Drawer);
 Vue.prototype.$message = message;

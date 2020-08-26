@@ -109,7 +109,7 @@ const actions: ActionTree<ChatState, RootState> = {
         if (!res.code) {
           commit(SET_FRIEND_GATHER, res.data);
           commit(SET_USER_GATHER, res.data);
-          Vue.prototype.$message.info(`${res.data.username}添加你为好友`);
+          Vue.prototype.$message.info(`添加好友${res.data.username}成功`);
           socket.emit('joinFriendSocket', {
             userId: user.userId,
             friendId: res.data.userId,

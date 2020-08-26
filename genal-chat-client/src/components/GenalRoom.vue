@@ -56,6 +56,10 @@ export default class GenalRoom extends Vue {
   @chatModule.Getter('friendGather') friendGather: FriendGather;
   chatArr: Array<Group | Friend> = [];
 
+  created() {
+    this.sortChat();
+  }
+
   @Watch('groupGather', { deep: true })
   changeGroupGather() {
     this.sortChat();

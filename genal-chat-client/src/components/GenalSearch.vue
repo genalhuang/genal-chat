@@ -106,18 +106,25 @@ export default class GenalSearch extends Vue {
   friendId: string = '';
   userArr: Array<User> = [];
 
+  created() {
+    this.getSearchData();
+  }
+
   @Watch('groupGather')
   changeGroupGather() {
-    this.searchData = [...Object.values(this.groupGather), ...Object.values(this.friendGather)];
+    this.getSearchData();
   }
 
   @Watch('friendGather')
   changeFriendGather() {
+    this.getSearchData();
+  }
+
+  getSearchData() {
     this.searchData = [...Object.values(this.groupGather), ...Object.values(this.friendGather)];
   }
 
   handleSearch(value: string) {
-    this.searchData = [...Object.values(this.groupGather), ...Object.values(this.friendGather)];
     let mySearchData = [];
     for (let chat of this.searchData) {
       // @ts-ignore

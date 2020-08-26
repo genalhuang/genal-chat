@@ -10,6 +10,11 @@
     <div class="chat-part3">
       <genal-message @sendMessage="sendMessage"></genal-message>
     </div>
+    <a-icon type="team" class="chat-team" @click="toggleDrawer" />
+    <a-drawer placement="left" :closable="false" :visible="visibleDrawer" @close="toggleDrawer">
+      <genal-search @addGroup="addGroup" @joinGroup="joinGroup" @addFriend="addFriend" @setActiveRoom="setActiveRoom"> </genal-search>
+      <genal-room @setActiveRoom="setActiveRoom"></genal-room>
+    </a-drawer>
     <genal-join @regist="handleregist" @login="handlelogin" :showModal="showModal"></genal-join>
   </div>
 </template>
@@ -35,8 +40,8 @@ const chatModule = namespace('chat');
   },
 })
 export default class GenalChat extends Vue {
-  showModal = false;
-
+  showModal: boolean = false;
+  visibleDrawer: boolean = false;
   @appModule.Getter('user') user: User;
   @appModule.Mutation('clear_user') clearUser: Function;
   @appModule.Action('login') login: Function;
@@ -144,6 +149,10 @@ export default class GenalChat extends Vue {
     this.clearUser();
     this.$router.go(0);
   }
+
+  toggleDrawer() {
+    this.visibleDrawer = !this.visibleDrawer;
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -190,10 +199,24 @@ export default class GenalChat extends Vue {
       font-weight: bold;
     }
   }
+  .chat-team {
+    display: none;
+  }
 }
 @media screen and (max-width: 768px) {
-  .chat-part2 {
-    display: none;
+  .chat {
+    margin: 0;
+    height: 100%;
+    .chat-part2 {
+      display: none;
+    }
+    .chat-team {
+      display: block !important;
+      position: absolute;
+      font-size: 25px;
+      top: 17px;
+      left: 95px;
+    }
   }
 }
 </style>

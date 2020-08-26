@@ -2,3 +2,25 @@
 .ant-tabs-bar {
   margin: 0 0 10px 0!important;
 }
+
+.ant-drawer-content-wrapper {
+  background-color: rgba(54, 50, 50, 0.1)!important;
+  .ant-drawer-content {
+    background-color: rgba(104, 179, 200, 0.4)!important;
+    .ant-drawer-body {
+      padding: 0!important;
+      .room-card {
+        background-color: rgba(104, 179, 200, 0.2);
+      }
+      .room-card.active {
+        background-color: rgba(0, 0, 0, 0.6);
+      }
+      .room-card-name {
+        color: #fff;
+      }
+      .text {
+        color: rgb(238, 214, 214);
+      }
+    }
+  }
+}
