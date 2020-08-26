@@ -172,12 +172,12 @@ export class ChatGateway {
             this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '不能添加自己为好友', data: '' })
             return;
           }
-          const isHave1 = await this.friendRepository.find({ userId: data.userId, friendId: data.friendId })
-          const isHave2 = await this.friendRepository.find({ userId: data.friendId, friendId: data.userId })
+          const isHave1 = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId })
+          const isHave2 = await this.friendRepository.findOne({ userId: data.friendId, friendId: data.userId })
           const roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId
 
-          if (isHave1.length || isHave2.length) {
-            this.server.emit('addFriend', { code: RCode.FAIL, msg: '已经有该好友', data: data })
+          if (isHave1 || isHave2) {
+            this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '已经有该好友', data: data })
             return;
           }
 
