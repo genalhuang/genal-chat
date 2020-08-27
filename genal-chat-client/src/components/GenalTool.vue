@@ -11,7 +11,7 @@
     </div>
     <a-tooltip placement="topLeft" arrow-point-at-center>
       <div slot="title">
-        <div>移动端暂不能切换聊天组</div>
+        <div>请文明聊天</div>
         <div>截图粘贴可发送图片</div>
       </div>
       <a-icon type="bulb" class="tip" />

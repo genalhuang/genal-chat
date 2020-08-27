@@ -22,7 +22,8 @@ const actions: ActionTree<ChatState, RootState> = {
   async connectSocket({ commit, state, dispatch, rootState }, callback) {
     let user = rootState.app.user;
     let friendGather = state.friendGather;
-    let socket = io.connect(`/?userId=${user.userId}`);
+    let socket = io.connect(`/?userId=${user.userId}`, { reconnection: true });
+    
     socket.on('connect', async () => {
       console.log('连接成功');
 
@@ -31,118 +32,118 @@ const actions: ActionTree<ChatState, RootState> = {
 
       // 先保存好socket对象
       commit(SET_SOCKET, socket);
+    });
 
-      // 初始化事件监听
-      socket.on('addGroup', (res: any) => {
-        console.log('on addGroup', res);
-        if (res.code) {
-          return Vue.prototype.$message.error(res.msg);
-        }
-        commit(SET_GROUP_GATHER, res.data);
-      });
+    // 初始化事件监听
+    socket.on('addGroup', (res: any) => {
+      console.log('on addGroup', res);
+      if (res.code) {
+        return Vue.prototype.$message.error(res.msg);
+      }
+      commit(SET_GROUP_GATHER, res.data);
+    });
 
-      socket.on('joinGroup', async (res: any) => {
-        console.log('on joinGroup', res);
-        if (res.code) {
-          return Vue.prototype.$message.error(res.msg);
+    socket.on('joinGroup', async (res: any) => {
+      console.log('on joinGroup', res);
+      if (res.code) {
+        return Vue.prototype.$message.error(res.msg);
+      }
+      let newUser = res.data.user;
+      let group = res.data.group;
+      if (newUser.userId != user.userId) {
+        commit(SET_USER_GATHER, newUser);
+        return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupName}`);
+      } else {
+        console.log(state.groupGather, group.groupId);
+        // 是用户自己 则加入到某个群
+        if (!state.groupGather[group.groupId]) {
+          commit(SET_GROUP_GATHER, group);
+          // 获取群里面所有用户的用户信息
+          socket.emit('chatData', user);
         }
-        let newUser = res.data.user;
-        let group = res.data.group;
-        if (newUser.userId != user.userId) {
-          commit(SET_USER_GATHER, newUser);
-          return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupName}`);
-        } else {
-          console.log(state.groupGather, group.groupId);
-          // 是用户自己 则加入到某个群
-          if (!state.groupGather[group.groupId]) {
-            commit(SET_GROUP_GATHER, group);
-            // 获取群里面所有用户的用户信息
-            socket.emit('chatData', user);
+        Vue.prototype.$message.info(`成功加入群${group.groupName}`);
+        commit(SET_ACTIVE_ROOM, state.groupGather[group.groupId]);
+      }
+    });
+
+    socket.on('joinGroupSocket', (res: any) => {
+      console.log('on joinGroupSocket', res);
+      if (res.code) {
+        return Vue.prototype.$message.error(res.msg);
+      }
+      let newUser: Friend = res.data.user;
+      let group: Group = res.data.group;
+      if (newUser.userId != user.userId) {
+        commit(SET_USER_GATHER, newUser);
+        if (friendGather[newUser.userId]) {
+          // 当用户的好友更新了用户信息
+          let messages;
+          if (friendGather[newUser.userId].messages) {
+            messages = friendGather[newUser.userId].messages;
           }
-          Vue.prototype.$message.info(`成功加入群${group.groupName}`);
-          commit(SET_ACTIVE_ROOM, state.groupGather[group.groupId]);
+          commit(SET_FRIEND_GATHER, newUser);
+          commit(SET_FRIEND_MESSAGES, messages);
         }
-      });
+        // @ts-ignore 解决重复进群消息问题
+        if (window.msg === newUser.userId) {
+          return;
+        }
+        // @ts-ignore
+        window.msg = newUser.userId;
+        return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupName}`);
+      } else {
+        if (!state.groupGather[group.groupId]) {
+          commit(SET_GROUP_GATHER, group);
+        }
+        commit(SET_USER_GATHER, newUser);
+      }
+    });
 
-      socket.on('joinGroupSocket', (res: any) => {
-        console.log('on joinGroupSocket', res);
-        if (res.code) {
-          return Vue.prototype.$message.error(res.msg);
-        }
-        let newUser: Friend = res.data.user;
-        let group: Group = res.data.group;
-        if (newUser.userId != user.userId) {
-          commit(SET_USER_GATHER, newUser);
-          if (friendGather[newUser.userId]) {
-            // 当用户的好友更新了用户信息
-            let messages;
-            if (friendGather[newUser.userId].messages) {
-              messages = friendGather[newUser.userId].messages;
-            }
-            commit(SET_FRIEND_GATHER, newUser);
-            commit(SET_FRIEND_MESSAGES, messages);
-          }
-          // @ts-ignore 解决重复进群消息问题
-          if (window.msg === newUser.userId) {
-            return;
-          }
-          // @ts-ignore
-          window.msg = newUser.userId;
-          return Vue.prototype.$message.info(`${newUser.username}加入群${group.groupName}`);
-        } else {
-          if (!state.groupGather[group.groupId]) {
-            commit(SET_GROUP_GATHER, group);
-          }
-          commit(SET_USER_GATHER, newUser);
-        }
-      });
+    socket.on('groupMessage', (res: any) => {
+      console.log('on groupMessage', res);
+      if (!res.code) {
+        commit(ADD_GROUP_MESSAGE, res.data);
+      }
+    });
 
-      socket.on('groupMessage', (res: any) => {
-        console.log('on groupMessage', res);
-        if (!res.code) {
-          commit(ADD_GROUP_MESSAGE, res.data);
-        }
-      });
+    socket.on('addFriend', (res: any) => {
+      console.log('on addFriend', res);
+      if (!res.code) {
+        commit(SET_FRIEND_GATHER, res.data);
+        commit(SET_USER_GATHER, res.data);
+        Vue.prototype.$message.info(`添加好友${res.data.username}成功`);
+        socket.emit('joinFriendSocket', {
+          userId: user.userId,
+          friendId: res.data.userId,
+        });
+      } else {
+        Vue.prototype.$message.error(res.msg);
+      }
+    });
 
-      socket.on('addFriend', (res: any) => {
-        console.log('on addFriend', res);
-        if (!res.code) {
-          commit(SET_FRIEND_GATHER, res.data);
-          commit(SET_USER_GATHER, res.data);
-          Vue.prototype.$message.info(`添加好友${res.data.username}成功`);
-          socket.emit('joinFriendSocket', {
-            userId: user.userId,
-            friendId: res.data.userId,
-          });
-        } else {
-          Vue.prototype.$message.error(res.msg);
-        }
-      });
+    socket.on('joinFriendSocket', (res: any) => {
+      console.log('on joinFriendSocket', res);
+      if (!res.code) {
+        console.log('成功加入私聊房间');
+      }
+    });
 
-      socket.on('joinFriendSocket', (res: any) => {
-        console.log('on joinFriendSocket', res);
-        if (!res.code) {
-          console.log('成功加入私聊房间');
-        }
-      });
+    socket.on('friendMessage', (res: any) => {
+      console.log('on friendMessage', res);
 
-      socket.on('friendMessage', (res: any) => {
-        console.log('on friendMessage', res);
-
-        if (!res.code) {
-          if (res.data.friendId === user.userId || res.data.userId === user.userId) {
-            console.log('ADD_FRIEND_MESSAGE', res.data);
-            commit(ADD_FRIEND_MESSAGE, res.data);
-          }
+      if (!res.code) {
+        if (res.data.friendId === user.userId || res.data.userId === user.userId) {
+          console.log('ADD_FRIEND_MESSAGE', res.data);
+          commit(ADD_FRIEND_MESSAGE, res.data);
         }
-      });
+      }
+    });
 
-      socket.on('chatData', (res: any) => {
-        if (res.code) {
-          return Vue.prototype.$message.error(res.msg);
-        }
-        dispatch('handleChatData', res.data);
-      });
+    socket.on('chatData', (res: any) => {
+      if (res.code) {
+        return Vue.prototype.$message.error(res.msg);
+      }
+      dispatch('handleChatData', res.data);
     });
   },
 
