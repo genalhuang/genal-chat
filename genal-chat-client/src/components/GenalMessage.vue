@@ -1,30 +1,36 @@
 <template>
-  <div class="message" v-if="activeRoom">
-    <div class="message-header" v-if="activeRoom">
-      <div v-if="groupGather[activeRoom.groupId]">
-        {{ groupGather[activeRoom.groupId].groupName }}
-      </div>
-      <div v-else>
-        {{ userGather[activeRoom.userId].username }}
-      </div>
-    </div>
-    <div class="message-frame" ref="messages" :style="{ opacity: messageOpacity }">
-      <a-icon type="sync" spin class="message-frame-loading" v-if="showLoading" />
-      <template v-for="item in pagingMessage">
-        <div class="message-frame-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
-          <genal-avatar :data="item"></genal-avatar>
-          <div>
-            <div class="message-frame-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
-            <div class="message-frame-image" v-if="item.messageType === 'image'">
-              <viewer>
-                <img :src="'api/static/' + item.content" alt="" :style="getImageStyle(item.content)" />
-              </viewer>
-            </div>
-          </div>
+  <div class="message">
+    <div class="message-header">
+      <div v-if="activeRoom">
+        <div v-if="groupGather[activeRoom.groupId]">
+          {{ groupGather[activeRoom.groupId].groupName }}
         </div>
-      </template>
+        <div v-else>
+          {{ userGather[activeRoom.userId].username }}
+        </div>
+      </div>
     </div>
-    <div class="message-input">
+    <div class="message-main" :style="{ opacity: messageOpacity }">
+      <div class="message-content">
+        <div v-if="activeRoom">
+          <a-icon type="sync" spin class="message-content-loading" v-if="showLoading" />
+          <template v-for="item in pagingMessage">
+            <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
+              <genal-avatar :data="item"></genal-avatar>
+              <div>
+                <div class="message-content-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
+                <div class="message-content-image" v-if="item.messageType === 'image'">
+                  <viewer>
+                    <img :src="'api/static/' + item.content" alt="" :style="getImageStyle(item.content)" />
+                  </viewer>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+    <div class="message-input" v-if="activeRoom">
       <a-popover placement="topLeft" trigger="hover" class="message-popver">
         <template slot="content">
           <a-tabs default-key="1" size="small">
@@ -43,12 +49,12 @@
             </a-tab-pane>
           </a-tabs>
         </template>
-        <a-icon class="messagte-tool-icon" type="appstore" />
+        <div class="messagte-tool-icon">😃</div>
       </a-popover>
       <a-input
         type="text"
         placeholder="say hello..."
-        v-model="message"
+        v-model="text"
         ref="input"
         autoFocus
         style="color:#000;"
@@ -76,30 +82,129 @@ import { parseText } from '@/utils/common';
 })
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
-  @chatModule.Getter('activeRoom') activeRoom: Group & Friend;
+  @chatModule.State('activeRoom') activeRoom: Group & Friend;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('userGather') userGather: FriendGather;
 
-  message: string = '';
+  text: string = '';
   loading: boolean = false;
-  messageDom: Element;
+  messageDom: HTMLElement;
+  messageContentDom: HTMLElement;
   pagingMessage: Array<GroupMessage | FriendMessage> = [];
   messageCount: number = 15;
   messageOpacity: number = 0;
   lastTime: number = 0;
+  lastMessagePosition: number = 0;
 
   mounted() {
     this.initPaste();
+    this.messageDom = document.getElementsByClassName('message-main')[0] as HTMLElement;
+    this.messageContentDom = document.getElementsByClassName('message-content')[0] as HTMLElement;
+    this.messageDom.addEventListener('scroll', this.handleScroll);
   }
 
-  @Watch('activeRoom', { deep: true })
+  get showLoading() {
+    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
+  }
+
+  /**
+   * 点击房间进入此方法
+   */
+  @Watch('activeRoom')
   changeActiveRoom() {
-    this.loading = false;
     this.messageOpacity = 0;
     this.messageCount = 15;
-    this.getPagingMessage();
-    this.initScroll();
+    this.initPagingMessage();
     this.scrollToBottom();
+  }
+
+  /**
+   * 新消息会进入此方法
+   */
+  @Watch('activeRoom.messages', { deep: true })
+  changeMessages() {
+    this.addMessage();
+  }
+
+  /**
+   * 初始化分页消息
+   */
+  initPagingMessage() {
+    if (!this.activeRoom.messages) {
+      return (this.pagingMessage = []);
+    }
+    if (this.activeRoom.messages.length <= 15) {
+      return (this.pagingMessage = this.activeRoom.messages);
+    }
+    this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - 15);
+  }
+
+  handleScroll(event: Event) {
+    if (event.currentTarget) {
+      // 只有有消息且滚动到顶部时才进入
+      if (this.messageDom.scrollTop === 0 && this.activeRoom.messages && this.activeRoom.messages.length > this.messageCount) {
+        this.lastMessagePosition = this.messageContentDom.offsetHeight;
+        this.loading = true;
+        this.messageCount += 15;
+        this.getPagingMessage();
+      }
+    }
+  }
+
+  /**
+   * 获取分页消息
+   */
+  getPagingMessage() {
+    if (this.activeRoom.messages) {
+      this.messageOpacity = 0;
+      this.$nextTick(() => {
+        this.messageDom.scrollTop = this.messageContentDom.offsetHeight - this.lastMessagePosition;
+        this.messageOpacity = 1;
+      });
+      this.loading = false;
+      if (this.activeRoom.messages.length < this.messageCount) {
+        return (this.pagingMessage = this.activeRoom.messages);
+      }
+      this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
+    }
+  }
+
+  /**
+   * 在分页信息的基础上来了新消息
+   */
+  addMessage() {
+    if (this.activeRoom.messages) {
+      // 新消息来了只有是自己发的消息和消息框本身在底部才会滚动到底部
+      if (this.judgeScrollToBottom()) {
+        this.scrollToBottom();
+      }
+      ++this.messageCount;
+      if (this.activeRoom.messages.length < this.messageCount) {
+        return (this.pagingMessage = this.activeRoom.messages);
+      }
+      this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
+    }
+  }
+
+  /**
+   * 判断是否应该滚动到底部
+   */
+  judgeScrollToBottom() {
+    let messages = this.activeRoom.messages;
+    return (
+      messages[messages.length - 1].userId === this.user.userId ||
+      (this.messageDom && this.messageDom.scrollTop + this.messageDom.offsetHeight + 80 > this.messageContentDom.scrollHeight)
+    );
+  }
+
+  /**
+   * 滚动到底部
+   */
+  scrollToBottom() {
+    this.$nextTick(() => {
+      this.messageDom.scrollTop = this.messageDom.scrollHeight;
+      this.messageOpacity = 1;
+    });
   }
 
   /**
@@ -125,59 +230,6 @@ export default class GenalMessage extends Vue {
     });
   }
 
-  initScroll() {
-    let that = this;
-    setTimeout(() => {
-      this.messageDom = this.$refs.messages as Element;
-      this.messageDom.addEventListener('scroll', this.handleScroll);
-    }, 0);
-  }
-
-  handleScroll(event: any) {
-    if (event.currentTarget) {
-      if (this.messageDom.scrollTop === 0) {
-        setTimeout(() => {
-          this.messageCount += 15;
-          this.getPagingMessage();
-        }, 60);
-      }
-    }
-  }
-
-  /**
-   * 滚动到底部
-   */
-  scrollToBottom() {
-    setTimeout(() => {
-      this.messageDom.scrollTop = this.messageDom.scrollHeight;
-      this.messageOpacity = 1;
-    }, 0);
-  }
-
-  /**
-   * 获取分页消息
-   */
-  getPagingMessage() {
-    if (!this.activeRoom.messages) {
-      return (this.pagingMessage = []);
-    }
-    if (this.activeRoom.messages.length < this.messageCount) {
-      this.loading = false;
-      return (this.pagingMessage = this.activeRoom.messages);
-    }
-    this.loading = true;
-    this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
-    if (this.messageDom && this.messageCount != 15) {
-      setTimeout(() => {
-        this.messageDom.scrollTop = 65;
-      }, 20);
-    }
-  }
-
-  get showLoading() {
-    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
-  }
-
   /**
    * 消息发送节流
    */
@@ -191,28 +243,27 @@ export default class GenalMessage extends Vue {
   }
 
   sendMessage() {
-    this.scrollToBottom();
-    if (!this.message.trim()) {
+    if (!this.text.trim()) {
       this.$message.error('不能发送空消息!');
       return;
     }
-    if (this.message.length > 500) {
+    if (this.text.length > 500) {
       this.$message.error('消息太长!');
       return;
     }
     if (this.activeRoom.groupId) {
-      this.$emit('sendMessage', { type: 'group', message: this.message, messageType: 'text' });
+      this.$emit('sendMessage', { type: 'group', message: this.text, messageType: 'text' });
     } else {
-      this.$emit('sendMessage', { type: 'friend', message: this.message, messageType: 'text' });
+      this.$emit('sendMessage', { type: 'friend', message: this.text, messageType: 'text' });
     }
-    this.message = '';
+    this.text = '';
   }
 
   /**
    * 添加emoji到input
    */
   addEmoji(emoji: string) {
-    this.message += emoji;
+    this.text += emoji;
     this.focusInput();
   }
 
@@ -308,7 +359,7 @@ export default class GenalMessage extends Vue {
     line-height: 60px;
     background-color: rgb(0, 0, 0, 0.3);
   }
-  .message-frame {
+  .message-main {
     height: calc(100% - 115px);
     overflow: auto;
     position: relative;
@@ -318,18 +369,18 @@ export default class GenalMessage extends Vue {
         justify-content: flex-end;
       }
     }
-    .message-frame-loading {
+    .message-content-loading {
       margin: 10px auto;
       font-size: 20px;
       padding: 8px;
       border-radius: 50%;
       background-color: rgb(0, 0, 0, 0.8);
     }
-    .message-frame-message {
+    .message-content-message {
       text-align: left;
       margin: 10px 20px;
-      .message-frame-text,
-      .message-frame-image {
+      .message-content-text,
+      .message-content-image {
         max-width: 600px;
         display: inline-block;
         background-color: rgb(0, 200, 255, 0.4);
@@ -340,7 +391,7 @@ export default class GenalMessage extends Vue {
         word-break: break-word;
         margin-top: 4px;
       }
-      .message-frame-image {
+      .message-content-image {
         max-height: 350px;
         max-width: 350px;
         img {
@@ -383,10 +434,9 @@ export default class GenalMessage extends Vue {
   width: 40px;
   height: 40px;
   text-align: center;
-  line-height: 45px;
-  font-size: 22px;
+  line-height: 42px;
+  font-size: 16px;
   cursor: pointer;
-  background-color: skyblue;
   z-index: 99;
 }
 .message-tool-item {
@@ -416,9 +466,9 @@ export default class GenalMessage extends Vue {
   .message-input {
     bottom: 0 !important;
   }
-  .message-frame {
+  .message-main {
     height: calc(100% - 102px) !important;
-    .message-frame-image {
+    .message-content-image {
       width: 150px !important;
       height: inherit !important;
       img {
