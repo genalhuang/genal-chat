@@ -18,8 +18,8 @@
 
 ### 项目界面
 <img src="./assets/genal.gif" alt="PC" style="max-width:800px" />
-<img src="./assets/mobile1.jpg" alt="Mobile" style="max-height:200px" />
-<img src="./assets/mobile2.jpg" alt="Mobile" style="max-height:200px" />
+
+<img src="./assets/mobile1.jpg" alt="Mobile" width="250" /><img src="./assets/mobile2.jpg" alt="Mobile" width="250" />
 
 ### 功能介绍
 - 群聊/私聊
