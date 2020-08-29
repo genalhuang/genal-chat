@@ -23,7 +23,7 @@ const actions: ActionTree<ChatState, RootState> = {
     let user = rootState.app.user;
     let friendGather = state.friendGather;
     let socket = io.connect(`/?userId=${user.userId}`, { reconnection: true });
-    
+
     socket.on('connect', async () => {
       console.log('连接成功');
 
@@ -183,10 +183,10 @@ const actions: ActionTree<ChatState, RootState> = {
      * 这里需要根据老的activeGather找到最新的gather对象,这样才能使得vue的watch监听新gather
      */
 
-    let activeRoom = state.activeRoom
+    let activeRoom = state.activeRoom;
     let groupGather2 = state.groupGather;
     let friendGather2 = state.friendGather;
-    if(!activeRoom) {
+    if (!activeRoom) {
       // 更新完数据没有默认activeRoom设置群为'阿童木聊天室'
       return commit(SET_ACTIVE_ROOM, groupGather['阿童木聊天室']);
     }

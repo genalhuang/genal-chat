@@ -16,7 +16,7 @@
       </div>
       <a-icon type="bulb" class="tip" />
     </a-tooltip>
-    <a href="https://github.com/genaller" target="_blank" class="github"><a-icon type="github"/></a>
+    <a href="https://github.com/genaller/genal-chat" target="_blank" class="github"><a-icon type="github"/></a>
     <a-modal title="用户信息" :visible="showUserModal" footer="" @cancel="handleCancel('showUserModal')">
       <div class="tool-user">
         <a-avatar :src="user.avatar" class="tool-user-img" :size="100"></a-avatar>

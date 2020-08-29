@@ -9,8 +9,8 @@
       </div>
     </div>
     <div class="message-main" ref="message" :style="{ opacity: messageOpacity }">
-      <div ref='messageContent'>
-        <a-icon type="sync" spin class="message-content-loading" v-if="showLoading" />
+      <div ref="messageContent">
+        <a-icon type="sync" spin class="message-content-loading" v-if="showLoading" />
         <template v-for="item in pagingMessage">
           <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
             <genal-avatar :data="item"></genal-avatar>
@@ -96,22 +96,22 @@ export default class GenalMessage extends Vue {
     this.initPaste();
   }
 
-  get showLoading() {
-    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
-  }
+  get showLoading() {
+    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
+  }
 
   @Watch('activeRoom')
   changeActiveRoom() {
     this.messageOpacity = 0;
     this.messageCount = 15;
-    this.initPagingMessage()
+    this.initPagingMessage();
     this.initScroll();
     this.scrollToBottom();
   }
 
-  @Watch('activeRoom.messages', {deep:true})
+  @Watch('activeRoom.messages', { deep: true })
   changeMessages() {
-    console.log('message')
+    console.log('message');
     this.addMessage();
   }
 
@@ -141,12 +141,12 @@ export default class GenalMessage extends Vue {
     if (event.currentTarget) {
       // 只有有消息且滚动到顶部时才进入
       if (this.messageDom.scrollTop === 0 && this.activeRoom.messages && this.activeRoom.messages.length > this.messageCount) {
-        this.lastMessagePosition = this.messageContentDom.offsetHeight
-        this.loading = true
+        this.lastMessagePosition = this.messageContentDom.offsetHeight;
+        this.loading = true;
         setTimeout(() => {
           this.messageCount += 15;
           this.getPagingMessage();
-        }, 0)
+        }, 0);
       }
     }
   }
@@ -155,7 +155,7 @@ export default class GenalMessage extends Vue {
    * 获取分页消息
    */
   getPagingMessage() {
-    if(this.activeRoom.messages) {
+    if (this.activeRoom.messages) {
       this.messageOpacity = 0;
       setTimeout(() => {
         this.messageDom.scrollTop = this.messageContentDom.offsetHeight - this.lastMessagePosition;
@@ -173,7 +173,7 @@ export default class GenalMessage extends Vue {
    * 在分页信息的基础上来了新消息
    */
   addMessage() {
-    if(this.activeRoom.messages) {
+    if (this.activeRoom.messages) {
       ++this.messageCount;
       if (this.activeRoom.messages.length < this.messageCount) {
         return (this.pagingMessage = this.activeRoom.messages);
@@ -214,7 +214,6 @@ export default class GenalMessage extends Vue {
       }
     });
   }
-
 
   /**
    * 消息发送节流
