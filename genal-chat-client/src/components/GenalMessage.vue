@@ -8,21 +8,22 @@
         {{ userGather[activeRoom.userId].username }}
       </div>
     </div>
-    <div class="message-frame" ref="messages" :style="{ opacity: messageOpacity }">
-      <a-icon type="sync" spin class="message-frame-loading" v-if="showLoading" />
-      <template v-for="item in pagingMessage">
-        <div class="message-frame-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
-          <genal-avatar :data="item"></genal-avatar>
-          <div>
-            <div class="message-frame-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
-            <div class="message-frame-image" v-if="item.messageType === 'image'">
-              <viewer>
-                <img :src="'api/static/' + item.content" alt="" :style="getImageStyle(item.content)" />
-              </viewer>
+    <div class="message-main" ref="message" :style="{ opacity: messageOpacity }">
+      <div ref='messageContent'>
+        <template v-for="item in pagingMessage">
+          <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
+            <genal-avatar :data="item"></genal-avatar>
+            <div>
+              <div class="message-content-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
+              <div class="message-content-image" v-if="item.messageType === 'image'">
+                <viewer>
+                  <img :src="'api/static/' + item.content" alt="" :style="getImageStyle(item.content)" />
+                </viewer>
+              </div>
             </div>
           </div>
-        </div>
-      </template>
+        </template>
+      </div>
     </div>
     <div class="message-input">
       <a-popover placement="topLeft" trigger="hover" class="message-popver">
@@ -82,24 +83,104 @@ export default class GenalMessage extends Vue {
 
   message: string = '';
   loading: boolean = false;
-  messageDom: Element;
+  messageDom: HTMLElement;
+  messageContentDom: HTMLElement;
   pagingMessage: Array<GroupMessage | FriendMessage> = [];
   messageCount: number = 15;
   messageOpacity: number = 0;
   lastTime: number = 0;
+  lastMessagePosition: number = 0;
 
   mounted() {
     this.initPaste();
   }
 
-  @Watch('activeRoom', { deep: true })
+  @Watch('activeRoom')
   changeActiveRoom() {
-    this.loading = false;
     this.messageOpacity = 0;
     this.messageCount = 15;
-    this.getPagingMessage();
+    this.initPagingMessage()
     this.initScroll();
     this.scrollToBottom();
+  }
+
+  @Watch('activeRoom.messages')
+  changeMessages() {
+    this.addMessage();
+  }
+
+  /**
+   * 初始化分页消息
+   */
+  initPagingMessage() {
+    if (!this.activeRoom.messages) {
+      return (this.pagingMessage = []);
+    }
+    if (this.activeRoom.messages.length <= 15) {
+      return (this.pagingMessage = this.activeRoom.messages);
+    }
+    this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - 15);
+  }
+
+  initScroll() {
+    let that = this;
+    setTimeout(() => {
+      this.messageDom = this.$refs.message as HTMLElement;
+      this.messageContentDom = this.$refs.messageContent as HTMLElement;
+      this.messageDom.addEventListener('scroll', this.handleScroll);
+    }, 0);
+  }
+
+  handleScroll(event: any) {
+    if (event.currentTarget) {
+      if (this.messageDom.scrollTop === 0) {
+        this.lastMessagePosition = this.messageContentDom.offsetHeight
+        setTimeout(() => {
+          this.messageCount += 15;
+          this.getPagingMessage();
+        }, 60)
+      }
+    }
+  }
+
+  /**
+   * 获取分页消息
+   */
+  getPagingMessage() {
+    if(this.activeRoom.messages) {
+      this.messageOpacity = 0;
+      setTimeout(() => {
+        this.messageDom.scrollTop = this.messageContentDom.offsetHeight - this.lastMessagePosition;
+        this.messageOpacity = 1;
+      }, 0);
+      if (this.activeRoom.messages.length < this.messageCount) {
+        return (this.pagingMessage = this.activeRoom.messages);
+      }
+      this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
+    }
+  }
+
+  /**
+   * 在分页信息的基础上来了新消息
+   */
+  addMessage() {
+    if(this.activeRoom.messages) {
+      ++this.messageCount;
+      if (this.activeRoom.messages.length < this.messageCount) {
+        return (this.pagingMessage = this.activeRoom.messages);
+      }
+      this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
+    }
+  }
+
+  /**
+   * 滚动到底部
+   */
+  scrollToBottom() {
+    setTimeout(() => {
+      this.messageDom.scrollTop = this.messageDom.scrollHeight;
+      this.messageOpacity = 1;
+    }, 10);
   }
 
   /**
@@ -125,58 +206,6 @@ export default class GenalMessage extends Vue {
     });
   }
 
-  initScroll() {
-    let that = this;
-    setTimeout(() => {
-      this.messageDom = this.$refs.messages as Element;
-      this.messageDom.addEventListener('scroll', this.handleScroll);
-    }, 0);
-  }
-
-  handleScroll(event: any) {
-    if (event.currentTarget) {
-      if (this.messageDom.scrollTop === 0) {
-        setTimeout(() => {
-          this.messageCount += 15;
-          this.getPagingMessage();
-        }, 60);
-      }
-    }
-  }
-
-  /**
-   * 滚动到底部
-   */
-  scrollToBottom() {
-    setTimeout(() => {
-      this.messageDom.scrollTop = this.messageDom.scrollHeight;
-      this.messageOpacity = 1;
-    }, 0);
-  }
-
-  /**
-   * 获取分页消息
-   */
-  getPagingMessage() {
-    if (!this.activeRoom.messages) {
-      return (this.pagingMessage = []);
-    }
-    if (this.activeRoom.messages.length < this.messageCount) {
-      this.loading = false;
-      return (this.pagingMessage = this.activeRoom.messages);
-    }
-    this.loading = true;
-    this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
-    if (this.messageDom && this.messageCount != 15) {
-      setTimeout(() => {
-        this.messageDom.scrollTop = 65;
-      }, 20);
-    }
-  }
-
-  get showLoading() {
-    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
-  }
 
   /**
    * 消息发送节流
@@ -308,7 +337,7 @@ export default class GenalMessage extends Vue {
     line-height: 60px;
     background-color: rgb(0, 0, 0, 0.3);
   }
-  .message-frame {
+  .message-main {
     height: calc(100% - 115px);
     overflow: auto;
     position: relative;
@@ -318,18 +347,18 @@ export default class GenalMessage extends Vue {
         justify-content: flex-end;
       }
     }
-    .message-frame-loading {
+    .message-content-loading {
       margin: 10px auto;
       font-size: 20px;
       padding: 8px;
       border-radius: 50%;
       background-color: rgb(0, 0, 0, 0.8);
     }
-    .message-frame-message {
+    .message-content-message {
       text-align: left;
       margin: 10px 20px;
-      .message-frame-text,
-      .message-frame-image {
+      .message-content-text,
+      .message-content-image {
         max-width: 600px;
         display: inline-block;
         background-color: rgb(0, 200, 255, 0.4);
@@ -340,7 +369,7 @@ export default class GenalMessage extends Vue {
         word-break: break-word;
         margin-top: 4px;
       }
-      .message-frame-image {
+      .message-content-image {
         max-height: 350px;
         max-width: 350px;
         img {

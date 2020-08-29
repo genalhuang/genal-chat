@@ -31,7 +31,7 @@ const mutations: MutationTree<ChatState> = {
 
   // 设置群消息
   [SET_GROUP_MESSAGES](state, payload: GroupMessage[]) {
-    if (payload.length) {
+    if (payload && payload.length) {
       Vue.set(state.groupGather[payload[0].groupId], 'messages', payload);
     }
   },
@@ -60,7 +60,7 @@ const mutations: MutationTree<ChatState> = {
   [SET_FRIEND_MESSAGES](state, payload: FriendMessage[]) {
     // @ts-ignore
     let userId = this.getters['app/user'].userId;
-    if (payload.length) {
+    if (payload && payload.length) {
       if (payload[0].friendId === userId) {
         Vue.set(state.friendGather[payload[0].userId], 'messages', payload);
       } else {
