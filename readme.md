@@ -17,8 +17,10 @@
   🧐 目前聊天室已经具备完整的聊天功能，今后会陆续开发更多酷炫的功能，喜欢的朋友给个star鼓励一下我吧!<br>
 
 ### 项目界面
+#### PC端
 <img src="./assets/genal.gif" alt="PC" style="max-width:800px" />
 
+#### 移动端
 <img src="./assets/mobile1.jpg" alt="Mobile" width="350" hspace="50"/><img src="./assets/mobile2.jpg" alt="Mobile" width="350" />
 
 ### 功能介绍
