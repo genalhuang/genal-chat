@@ -19,7 +19,7 @@
 ### 项目界面
 <img src="./assets/genal.gif" alt="PC" style="max-width:800px" />
 
-<img src="./assets/mobile1.jpg" alt="Mobile" width="370" hspace="50"/><img src="./assets/mobile2.jpg" alt="Mobile" width="370" />
+<img src="./assets/mobile1.jpg" alt="Mobile" width="350" hspace="50"/><img src="./assets/mobile2.jpg" alt="Mobile" width="350" />
 
 ### 功能介绍
 - 群聊/私聊
