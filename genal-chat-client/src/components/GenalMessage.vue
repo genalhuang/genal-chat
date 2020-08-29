@@ -471,9 +471,9 @@ export default class GenalMessage extends Vue {
   .message-input {
     bottom: 0 !important;
   }
-  .message-frame {
+  .message-main {
     height: calc(100% - 102px) !important;
-    .message-frame-image {
+    .message-content-image {
       width: 150px !important;
       height: inherit !important;
       img {
