@@ -178,8 +178,20 @@ export default class GenalMessage extends Vue {
       if (this.activeRoom.messages.length < this.messageCount) {
         return (this.pagingMessage = this.activeRoom.messages);
       }
+      let length = this.activeRoom.messages.length
+      // 新消息来了只有是自己发的消息和消息框本身在底部才会滚动到底部
+      if(this.judgeScrollToBottom()) {
+        this.scrollToBottom();
+      }
       this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
     }
+  }
+
+  /**
+   * 判断是否应该滚动到底部
+   */
+  judgeScrollToBottom() {
+    return this.activeRoom.messages[length-1].userId === this.user.userId || this.messageDom.scrollTop + this.messageDom.offsetHeight > this.messageContentDom.scrollHeight 
   }
 
   /**
@@ -228,7 +240,6 @@ export default class GenalMessage extends Vue {
   }
 
   sendMessage() {
-    this.scrollToBottom();
     if (!this.message.trim()) {
       this.$message.error('不能发送空消息!');
       return;
