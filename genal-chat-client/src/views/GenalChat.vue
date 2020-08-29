@@ -1,6 +1,6 @@
 <template>
   <div class="chat">
-    <div class="chat-part1">
+    <div class="chat-part1" v-if="visibleTool">
       <genal-tool @logout="logout"></genal-tool>
     </div>
     <div class="chat-part2">
@@ -8,9 +8,13 @@
       <genal-room @setActiveRoom="setActiveRoom"></genal-room>
     </div>
     <div class="chat-part3">
+      <a-icon class="chat-team" type="team" @click="toggleDrawer" />
+      <div class="chat-tool">
+        <a-icon type="menu-fold" @click="toggleTool" v-if="visibleTool" />
+        <a-icon type="menu-unfold" @click="toggleTool" v-else />
+      </div>
       <genal-message @sendMessage="sendMessage"></genal-message>
     </div>
-    <a-icon type="team" class="chat-team" @click="toggleDrawer" />
     <a-drawer placement="left" :closable="false" :visible="visibleDrawer" @close="toggleDrawer">
       <genal-search @addGroup="addGroup" @joinGroup="joinGroup" @addFriend="addFriend" @setActiveRoom="setActiveRoom"> </genal-search>
       <genal-room @setActiveRoom="setActiveRoom"></genal-room>
@@ -42,6 +46,7 @@ const chatModule = namespace('chat');
 export default class GenalChat extends Vue {
   showModal: boolean = false;
   visibleDrawer: boolean = false;
+  visibleTool: boolean = true;
   @appModule.Getter('user') user: User;
   @appModule.Mutation('clear_user') clearUser: Function;
   @appModule.Action('login') login: Function;
@@ -153,6 +158,10 @@ export default class GenalChat extends Vue {
   toggleDrawer() {
     this.visibleDrawer = !this.visibleDrawer;
   }
+
+  toggleTool() {
+    this.visibleTool = !this.visibleTool;
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -192,6 +201,7 @@ export default class GenalChat extends Vue {
     height: 100%;
     background-color: rgb(21, 21, 21, 0.2);
     overflow-y: hidden;
+    position: relative;
     .chat-group {
       height: 53px;
       border-bottom: 1px solid #ccc;
@@ -200,6 +210,9 @@ export default class GenalChat extends Vue {
     }
   }
   .chat-team {
+    display: none;
+  }
+  .chat-tool {
     display: none;
   }
 }
@@ -215,7 +228,16 @@ export default class GenalChat extends Vue {
       position: absolute;
       font-size: 25px;
       top: 17px;
-      left: 95px;
+      left: 60px;
+      z-index: 999;
+    }
+    .chat-tool {
+      display: block !important;
+      position: absolute;
+      font-size: 25px;
+      top: 13px;
+      left: 20px;
+      z-index: 999;
     }
   }
 }

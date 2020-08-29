@@ -2,10 +2,10 @@
   <div class="message">
     <div class="message-header">
       <div v-if="activeRoom">
-        <div v-if="groupGather[activeRoom.groupId]">
+        <div v-if="groupGather[activeRoom.groupId]" class="message-header-text">
           {{ groupGather[activeRoom.groupId].groupName }}
         </div>
-        <div v-else>
+        <div v-else class="message-header-text">
           {{ userGather[activeRoom.userId].username }}
         </div>
       </div>
@@ -477,6 +477,15 @@ export default class GenalMessage extends Vue {
         height: inherit !important;
       }
     }
+  }
+}
+@media screen and (max-width: 500px) {
+  .message-header-text {
+    width: 100px;
+    margin: 0 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 </style>
