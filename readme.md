@@ -17,20 +17,9 @@
   🧐 目前聊天室已经具备完整的聊天功能，今后会陆续开发更多酷炫的功能，喜欢的朋友给个star鼓励一下我吧!<br>
 
 ### 项目界面
-
-<details>
-<summary>点击查看</summary>
-
-### PC
-![pc](./assets/genal.gif)
-
-### 移动端
-
-![移动端一](./assets/mobile1.jpg)
-
-![移动端二](./assets/mobile2.jpg)
-
-</details>
+<img src="./assets/genal.gif" alt="PC" style="max-width:800px" />
+<img src="./assets/mobile1.jpg" alt="Mobile" style="max-height:450px;margin-right:20px;" />
+<img src="./assets/mobile2.jpg" alt="Mobile" style="max-height:450px" />
 
 ### 功能介绍
 - 群聊/私聊
