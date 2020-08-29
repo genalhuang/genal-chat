@@ -100,6 +100,9 @@ export default class GenalMessage extends Vue {
     return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
   }
 
+  /**
+   * 点击房间进入此方法
+   */
   @Watch('activeRoom')
   changeActiveRoom() {
     this.messageOpacity = 0;
@@ -109,9 +112,11 @@ export default class GenalMessage extends Vue {
     this.scrollToBottom();
   }
 
+  /**
+   * 登录后初始化和新消息都会进入此方法
+   */
   @Watch('activeRoom.messages', { deep: true })
   changeMessages() {
-    console.log('message');
     this.addMessage();
   }
 
@@ -178,9 +183,8 @@ export default class GenalMessage extends Vue {
       if (this.activeRoom.messages.length < this.messageCount) {
         return (this.pagingMessage = this.activeRoom.messages);
       }
-      let length = this.activeRoom.messages.length
       // 新消息来了只有是自己发的消息和消息框本身在底部才会滚动到底部
-      if(this.judgeScrollToBottom()) {
+      if (this.judgeScrollToBottom()) {
         this.scrollToBottom();
       }
       this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
@@ -191,7 +195,11 @@ export default class GenalMessage extends Vue {
    * 判断是否应该滚动到底部
    */
   judgeScrollToBottom() {
-    return this.activeRoom.messages[length-1].userId === this.user.userId || this.messageDom.scrollTop + this.messageDom.offsetHeight > this.messageContentDom.scrollHeight 
+    let messages = this.activeRoom.messages;
+    return (
+      messages[messages.length - 1].userId === this.user.userId ||
+      (this.messageDom && this.messageDom.scrollTop + this.messageDom.offsetHeight > this.messageContentDom.scrollHeight)
+    );
   }
 
   /**
