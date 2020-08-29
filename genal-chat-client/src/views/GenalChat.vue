@@ -1,6 +1,6 @@
 <template>
   <div class="chat">
-    <div class="chat-part1" v-if='visibleTool'>
+    <div class="chat-part1" v-if="visibleTool">
       <genal-tool @logout="logout"></genal-tool>
     </div>
     <div class="chat-part2">
@@ -9,9 +9,9 @@
     </div>
     <div class="chat-part3">
       <a-icon class="chat-team" type="team" @click="toggleDrawer" />
-      <div class='chat-tool'>
-        <a-icon type="menu-fold" @click='toggleTool' v-if='visibleTool'/>
-        <a-icon type="menu-unfold" @click='toggleTool' v-else/>
+      <div class="chat-tool">
+        <a-icon type="menu-fold" @click="toggleTool" v-if="visibleTool" />
+        <a-icon type="menu-unfold" @click="toggleTool" v-else />
       </div>
       <genal-message @sendMessage="sendMessage"></genal-message>
     </div>
@@ -46,7 +46,7 @@ const chatModule = namespace('chat');
 export default class GenalChat extends Vue {
   showModal: boolean = false;
   visibleDrawer: boolean = false;
-  visibleTool:boolean = true;
+  visibleTool: boolean = true;
   @appModule.Getter('user') user: User;
   @appModule.Mutation('clear_user') clearUser: Function;
   @appModule.Action('login') login: Function;
@@ -160,7 +160,7 @@ export default class GenalChat extends Vue {
   }
 
   toggleTool() {
-    this.visibleTool = !this.visibleTool
+    this.visibleTool = !this.visibleTool;
   }
 }
 </script>

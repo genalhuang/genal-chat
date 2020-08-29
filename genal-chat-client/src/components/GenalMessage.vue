@@ -2,10 +2,10 @@
   <div class="message">
     <div class="message-header">
       <div v-if="activeRoom">
-        <div v-if="groupGather[activeRoom.groupId]" class='message-header-text'>
+        <div v-if="groupGather[activeRoom.groupId]" class="message-header-text">
           {{ groupGather[activeRoom.groupId].groupName }}
         </div>
-        <div v-else class='message-header-text'>
+        <div v-else class="message-header-text">
           {{ userGather[activeRoom.userId].username }}
         </div>
       </div>
