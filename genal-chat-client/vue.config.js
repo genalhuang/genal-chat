@@ -62,9 +62,9 @@ module.exports = {
     config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/));
 
     // 去除console
-    if (process.env.NODE_ENV === 'production') {
-      config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true;
-    }
+    // if (process.env.NODE_ENV === 'production') {
+    //   config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true;
+    // }
   },
   css: {
     loaderOptions: {

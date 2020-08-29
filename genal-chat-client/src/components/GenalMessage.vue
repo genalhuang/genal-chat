@@ -184,6 +184,7 @@ export default class GenalMessage extends Vue {
         return (this.pagingMessage = this.activeRoom.messages);
       }
       // 新消息来了只有是自己发的消息和消息框本身在底部才会滚动到底部
+      console.log(1, this.judgeScrollToBottom())
       if (this.judgeScrollToBottom()) {
         this.scrollToBottom();
       }
@@ -196,6 +197,7 @@ export default class GenalMessage extends Vue {
    */
   judgeScrollToBottom() {
     let messages = this.activeRoom.messages;
+    console.log(2, messages[messages.length - 1].userId ,this.user.userId)
     return (
       messages[messages.length - 1].userId === this.user.userId ||
       (this.messageDom && this.messageDom.scrollTop + this.messageDom.offsetHeight > this.messageContentDom.scrollHeight)
