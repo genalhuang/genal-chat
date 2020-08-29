@@ -10,6 +10,7 @@
     </div>
     <div class="message-main" ref="message" :style="{ opacity: messageOpacity }">
       <div ref='messageContent'>
+        <a-icon type="sync" spin class="message-content-loading" v-if="showLoading" />
         <template v-for="item in pagingMessage">
           <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
             <genal-avatar :data="item"></genal-avatar>
@@ -44,7 +45,7 @@
             </a-tab-pane>
           </a-tabs>
         </template>
-        <a-icon class="messagte-tool-icon" type="appstore" />
+        <div class="messagte-tool-icon">😃</div>
       </a-popover>
       <a-input
         type="text"
@@ -95,6 +96,10 @@ export default class GenalMessage extends Vue {
     this.initPaste();
   }
 
+  get showLoading() {
+    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
+  }
+
   @Watch('activeRoom')
   changeActiveRoom() {
     this.messageOpacity = 0;
@@ -133,12 +138,14 @@ export default class GenalMessage extends Vue {
 
   handleScroll(event: any) {
     if (event.currentTarget) {
-      if (this.messageDom.scrollTop === 0) {
+      // 只有有消息且滚动到顶部时才进入
+      if (this.messageDom.scrollTop === 0 && this.activeRoom.messages && this.activeRoom.messages.length > this.messageCount) {
         this.lastMessagePosition = this.messageContentDom.offsetHeight
+        this.loading = true
         setTimeout(() => {
           this.messageCount += 15;
           this.getPagingMessage();
-        }, 60)
+        }, 0)
       }
     }
   }
@@ -153,6 +160,7 @@ export default class GenalMessage extends Vue {
         this.messageDom.scrollTop = this.messageContentDom.offsetHeight - this.lastMessagePosition;
         this.messageOpacity = 1;
       }, 0);
+      this.loading = false;
       if (this.activeRoom.messages.length < this.messageCount) {
         return (this.pagingMessage = this.activeRoom.messages);
       }
@@ -412,10 +420,9 @@ export default class GenalMessage extends Vue {
   width: 40px;
   height: 40px;
   text-align: center;
-  line-height: 45px;
-  font-size: 22px;
+  line-height: 42px;
+  font-size: 16px;
   cursor: pointer;
-  background-color: skyblue;
   z-index: 99;
 }
 .message-tool-item {
