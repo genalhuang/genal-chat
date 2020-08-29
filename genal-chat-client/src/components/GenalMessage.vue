@@ -78,7 +78,7 @@ import { parseText } from '@/utils/common';
 })
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
-  @chatModule.Getter('activeRoom') activeRoom: Group & Friend;
+  @chatModule.State('activeRoom') activeRoom: Group & Friend;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('userGather') userGather: FriendGather;
 
@@ -109,8 +109,9 @@ export default class GenalMessage extends Vue {
     this.scrollToBottom();
   }
 
-  @Watch('activeRoom.messages')
+  @Watch('activeRoom.messages', {deep:true})
   changeMessages() {
+    console.log('message')
     this.addMessage();
   }
 

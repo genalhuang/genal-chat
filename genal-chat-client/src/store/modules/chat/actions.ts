@@ -177,8 +177,20 @@ const actions: ActionTree<ChatState, RootState> = {
         commit(SET_USER_GATHER, user);
       }
     }
-    // 更新完数据设置默认active群为'阿童木聊天室'
-    commit(SET_ACTIVE_ROOM, groupGather['阿童木聊天室']);
+
+    /**
+     * 由于groupgather和userGather都更新了, 但是activeGather依旧是老对象,
+     * 这里需要根据老的activeGather找到最新的gather对象,这样才能使得vue的watch监听新gather
+     */
+
+    let activeRoom = state.activeRoom
+    let groupGather2 = state.groupGather;
+    let friendGather2 = state.friendGather;
+    if(!activeRoom) {
+      // 更新完数据没有默认activeRoom设置群为'阿童木聊天室'
+      return commit(SET_ACTIVE_ROOM, groupGather['阿童木聊天室']);
+    }
+    commit(SET_ACTIVE_ROOM, groupGather2[activeRoom.groupId] || friendGather2[activeRoom.userId]);
   },
 };
 
