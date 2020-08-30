@@ -21,7 +21,7 @@
 <img src="./assets/genal.gif" alt="PC" style="max-width:800px" />
 
 #### 移动端
-<img src="./assets/mobile1.jpg" alt="Mobile" width="350" hspace="50"/><img src="./assets/mobile2.jpg" alt="Mobile" width="350" />
+<img src="./assets/mobile1.jpg" alt="Mobile" width="350"/><img src="./assets/mobile2.jpg" alt="Mobile" width="350"  hspace="50"/>
 
 ### 功能介绍
 - 群聊/私聊
