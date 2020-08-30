@@ -19,9 +19,9 @@
               <genal-avatar :data="item"></genal-avatar>
               <div>
                 <div class="message-content-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
-                <div class="message-content-image" v-if="item.messageType === 'image'">
+                <div class="message-content-image" v-if="item.messageType === 'image'" :style="getImageStyle(item.content)">
                   <viewer>
-                    <img :src="'api/static/' + item.content" alt="" :style="getImageStyle(item.content)" />
+                    <img :src="'api/static/' + item.content" alt="" />
                   </viewer>
                 </div>
               </div>
@@ -273,13 +273,27 @@ export default class GenalMessage extends Vue {
   }
 
   /**
-   * 根据图片url设置消息框宽高
+   * 根据图片url设置图片框宽高, 注意是图片框
    */
   getImageStyle(src: string) {
+    let isMobile = document.body.clientWidth <= 768;
     let arr = src.split('$');
+    let width = Number(arr[2]);
+    let height = Number(arr[3]);
+    if (isMobile) {
+      // 如果是移动端,图片最大宽度138, 返回值加12是因为设置的是图片框的宽高要加入padding值
+      if (width > 138) {
+        height = (height * 138) / width;
+        width = 138;
+        return {
+          width: `${width + 12}px`,
+          height: `${height + 12}px`,
+        };
+      }
+    }
     return {
-      width: `${arr[2]}px`,
-      height: `${arr[3]}px`,
+      width: `${width + 12}px`,
+      height: `${height + 12}px`,
     };
   }
 
@@ -288,13 +302,16 @@ export default class GenalMessage extends Vue {
    */
   getImageSize(data: ImageSize) {
     let { width, height } = data;
-    if (width > 350 || height > 350) {
+    if (width > 335 || height > 335) {
       if (width > height) {
-        height = 350 * (height / width);
+        height = 335 * (height / width);
+        width = 335;
       } else {
-        width = 350 * (width / height);
+        width = 335 * (width / height);
+        height = 335;
       }
     }
+    console.log(width, height, 3);
     return {
       width,
       height,
@@ -469,11 +486,9 @@ export default class GenalMessage extends Vue {
   .message-main {
     height: calc(100% - 102px) !important;
     .message-content-image {
-      width: 150px !important;
-      height: inherit !important;
       img {
         cursor: pointer;
-        width: 137px !important;
+        max-width: 138px !important;
         height: inherit !important;
       }
     }
