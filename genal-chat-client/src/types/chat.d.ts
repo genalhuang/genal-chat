@@ -85,3 +85,10 @@ interface ImageSize {
   width: number;
   height: number;
 }
+
+// socket返回值格式
+interface SocketRes {
+  code: number;
+  msg: string;
+  data: any;
+}

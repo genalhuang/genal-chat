@@ -204,8 +204,8 @@ export class ChatGateway {
           delete friendData._id
           await this.friendRepository.save(friendData)
           client.join(roomId)
-          this.server.to(data.userId).emit('addFriend', { code: RCode.OK, msg: '添加好友成功', data: friend })
-          this.server.to(data.friendId).emit('addFriend', { code: RCode.OK, msg: '你正被一个人添加', data: user })
+          this.server.to(data.userId).emit('addFriend', { code: RCode.OK, msg: `添加好友${friend.username}成功`, data: friend })
+          this.server.to(data.friendId).emit('addFriend', { code: RCode.OK, msg: `${user.username}添加你为好友`, data: user })
         }
       } else {
         this.server.to(data.userId).emit('addFriend', {code: RCode.FAIL, msg:'你没资格加好友' })
