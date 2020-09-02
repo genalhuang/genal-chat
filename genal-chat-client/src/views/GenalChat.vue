@@ -33,7 +33,7 @@ import GenalJoin from '@/components/GenalJoin.vue';
 import GenalRoom from '@/components/GenalRoom.vue';
 import GenalMessage from '@/components/GenalMessage.vue';
 import GenalSearch from '@/components/GenalSearch.vue';
-import GenalMusic from '@/components/GenalMusic.vue'
+import GenalMusic from '@/components/GenalMusic.vue';
 import { namespace } from 'vuex-class';
 const appModule = namespace('app');
 const chatModule = namespace('chat');
@@ -45,7 +45,7 @@ const chatModule = namespace('chat');
     GenalRoom,
     GenalMessage,
     GenalSearch,
-    GenalMusic
+    GenalMusic,
   },
 })
 export default class GenalChat extends Vue {
