@@ -1,5 +1,6 @@
 <template>
   <div class="chat">
+    <genal-music></genal-music>
     <div class="chat-part1" v-if="visibleTool">
       <genal-tool @logout="logout"></genal-tool>
     </div>
@@ -32,6 +33,7 @@ import GenalJoin from '@/components/GenalJoin.vue';
 import GenalRoom from '@/components/GenalRoom.vue';
 import GenalMessage from '@/components/GenalMessage.vue';
 import GenalSearch from '@/components/GenalSearch.vue';
+import GenalMusic from '@/components/GenalMusic.vue'
 import { namespace } from 'vuex-class';
 const appModule = namespace('app');
 const chatModule = namespace('chat');
@@ -43,6 +45,7 @@ const chatModule = namespace('chat');
     GenalRoom,
     GenalMessage,
     GenalSearch,
+    GenalMusic
   },
 })
 export default class GenalChat extends Vue {
