@@ -15,9 +15,11 @@
       </div>
       <genal-message @sendMessage="sendMessage"></genal-message>
     </div>
-    <a-drawer placement="left" :closable="false" :visible="visibleDrawer" @close="toggleDrawer">
-      <genal-search @addGroup="addGroup" @joinGroup="joinGroup" @addFriend="addFriend" @setActiveRoom="setActiveRoom"> </genal-search>
-      <genal-room @setActiveRoom="setActiveRoom"></genal-room>
+    <a-drawer placement="left" :closable="false" :visible="visibleDrawer" @close="toggleDrawer" style="height:100%">
+      <div class="chat-drawer">
+        <genal-search @addGroup="addGroup" @joinGroup="joinGroup" @addFriend="addFriend" @setActiveRoom="setActiveRoom"> </genal-search>
+        <genal-room @setActiveRoom="setActiveRoom"></genal-room>
+      </div>
     </a-drawer>
     <genal-join @regist="handleregist" @login="handlelogin" :showModal="showModal"></genal-join>
   </div>
@@ -180,12 +182,6 @@ export default class GenalChat extends Vue {
   box-shadow: 6px 10px 10px rgb(153, 153, 153, 0.2);
   display: flex;
   border-radius: 5px;
-  .chat-header {
-    position: absolute;
-    display: flex;
-    right: 0;
-    top: -50px;
-  }
   .chat-part1 {
     width: 74px;
     height: 100%;

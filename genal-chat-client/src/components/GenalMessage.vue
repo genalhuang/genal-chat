@@ -91,7 +91,7 @@ export default class GenalMessage extends Vue {
   messageDom: HTMLElement;
   messageContentDom: HTMLElement;
   pagingMessage: Array<GroupMessage | FriendMessage> = [];
-  messageCount: number = 15;
+  messageCount: number = 30;
   messageOpacity: number = 0;
   lastTime: number = 0;
   lastMessagePosition: number = 0;
@@ -113,7 +113,7 @@ export default class GenalMessage extends Vue {
   @Watch('activeRoom')
   changeActiveRoom() {
     this.messageOpacity = 0;
-    this.messageCount = 15;
+    this.messageCount = 30;
     this.initPagingMessage();
     this.scrollToBottom();
   }
@@ -133,10 +133,10 @@ export default class GenalMessage extends Vue {
     if (!this.activeRoom.messages) {
       return (this.pagingMessage = []);
     }
-    if (this.activeRoom.messages.length <= 15) {
+    if (this.activeRoom.messages.length <= 30) {
       return (this.pagingMessage = this.activeRoom.messages);
     }
-    this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - 15);
+    this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - 30);
   }
 
   handleScroll(event: Event) {
@@ -145,7 +145,7 @@ export default class GenalMessage extends Vue {
       if (this.messageDom.scrollTop === 0 && this.activeRoom.messages && this.activeRoom.messages.length > this.messageCount) {
         this.lastMessagePosition = this.messageContentDom.offsetHeight;
         this.loading = true;
-        this.messageCount += 15;
+        this.messageCount += 30;
         this.getPagingMessage();
       }
     }
@@ -311,7 +311,6 @@ export default class GenalMessage extends Vue {
         height = 335;
       }
     }
-    console.log(width, height, 3);
     return {
       width,
       height,

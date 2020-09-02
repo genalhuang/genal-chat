@@ -24,3 +24,16 @@
     }
   }
 }
+
+// antd drawer
+.ant-drawer .ant-drawer-content {
+  overflow: hidden;
+}
+.ant-drawer-body {
+  height: 100%;
+  overflow: hidden;
+}
+.chat-drawer {
+  height: 100%;
+  overflow: hidden;
+}
