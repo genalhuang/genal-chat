@@ -35,7 +35,7 @@ const actions: ActionTree<ChatState, RootState> = {
     });
 
     // 初始化事件监听
-    socket.on('addGroup', (res: SocketRes) => {
+    socket.on('addGroup', (res: ServerRes) => {
       console.log('on addGroup', res);
       if (res.code) {
         return Vue.prototype.$message.error(res.msg);
@@ -43,7 +43,7 @@ const actions: ActionTree<ChatState, RootState> = {
       commit(SET_GROUP_GATHER, res.data);
     });
 
-    socket.on('joinGroup', async (res: SocketRes) => {
+    socket.on('joinGroup', async (res: ServerRes) => {
       console.log('on joinGroup', res);
       if (res.code) {
         return Vue.prototype.$message.error(res.msg);
@@ -66,7 +66,7 @@ const actions: ActionTree<ChatState, RootState> = {
       }
     });
 
-    socket.on('joinGroupSocket', (res: SocketRes) => {
+    socket.on('joinGroupSocket', (res: ServerRes) => {
       console.log('on joinGroupSocket', res);
       if (res.code) {
         return Vue.prototype.$message.error(res.msg);
@@ -99,14 +99,14 @@ const actions: ActionTree<ChatState, RootState> = {
       }
     });
 
-    socket.on('groupMessage', (res: SocketRes) => {
+    socket.on('groupMessage', (res: ServerRes) => {
       console.log('on groupMessage', res);
       if (!res.code) {
         commit(ADD_GROUP_MESSAGE, res.data);
       }
     });
 
-    socket.on('addFriend', (res: SocketRes) => {
+    socket.on('addFriend', (res: ServerRes) => {
       console.log('on addFriend', res);
       if (!res.code) {
         commit(SET_FRIEND_GATHER, res.data);
@@ -121,14 +121,14 @@ const actions: ActionTree<ChatState, RootState> = {
       }
     });
 
-    socket.on('joinFriendSocket', (res: SocketRes) => {
+    socket.on('joinFriendSocket', (res: ServerRes) => {
       console.log('on joinFriendSocket', res);
       if (!res.code) {
         console.log('成功加入私聊房间');
       }
     });
 
-    socket.on('friendMessage', (res: SocketRes) => {
+    socket.on('friendMessage', (res: ServerRes) => {
       console.log('on friendMessage', res);
       if (!res.code) {
         if (res.data.friendId === user.userId || res.data.userId === user.userId) {
@@ -138,7 +138,7 @@ const actions: ActionTree<ChatState, RootState> = {
       }
     });
 
-    socket.on('chatData', (res: SocketRes) => {
+    socket.on('chatData', (res: ServerRes) => {
       if (res.code) {
         return Vue.prototype.$message.error(res.msg);
       }

@@ -87,7 +87,7 @@ interface ImageSize {
 }
 
 // socket返回值格式
-interface SocketRes {
+interface ServerRes {
   code: number;
   msg: string;
   data: any;
