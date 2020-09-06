@@ -40,15 +40,6 @@ export class ChatGateway {
   // socket连接钩子
   async handleConnection(client: Socket): Promise<string> {
     const userRoom = client.handshake.query.userId
-    const defaultGroup = await this.groupRepository.find({groupName: '阿童木聊天室'})
-    if(!defaultGroup.length) {
-      this.groupRepository.save({
-        groupId: '阿童木聊天室',
-        groupName: '阿童木聊天室',
-        userId: 'admin',
-        createTime: new Date().valueOf()
-      })
-    }
     // 连接默认加入"阿童木聊天室"房间
     client.join('阿童木聊天室')
     // 用户独有消息房间 根据userId
@@ -56,6 +47,24 @@ export class ChatGateway {
       client.join(userRoom)
     }
     return '连接成功'
+  }
+
+  // socket断连钩子
+  handleDisconnect(@ConnectedSocket() client: Socket) {
+    // console.log('userId',client.handshake.query)
+    let rooms = client.adapter.rooms
+    let userId = client.handshake.query.userId;
+    for(let roomId in rooms) {
+      console.log(roomId)
+      this.server.to(roomId).emit('userDisconnect',{
+        msg: 'a man leave', 
+        data: {
+          roomId,
+          userId
+        }
+      })
+    }
+    // console.log('client', client.adapter.rooms)
   }
 
   // 创建群组
@@ -215,7 +224,7 @@ export class ChatGateway {
     }
   }
 
-  // 进入私聊房间
+  // 加入私聊的socket连接
   @SubscribeMessage('joinFriendSocket')
   async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: UserMap) {
     try {
@@ -257,6 +266,7 @@ export class ChatGateway {
     }
   }
 
+  // 获取所有群和好友数据
   @SubscribeMessage('chatData') 
   async getAllData(@ConnectedSocket() client: Socket,  @MessageBody() user: User) {
     try {

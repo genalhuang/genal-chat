@@ -6,6 +6,8 @@ import { Group, GroupMap } from '../group/entity/group.entity';
 import { GroupMessage } from '../group/entity/groupMessage.entity';
 import { UserMap } from '../friend/entity/friend.entity';
 import { FriendMessage } from '../friend/entity/friendMessage.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
@@ -13,4 +15,21 @@ import { FriendMessage } from '../friend/entity/friendMessage.entity';
   ],
   providers: [ChatGateway],
 })
-export class ChatModule {}
+export class ChatModule {
+  constructor(
+    @InjectRepository(Group)
+    private readonly groupRepository: Repository<Group>,
+  ) {}
+  async onModuleInit() {
+    const defaultGroup = await this.groupRepository.find({groupName: '阿童木聊天室'})
+    if(!defaultGroup.length) {
+      this.groupRepository.save({
+        groupId: '阿童木聊天室',
+        groupName: '阿童木聊天室',
+        userId: 'admin',
+        createTime: new Date().valueOf()
+      })
+      console.log('create default group 阿童木聊天室')
+    }
+  }
+}
