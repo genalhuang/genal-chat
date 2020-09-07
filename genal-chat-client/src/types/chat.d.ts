@@ -92,3 +92,8 @@ interface ServerRes {
   msg: string;
   data: any;
 }
+
+// 所有群的在线用户合集
+interface ActiveGroupUser {
+  [key: string]: User;
+}

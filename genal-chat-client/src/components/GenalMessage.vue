@@ -4,6 +4,7 @@
       <div v-if="activeRoom">
         <div v-if="groupGather[activeRoom.groupId]" class="message-header-text">
           {{ groupGather[activeRoom.groupId].groupName }}
+          <genal-active></genal-active>
         </div>
         <div v-else class="message-header-text">
           {{ userGather[activeRoom.userId].username }}
@@ -69,6 +70,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue';
 import GenalEmoji from './GenalEmoji.vue';
+import GenalActive from './GenalActive.vue';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
 const appModule = namespace('app');
@@ -76,6 +78,7 @@ import { parseText } from '@/utils/common';
 
 @Component({
   components: {
+    GenalActive,
     GenalAvatar,
     GenalEmoji,
   },

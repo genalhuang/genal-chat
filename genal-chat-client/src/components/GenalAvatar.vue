@@ -31,7 +31,7 @@ export default class GenalAvatar extends Vue {
   @appModule.Getter('user') user: User;
   @chatModule.Getter('userGather') userGather: FriendGather;
   @chatModule.Getter('friendGather') friendGather: FriendGather;
-  @chatModule.Getter('socket') socket: any;
+  @chatModule.Getter('socket') socket: SocketIOClient.Socket;
 
   addFriend(friendId: string) {
     this.socket.emit('addFriend', {

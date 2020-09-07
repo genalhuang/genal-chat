@@ -1,4 +1,5 @@
 export const SET_SOCKET = 'set_socket';
+export const SET_ACTIVE_GROUP_USER = 'set_active_group_user';
 export const SET_ACTIVE_ROOM = 'set_active_room';
 export const SET_USER_GATHER = 'set_user_gather';
 export const SET_FRIEND_GATHER = 'set_friend_gather';

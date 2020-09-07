@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import {
   SET_SOCKET,
+  SET_ACTIVE_GROUP_USER,
   ADD_GROUP_MESSAGE,
   SET_GROUP_MESSAGES,
   ADD_FRIEND_MESSAGE,
@@ -17,6 +18,11 @@ const mutations: MutationTree<ChatState> = {
   // 保存socket
   [SET_SOCKET](state, payload: any) {
     state.socket = payload;
+  },
+
+  // 设置群在线人数
+  [SET_ACTIVE_GROUP_USER](state, payload: ActiveGroupUser) {
+    state.activeGroupUser = payload;
   },
 
   // 新增一条群消息

@@ -60,7 +60,7 @@ const chatModule = namespace('chat');
 export default class GenalTool extends Vue {
   @appModule.Getter('user') user: User;
   @appModule.Mutation('set_user') setUser: Function;
-  @chatModule.Getter('socket') socket: any;
+  @chatModule.Getter('socket') socket: SocketIOClient.Socket;
 
   showSetModal: boolean = false;
   showUserModal: boolean = false;

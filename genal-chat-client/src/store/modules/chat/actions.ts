@@ -1,12 +1,11 @@
 import { ActionTree } from 'vuex';
 import { ChatState } from './state';
 import { RootState } from '../../index';
-import fetch from '@/api/fetch';
 import io from 'socket.io-client';
 import Vue from 'vue';
-import { processReturn } from '@/utils/common.ts';
 import {
   SET_SOCKET,
+  SET_ACTIVE_GROUP_USER,
   ADD_GROUP_MESSAGE,
   SET_GROUP_MESSAGES,
   ADD_FRIEND_MESSAGE,
@@ -22,7 +21,7 @@ const actions: ActionTree<ChatState, RootState> = {
   async connectSocket({ commit, state, dispatch, rootState }, callback) {
     let user = rootState.app.user;
     let friendGather = state.friendGather;
-    let socket = io.connect(`/?userId=${user.userId}`, { reconnection: true });
+    let socket: SocketIOClient.Socket = io.connect(`/?userId=${user.userId}`, { reconnection: true });
 
     socket.on('connect', async () => {
       console.log('连接成功');
@@ -35,6 +34,11 @@ const actions: ActionTree<ChatState, RootState> = {
     });
 
     // 初始化事件监听
+    socket.on('activeGroupUser', (data: any) => {
+      console.log('activeGroupUser', data);
+      commit(SET_ACTIVE_GROUP_USER, data.data);
+    });
+
     socket.on('addGroup', (res: ServerRes) => {
       console.log('on addGroup', res);
       if (res.code) {

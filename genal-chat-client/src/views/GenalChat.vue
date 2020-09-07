@@ -57,7 +57,7 @@ export default class GenalChat extends Vue {
   @appModule.Action('login') login: Function;
   @appModule.Action('regist') regist: Function;
 
-  @chatModule.Getter('socket') socket: any;
+  @chatModule.Getter('socket') socket: SocketIOClient.Socket;
   @chatModule.Getter('userGather') userGather: FriendGather;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('activeRoom') activeRoom: Friend & Group;

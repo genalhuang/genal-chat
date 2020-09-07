@@ -32,10 +32,14 @@ export class ChatGateway {
     private readonly friendRepository: Repository<UserMap>,
     @InjectRepository(FriendMessage)
     private readonly friendMessageRepository: Repository<FriendMessage>,
-  ) {}
+  ) {
+    this.activeGroupUserGather = {}
+  }
 
   @WebSocketServer()
   server: Server
+
+  activeGroupUserGather: { [key: string]: Object };
 
   // socket连接钩子
   async handleConnection(client: Socket): Promise<string> {
@@ -50,21 +54,17 @@ export class ChatGateway {
   }
 
   // socket断连钩子
-  handleDisconnect(@ConnectedSocket() client: Socket) {
-    // console.log('userId',client.handshake.query)
-    let rooms = client.adapter.rooms
-    let userId = client.handshake.query.userId;
-    for(let roomId in rooms) {
-      console.log(roomId)
-      this.server.to(roomId).emit('userDisconnect',{
-        msg: 'a man leave', 
-        data: {
-          roomId,
-          userId
-        }
-      })
+  async handleDisconnect(@ConnectedSocket() client: Socket) {
+    const userId = client.handshake.query.userId;
+    const groups = await this.groupUserRepository.find({userId: userId})
+    for(const group of groups) {
+      const groupId = group.groupId
+      delete this.activeGroupUserGather[groupId][userId];
     }
-    // console.log('client', client.adapter.rooms)
+    this.server.to('阿童木聊天室').emit('activeGroupUser',{
+      msg: 'a man leave', 
+      data: this.activeGroupUserGather
+    })
   }
 
   // 创建群组
@@ -79,6 +79,7 @@ export class ChatGateway {
           return;
         }
         data = await this.groupRepository.save(data)
+        this.calculateActiveGroupUser(data, isUser);
         client.join(data.groupId)
         const group = await this.groupUserRepository.save(data)
         this.server.to(group.groupId).emit('addGroup', { code: RCode.OK, msg: `成功创建群${data.groupName}`, data: group })
@@ -107,7 +108,8 @@ export class ChatGateway {
             data.groupId = group.groupId
             userGroup = await this.groupUserRepository.save(data)
           }
-          client.join(group.groupId)
+          this.calculateActiveGroupUser(group, isUser);
+          client.join(group.groupId)          
           const res = { group: group, user: user }
           this.server.to(group.groupId).emit('joinGroup', {
             code: RCode.OK,
@@ -135,6 +137,7 @@ export class ChatGateway {
         where:{userId: Like(`%${data.userId}%`)}
       });
       if(group) {
+        this.calculateActiveGroupUser(group, user);
         client.join(group.groupId)
         const res = { group: group, user: user}
         this.server.to(group.groupId).emit('joinGroupSocket', {code: RCode.OK, msg:`${user.username}加入群${group.groupName}`, data: res})
@@ -342,5 +345,17 @@ export class ChatGateway {
         userData: []
       }})
     }
+  }
+
+  // 计算各个群在线人数
+  calculateActiveGroupUser(group: Group, user: User) {
+    if(!this.activeGroupUserGather[group.groupId]) {
+      this.activeGroupUserGather[group.groupId] = {}
+    }
+    this.activeGroupUserGather[group.groupId][user.userId] = user
+    this.server.to('阿童木聊天室').emit('activeGroupUser',{
+      msg: 'a man join', 
+      data: this.activeGroupUserGather
+    })
   }
 }

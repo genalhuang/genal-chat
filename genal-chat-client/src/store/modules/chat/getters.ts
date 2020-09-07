@@ -6,6 +6,9 @@ const getters: GetterTree<ChatState, RootState> = {
   socket(state) {
     return state.socket;
   },
+  activeGroupUser(state) {
+    return state.activeGroupUser;
+  },
   activeRoom(state) {
     return state.activeRoom;
   },
