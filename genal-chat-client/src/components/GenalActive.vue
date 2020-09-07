@@ -2,7 +2,8 @@
   <div class="active">
     <a-icon type="eye" @click="toggleGroupUser" class="active-button" :class="{ heightLight: showGroupUser }" />
     <div class="active-content" v-if="showGroupUser">
-      <div class="active-user" v-for="user in activeGroupUser[activeRoom.groupId]" :key="user.userId">
+      <div class="active-content-sum">在线人数: {{ activeNum }}</div>
+      <div class="active-content-user" v-for="user in activeGroupUser[activeRoom.groupId]" :key="user.userId">
         <a-avatar :src="user.avatar"></a-avatar>
         {{ user.username }}
       </div>
@@ -21,6 +22,10 @@ export default class GenalActive extends Vue {
   @chatModule.Getter('activeGroupUser') activeGroupUser: ActiveGroupUser;
 
   showGroupUser: boolean = false;
+
+  get activeNum() {
+    return Object.keys(this.activeGroupUser[this.activeRoom.groupId]).length;
+  }
 
   toggleGroupUser() {
     this.showGroupUser = !this.showGroupUser;
@@ -56,7 +61,15 @@ export default class GenalActive extends Vue {
     padding: 12px;
     max-height: 300px;
     border-radius: 0 0 5px 5px;
-    .active-user {
+    .active-content-sum {
+      font-weight: bold;
+      text-align: left;
+      height: 40px;
+      line-height: 40px;
+      border-bottom: 1px solid rgb(135, 206, 235, 0.5);
+      margin: -5px 0 10px 0;
+    }
+    .active-content-user {
       width: 150px;
       overflow: hidden; //超出的文本隐藏
       text-overflow: ellipsis; //溢出用省略号显示
