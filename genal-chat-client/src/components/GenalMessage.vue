@@ -403,7 +403,7 @@ export default class GenalMessage extends Vue {
       .message-content-image {
         max-width: 600px;
         display: inline-block;
-        background-color: rgb(0, 200, 255, 0.4);
+        background-color: rgb(0, 0, 0, 0.2);
         padding: 6px;
         font-size: 16px;
         border-radius: 5px;
