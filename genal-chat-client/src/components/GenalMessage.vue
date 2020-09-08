@@ -4,10 +4,11 @@
       <div v-if="activeRoom">
         <div v-if="groupGather[activeRoom.groupId]" class="message-header-text">
           {{ groupGather[activeRoom.groupId].groupName }}
-          <genal-active></genal-active>
+          <genal-active type='group'></genal-active>
         </div>
         <div v-else class="message-header-text">
           {{ userGather[activeRoom.userId].username }}
+          <genal-active type='friend'></genal-active>
         </div>
       </div>
     </div>

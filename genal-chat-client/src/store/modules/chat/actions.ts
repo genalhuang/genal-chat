@@ -148,6 +148,22 @@ const actions: ActionTree<ChatState, RootState> = {
       }
       dispatch('handleChatData', res.data);
     });
+
+    socket.on('exitGroup', (res: ServerRes) => {
+      if(!res.code) {
+        Vue.prototype.$message.success(res.msg);
+      } else {
+        Vue.prototype.$message.error(res.msg);
+      }
+    })
+
+    socket.on('exitFriend', (res: ServerRes) => {
+      if(!res.code) {
+        Vue.prototype.$message.success(res.msg);
+      } else {
+        Vue.prototype.$message.error(res.msg);
+      }
+    })
   },
 
   async handleChatData({ commit, dispatch, state, rootState }, payload) {

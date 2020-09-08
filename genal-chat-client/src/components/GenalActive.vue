@@ -1,26 +1,31 @@
 <template>
   <div class="active">
-    <a-icon type="team" @click="toggleGroupUser" class="active-button" :class="{ heightLight: showGroupUser }" />
-    <a-drawer
-      placement="right"
-      :closable="false"
-      :visible="showGroupUser"
-      :get-container="getElement"
-      @close="toggleGroupUser"
-      :wrap-style="{ position: 'absolute' }"
-    >
-      <div class="active-content" v-if="activeGroupUser[activeRoom.groupId]">
-        <div class="actiev-content-title">群聊管理</div>
-        <div class="active-content-sum">在线人数: {{ activeNum }}</div>
-        <div class="active-content-users">
-          <div class="active-content-user" v-for="user in activeGroupUser[activeRoom.groupId]" :key="user.userId">
-            <a-avatar :src="user.avatar"></a-avatar>
-            {{ user.username }}
+    <div v-if='type==="group"'>
+      <a-icon type="team" @click="toggleGroupUser" class="active-button" :class="{ heightLight: showGroupUser }" />
+      <a-drawer
+        placement="right"
+        :closable="false"
+        :visible="showGroupUser"
+        :get-container="getElement"
+        @close="toggleGroupUser"
+        :wrap-style="{ position: 'absolute' }"
+      >
+        <div class="active-content" v-if="activeGroupUser[activeRoom.groupId]">
+          <div class="actiev-content-title">群聊管理</div>
+          <div class="active-content-sum">在线人数: {{ activeNum }}</div>
+          <div class="active-content-users">
+            <div class="active-content-user" v-for="user in activeGroupUser[activeRoom.groupId]" :key="user.userId">
+              <a-avatar :src="user.avatar"></a-avatar>
+              {{ user.username }}
+            </div>
           </div>
+          <a-button type="danger" class="active-content-out" @click='exitGroup'>退出</a-button>
         </div>
-        <a-button type="danger" class="active-content-out">退出</a-button>
-      </div>
-    </a-drawer>
+      </a-drawer>
+    </div>
+    <div v-else>
+      <a-icon type="user-delete" class="active-button" @click='exitFriend'/>
+    </div>
   </div>
 </template>
 
@@ -28,13 +33,26 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
+const appModule = namespace('app');
 
 @Component
 export default class GenalActive extends Vue {
+  @Prop({default: 'group'}) type: string;
+
+  @appModule.Getter('user') user: User;
+
   @chatModule.State('activeRoom') activeRoom: Group & Friend;
+  @chatModule.State('socket') socket: SocketIOClient.Socket;
   @chatModule.Getter('activeGroupUser') activeGroupUser: ActiveGroupUser;
 
   showGroupUser: boolean = false;
+
+  @Watch('type')
+  changeType() {
+    if(this.type === 'friend') {
+      this.showGroupUser = false;
+    }
+  }
 
   get activeNum() {
     return Object.keys(this.activeGroupUser[this.activeRoom.groupId]).length;
@@ -47,6 +65,20 @@ export default class GenalActive extends Vue {
   getElement() {
     console.log('asdf', document.getElementsByClassName('message')[0]);
     return document.getElementsByClassName('message')[0];
+  }
+
+  exitGroup() {
+    this.socket.emit('exitGroup', {
+      userId: this.user.userId,
+      groupId: this.activeRoom.groupId
+    })
+  }
+
+  exitFriend() {
+    this.socket.emit('exitFriend', {
+      userId: this.user.userId,
+      friendId: this.activeRoom.userId
+    })
   }
 }
 </script>
@@ -66,6 +98,9 @@ export default class GenalActive extends Vue {
     font-size: 25px;
     color: #fff;
     cursor: pointer;
+    &:active {
+      color: skyblue;
+    }
   }
   .active-button.heightLight {
     color: skyblue;

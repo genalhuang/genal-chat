@@ -54,7 +54,7 @@ export class ChatGateway {
   }
 
   // socket断连钩子
-  async handleDisconnect(@ConnectedSocket() client: Socket) {
+  async handleDisconnect(@ConnectedSocket() client: Socket):Promise<any> {
     const userId = client.handshake.query.userId;
     const groups = await this.groupUserRepository.find({userId: userId})
     for(const group of groups) {
@@ -69,209 +69,181 @@ export class ChatGateway {
 
   // 创建群组
   @SubscribeMessage('addGroup')
-  async addGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group) {
-    try {
-      const isUser = await this.userRepository.findOne({userId: data.userId})
-      if(isUser) {
-        const isHaveGroup = await this.groupRepository.findOne({ groupName: data.groupName })
-        if (isHaveGroup) {
-          this.server.to(data.userId).emit('addGroup', { code: RCode.FAIL, msg: '该群名字已存在', data: isHaveGroup })
-          return;
-        }
-        data = await this.groupRepository.save(data)
-        this.calculateActiveGroupUser(data, isUser);
-        client.join(data.groupId)
-        const group = await this.groupUserRepository.save(data)
-        this.server.to(group.groupId).emit('addGroup', { code: RCode.OK, msg: `成功创建群${data.groupName}`, data: group })
-      } else{
-        this.server.to(data.userId).emit('addGroup', { code: RCode.FAIL, msg: `你没资格创建群` })
+  async addGroup(@ConnectedSocket() client: Socket, @MessageBody() data: Group):Promise<any> {
+    const isUser = await this.userRepository.findOne({userId: data.userId})
+    if(isUser) {
+      const isHaveGroup = await this.groupRepository.findOne({ groupName: data.groupName })
+      if (isHaveGroup) {
+        this.server.to(data.userId).emit('addGroup', { code: RCode.FAIL, msg: '该群名字已存在', data: isHaveGroup })
+        return;
       }
-    } catch(e) {
-      this.server.to(data.userId).emit('addGroup', {code: RCode.ERROR, msg:'创建群失败', data:e})
+      data = await this.groupRepository.save(data)
+      this.calculateActiveGroupUser(data, isUser);
+      client.join(data.groupId)
+      const group = await this.groupUserRepository.save(data)
+      this.server.to(group.groupId).emit('addGroup', { code: RCode.OK, msg: `成功创建群${data.groupName}`, data: group })
+    } else{
+      this.server.to(data.userId).emit('addGroup', { code: RCode.FAIL, msg: `你没资格创建群` })
     }
   }
 
   // 加入群组
   @SubscribeMessage('joinGroup')
-  async joinGroup(@ConnectedSocket() client: Socket, @MessageBody() data: GroupMap) {
-    try {
-      const isUser = await this.userRepository.findOne({userId: data.userId})
-      if(isUser) {
-        const group = await this.groupRepository.findOne({ groupId: data.groupId })
-        let userGroup = await this.groupUserRepository.findOne({ groupId: group.groupId, userId: data.userId })
-        const user = await this.userRepository.findOne({
-          select: ['userId', 'username', 'avatar', 'role', 'tag', 'createTime'],
-          where: { userId: Like(`%${data.userId}%`) }
-        });
-        if (group) {
-          if (!userGroup) {
-            data.groupId = group.groupId
-            userGroup = await this.groupUserRepository.save(data)
-          }
-          this.calculateActiveGroupUser(group, isUser);
-          client.join(group.groupId)          
-          const res = { group: group, user: user }
-          this.server.to(group.groupId).emit('joinGroup', {
-            code: RCode.OK,
-            msg: `${user.username}加入群${group.groupName}`,
-            data: res
-          })
-        } else {
-          this.server.to(data.userId).emit('joinGroup', { code: RCode.FAIL, msg: '该群不存在', data: '' })
+  async joinGroup(@ConnectedSocket() client: Socket, @MessageBody() data: GroupMap):Promise<any> {
+    const isUser = await this.userRepository.findOne({userId: data.userId})
+    if(isUser) {
+      const group = await this.groupRepository.findOne({ groupId: data.groupId })
+      let userGroup = await this.groupUserRepository.findOne({ groupId: group.groupId, userId: data.userId })
+      const user = await this.userRepository.findOne({
+        select: ['userId', 'username', 'avatar', 'role', 'tag', 'createTime'],
+        where: { userId: Like(`%${data.userId}%`) }
+      });
+      if (group) {
+        if (!userGroup) {
+          data.groupId = group.groupId
+          userGroup = await this.groupUserRepository.save(data)
         }
+        this.calculateActiveGroupUser(group, isUser);
+        client.join(group.groupId)          
+        const res = { group: group, user: user }
+        this.server.to(group.groupId).emit('joinGroup', {
+          code: RCode.OK,
+          msg: `${user.username}加入群${group.groupName}`,
+          data: res
+        })
       } else {
-        this.server.to(data.userId).emit('joinGroup', { code: RCode.FAIL, msg: '你没资格进群'})
+        this.server.to(data.userId).emit('joinGroup', { code: RCode.FAIL, msg: '该群不存在', data: '' })
       }
-    } catch(e) {
-      this.server.to(data.userId).emit('joinGroup', {code: RCode.ERROR, msg:'进群失败', data:e})
+    } else {
+      this.server.to(data.userId).emit('joinGroup', { code: RCode.FAIL, msg: '你没资格进群'})
     }
   }
 
   // 加入群组的socket连接
   @SubscribeMessage('joinGroupSocket')
-  async joinGroupSocket(@ConnectedSocket() client: Socket, @MessageBody() data: GroupMap) {
-    try {
-      const group = await this.groupRepository.findOne({groupId: data.groupId})
-      const user = await this.userRepository.findOne({
-        select: ['userId','username','avatar','role','tag','createTime'],
-        where:{userId: Like(`%${data.userId}%`)}
-      });
-      if(group) {
-        this.calculateActiveGroupUser(group, user);
-        client.join(group.groupId)
-        const res = { group: group, user: user}
-        this.server.to(group.groupId).emit('joinGroupSocket', {code: RCode.OK, msg:`${user.username}加入群${group.groupName}`, data: res})
-      } else {
-        this.server.to(data.userId).emit('joinGroupSocket', {code:RCode.FAIL, msg:'该群不存在', data:''})
-      }
-    } catch(e) {
-      this.server.to(data.userId).emit('joinGroupSocket', {code:RCode.ERROR, msg:'进群失败', data:e})
+  async joinGroupSocket(@ConnectedSocket() client: Socket, @MessageBody() data: GroupMap):Promise<any> {
+    const group = await this.groupRepository.findOne({groupId: data.groupId})
+    const user = await this.userRepository.findOne({
+      select: ['userId','username','avatar','role','tag','createTime'],
+      where:{userId: Like(`%${data.userId}%`)}
+    });
+    if(group) {
+      this.calculateActiveGroupUser(group, user);
+      client.join(group.groupId)
+      const res = { group: group, user: user}
+      this.server.to(group.groupId).emit('joinGroupSocket', {code: RCode.OK, msg:`${user.username}加入群${group.groupName}`, data: res})
+    } else {
+      this.server.to(data.userId).emit('joinGroupSocket', {code:RCode.FAIL, msg:'该群不存在', data:''})
     }
   }
 
   // 发送群消息
   @SubscribeMessage('groupMessage')
-  async sendGroupMessage(@MessageBody() data: GroupMessageDto) {
-    try {
-      const isUserInGroup = await this.groupUserRepository.findOne({userId: data.userId, groupId: data.groupId})
-      if(!isUserInGroup) {
-        this.server.to(data.userId).emit('groupMessage',{code:RCode.FAIL, msg:'群消息发送错误', data: ''})
-        return;
-      } 
-      if(data.groupId) {
-        if(data.messageType === 'image') {
-          const randomName = `${Date.now()}$${data.userId}$${data.width}$${data.height}`
-          const writeSream = createWriteStream(join('public/static', randomName))
-          writeSream.write(data.content)
-          data.content = randomName;
-        }
-        this.groupMessageRepository.save(data);
-        this.server.to(data.groupId).emit('groupMessage', {code: RCode.OK, msg:'', data: data})
+  async sendGroupMessage(@MessageBody() data: GroupMessageDto):Promise<any> {
+    const isUserInGroup = await this.groupUserRepository.findOne({userId: data.userId, groupId: data.groupId})
+    if(!isUserInGroup) {
+      this.server.to(data.userId).emit('groupMessage',{code:RCode.FAIL, msg:'群消息发送错误', data: ''})
+      return;
+    } 
+    if(data.groupId) {
+      if(data.messageType === 'image') {
+        const randomName = `${Date.now()}$${data.userId}$${data.width}$${data.height}`
+        const writeSream = createWriteStream(join('public/static', randomName))
+        writeSream.write(data.content)
+        data.content = randomName;
       }
-    } catch(e) {
-      this.server.to(data.userId).emit('groupMessage',{ code: RCode.ERROR, msg:'群消息发送错误', data: e })
+      this.groupMessageRepository.save(data);
+      this.server.to(data.groupId).emit('groupMessage', {code: RCode.OK, msg:'', data: data})
     }
   }
 
   // 添加好友
   @SubscribeMessage('addFriend')
-  async addFriend(@ConnectedSocket() client: Socket, @MessageBody() data: UserMap) {
-    try {
-      const isUser = await this.userRepository.findOne({userId: data.userId})
-      if(isUser) {
-        if (data.friendId && data.userId) {
-          if (data.userId === data.friendId) {
-            this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '不能添加自己为好友', data: '' })
-            return;
-          }
-          const isHave1 = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId })
-          const isHave2 = await this.friendRepository.findOne({ userId: data.friendId, friendId: data.userId })
-          const roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId
-
-          if (isHave1 || isHave2) {
-            this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '已经有该好友', data: data })
-            return;
-          }
-
-          const friend = await this.userRepository.findOne({
-            select: ['userId', 'username', 'avatar', 'role', 'tag', 'createTime'],
-            where: { userId: Like(`%${data.friendId}%`) }
-          });
-          ;
-          const user = await this.userRepository.findOne({
-            select: ['userId', 'username', 'avatar', 'role', 'tag', 'createTime'],
-            where: { userId: Like(`%${data.userId}%`) }
-          });
-          if (!friend) {
-            this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '该好友不存在', data: '' })
-            return;
-          }
-
-          // 双方都添加好友 并存入数据库
-          await this.friendRepository.save(data)
-          const friendData = JSON.parse(JSON.stringify(data))
-          const friendId = friendData.friendId
-          friendData.friendId = friendData.userId
-          friendData.userId = friendId
-          delete friendData._id
-          await this.friendRepository.save(friendData)
-          client.join(roomId)
-          this.server.to(data.userId).emit('addFriend', { code: RCode.OK, msg: `添加好友${friend.username}成功`, data: friend })
-          this.server.to(data.friendId).emit('addFriend', { code: RCode.OK, msg: `${user.username}添加你为好友`, data: user })
+  async addFriend(@ConnectedSocket() client: Socket, @MessageBody() data: UserMap):Promise<any> {
+    const isUser = await this.userRepository.findOne({userId: data.userId})
+    if(isUser) {
+      if (data.friendId && data.userId) {
+        if (data.userId === data.friendId) {
+          this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '不能添加自己为好友', data: '' })
+          return;
         }
-      } else {
-        this.server.to(data.userId).emit('addFriend', {code: RCode.FAIL, msg:'你没资格加好友' })
+        const isHave1 = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId })
+        const isHave2 = await this.friendRepository.findOne({ userId: data.friendId, friendId: data.userId })
+        const roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId
+
+        if (isHave1 || isHave2) {
+          this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '已经有该好友', data: data })
+          return;
+        }
+
+        const friend = await this.userRepository.findOne({
+          select: ['userId', 'username', 'avatar', 'role', 'tag', 'createTime'],
+          where: { userId: Like(`%${data.friendId}%`) }
+        });
+        ;
+        const user = await this.userRepository.findOne({
+          select: ['userId', 'username', 'avatar', 'role', 'tag', 'createTime'],
+          where: { userId: Like(`%${data.userId}%`) }
+        });
+        if (!friend) {
+          this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '该好友不存在', data: '' })
+          return;
+        }
+
+        // 双方都添加好友 并存入数据库
+        await this.friendRepository.save(data)
+        const friendData = JSON.parse(JSON.stringify(data))
+        const friendId = friendData.friendId
+        friendData.friendId = friendData.userId
+        friendData.userId = friendId
+        delete friendData._id
+        await this.friendRepository.save(friendData)
+        client.join(roomId)
+        this.server.to(data.userId).emit('addFriend', { code: RCode.OK, msg: `添加好友${friend.username}成功`, data: friend })
+        this.server.to(data.friendId).emit('addFriend', { code: RCode.OK, msg: `${user.username}添加你为好友`, data: user })
       }
-    } catch(e) {
-      this.server.to(data.userId).emit('addFriend', {code: RCode.ERROR, msg:'添加好友失败', data: e })
+    } else {
+      this.server.to(data.userId).emit('addFriend', {code: RCode.FAIL, msg:'你没资格加好友' })
     }
   }
 
   // 加入私聊的socket连接
   @SubscribeMessage('joinFriendSocket')
-  async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: UserMap) {
-    try {
-      if(data.friendId && data.userId) {
-        const relation = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId })
-        const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
-        if(relation) {
-          client.join(roomId)
-          this.server.to(data.userId).emit('joinFriendSocket',{ code:RCode.OK, msg:'进入私聊socket成功', data: relation })
-        } 
-      }
-    } catch(e) {
-      this.server.to(data.userId).emit('joinFriendSocket',{ code:RCode.ERROR, msg:'进入私聊socket失败', data: e })
+  async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: UserMap):Promise<any> {
+    if(data.friendId && data.userId) {
+      const relation = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId })
+      const roomId = data.userId > data.friendId ?  data.userId + data.friendId : data.friendId + data.userId
+      if(relation) {
+        client.join(roomId)
+        this.server.to(data.userId).emit('joinFriendSocket',{ code:RCode.OK, msg:'进入私聊socket成功', data: relation })
+      } 
     }
   }
 
   // 发送私聊消息
   @SubscribeMessage('friendMessage')
-  async friendMessage(@ConnectedSocket() client: Socket, @MessageBody() data: FriendMessageDto) {
-    try {
-      const isUser = await this.userRepository.findOne({userId: data.userId})
-      if(isUser) {
-        if(data.userId && data.friendId) {
-          const roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId
-          if(data.messageType === 'image') {
-            const randomName = `${Date.now()}$${roomId}$${data.width}$${data.height}`
-            const writeSream = createWriteStream(join('public/static', randomName))
-            writeSream.write(data.content)
-            data.content = randomName;
-          }
-          await this.friendMessageRepository.save(data)
-          this.server.to(roomId).emit('friendMessage', {code: RCode.OK, msg:'', data})
+  async friendMessage(@ConnectedSocket() client: Socket, @MessageBody() data: FriendMessageDto):Promise<any> {
+    const isUser = await this.userRepository.findOne({userId: data.userId})
+    if(isUser) {
+      if(data.userId && data.friendId) {
+        const roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId
+        if(data.messageType === 'image') {
+          const randomName = `${Date.now()}$${roomId}$${data.width}$${data.height}`
+          const writeSream = createWriteStream(join('public/static', randomName))
+          writeSream.write(data.content)
+          data.content = randomName;
         }
-      } else {
-        this.server.to(data.userId).emit('friendMessage', {code: RCode.FAIL, msg:'你没资格发消息', data})
+        await this.friendMessageRepository.save(data)
+        this.server.to(roomId).emit('friendMessage', {code: RCode.OK, msg:'', data})
       }
-    } catch(e) {
-      this.server.to(data.userId).emit('friendMessage', {code: RCode.ERROR, msg:'消息发送失败', data})
+    } else {
+      this.server.to(data.userId).emit('friendMessage', {code: RCode.FAIL, msg:'你没资格发消息', data})
     }
   }
 
   // 获取所有群和好友数据
   @SubscribeMessage('chatData') 
-  async getAllData(@ConnectedSocket() client: Socket,  @MessageBody() user: User) {
+  async getAllData(@ConnectedSocket() client: Socket,  @MessageBody() user: User):Promise<any> {
     try {
       let groupArr: GroupDto[] = [];
       let friendArr: FriendDto[] = [];
@@ -348,7 +320,7 @@ export class ChatGateway {
   }
 
   // 计算各个群在线人数
-  calculateActiveGroupUser(group: Group, user: User) {
+  calculateActiveGroupUser(group: Group, user: User):Promise<any> {
     if(!this.activeGroupUserGather[group.groupId]) {
       this.activeGroupUserGather[group.groupId] = {}
     }
@@ -357,5 +329,36 @@ export class ChatGateway {
       msg: 'a man join', 
       data: this.activeGroupUserGather
     })
+  }
+
+  // 退群
+  @SubscribeMessage('exitGroup') 
+  async exitGroup(@ConnectedSocket() client: Socket,  @MessageBody() groupMap: GroupMap):Promise<any> {
+    if(groupMap.groupId === '阿童木聊天室') {
+      return this.server.to(groupMap.userId).emit('exitGroup',{code: RCode.FAIL, msg: '默认群不可退'});
+    }
+    const user = await this.userRepository.findOne({userId: groupMap.userId})
+    const group = await this.groupRepository.findOne({groupId: groupMap.groupId})
+    const map = await this.groupUserRepository.findOne({userId: groupMap.userId, groupId: groupMap.groupId})
+    if(user && group && map) {
+      await this.groupUserRepository.remove(map)
+      return this.server.to(groupMap.userId).emit('exitGroup',{code: RCode.OK, msg: '退群成功'});
+    }
+    this.server.to(groupMap.userId).emit('exitGroup',{code: RCode.FAIL, msg: '退群失败'});
+  }
+
+  // 删好友
+  @SubscribeMessage('exitFriend') 
+  async exitFriend(@ConnectedSocket() client: Socket,  @MessageBody() userMap: UserMap):Promise<any> {
+    const user = await this.userRepository.findOne({userId: userMap.userId})
+    const friend = await this.userRepository.findOne({userId: userMap.friendId})
+    const map1 = await this.friendRepository.findOne({userId: userMap.userId, friendId: userMap.friendId})
+    const map2 = await this.friendRepository.findOne({userId: userMap.friendId, friendId: userMap.userId})
+    if(user && friend && map1 && map2) {
+      await this.friendRepository.remove(map1)
+      await this.friendRepository.remove(map2)
+      return this.server.to(userMap.userId).emit('exitFriend',{code: RCode.OK, msg: '删好友成功'});
+    }
+    this.server.to(userMap.userId).emit('exitFriend',{code: RCode.FAIL, msg: '删好友失败'});
   }
 }
