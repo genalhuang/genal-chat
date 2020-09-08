@@ -379,7 +379,7 @@ export default class GenalMessage extends Vue {
     background-color: rgb(0, 0, 0, 0.3);
   }
   .message-main {
-    height: calc(100% - 115px);
+    height: calc(100% - 100px);
     overflow: auto;
     position: relative;
     .text-right {
@@ -425,9 +425,8 @@ export default class GenalMessage extends Vue {
     display: flex;
     flex-wrap: nowrap;
     position: absolute;
-    width: 99%;
-    margin-top: 10px;
-    bottom: 10px;
+    width: 100%;
+    bottom: 0px;
     input {
       height: 40px;
     }
@@ -482,11 +481,7 @@ export default class GenalMessage extends Vue {
 
 // 移动端样式
 @media screen and (max-width: 768px) {
-  .message-input {
-    bottom: 0 !important;
-  }
   .message-main {
-    height: calc(100% - 102px) !important;
     .message-content-image {
       img {
         cursor: pointer;

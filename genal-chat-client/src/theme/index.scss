@@ -12,10 +12,8 @@
   }
   ::-webkit-scrollbar-thumb {
     height: 50px;
-    background-color: rgba(0, 200, 255, 0.5);
-    outline: 2px solid rgba(54, 50, 50, 0.1);
+    background-color: rgba(0, 200, 255, 0.4);
     outline-offset: -2px;
-    border: 2px solid rgba(54, 50, 50, 0.1);
     filter: alpha(opacity = 50);
     -moz-opacity: 0.5;
     -khtml-opacity: 0.5;
@@ -23,7 +21,7 @@
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(0, 200, 255, 0.7);
+    background-color: rgba(0, 200, 255, 0.6);
   }
 }  
 ::-webkit-scrollbar {

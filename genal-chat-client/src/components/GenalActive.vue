@@ -1,13 +1,26 @@
 <template>
   <div class="active">
-    <a-icon type="eye" @click="toggleGroupUser" class="active-button" :class="{ heightLight: showGroupUser }" />
-    <div class="active-content" v-if="showGroupUser">
-      <div class="active-content-sum">在线人数: {{ activeNum }}</div>
-      <div class="active-content-user" v-for="user in activeGroupUser[activeRoom.groupId]" :key="user.userId">
-        <a-avatar :src="user.avatar"></a-avatar>
-        {{ user.username }}
+    <a-icon type="team" @click="toggleGroupUser" class="active-button" :class="{ heightLight: showGroupUser }" />
+    <a-drawer
+      placement="right"
+      :closable="false"
+      :visible="showGroupUser"
+      :get-container="getElement"
+      @close="toggleGroupUser"
+      :wrap-style="{ position: 'absolute' }"
+    >
+      <div class="active-content" v-if="activeGroupUser[activeRoom.groupId]">
+        <div class="actiev-content-title">群聊管理</div>
+        <div class="active-content-sum">在线人数: {{ activeNum }}</div>
+        <div class="active-content-users">
+          <div class="active-content-user" v-for="user in activeGroupUser[activeRoom.groupId]" :key="user.userId">
+            <a-avatar :src="user.avatar"></a-avatar>
+            {{ user.username }}
+          </div>
+        </div>
+        <a-button type="danger" class="active-content-out">退出</a-button>
       </div>
-    </div>
+    </a-drawer>
   </div>
 </template>
 
@@ -30,6 +43,11 @@ export default class GenalActive extends Vue {
   toggleGroupUser() {
     this.showGroupUser = !this.showGroupUser;
   }
+
+  getElement() {
+    console.log('asdf', document.getElementsByClassName('message')[0]);
+    return document.getElementsByClassName('message')[0];
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -51,33 +69,6 @@ export default class GenalActive extends Vue {
   }
   .active-button.heightLight {
     color: skyblue;
-  }
-  .active-button:hover {
-    color: rgb(135, 206, 235, 0.5);
-  }
-  .active-content {
-    background-color: #fff;
-    overflow-y: scroll;
-    padding: 12px;
-    max-height: 300px;
-    border-radius: 0 0 5px 5px;
-    .active-content-sum {
-      font-weight: bold;
-      text-align: left;
-      height: 40px;
-      line-height: 40px;
-      border-bottom: 1px solid rgb(135, 206, 235, 0.5);
-      margin: -5px 0 10px 0;
-    }
-    .active-content-user {
-      width: 150px;
-      overflow: hidden; //超出的文本隐藏
-      text-overflow: ellipsis; //溢出用省略号显示
-      white-space: nowrap; //溢出不换行
-      text-align: left;
-      height: 40px;
-      line-height: 40px;
-    }
   }
 }
 ::-webkit-scrollbar {

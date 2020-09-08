@@ -6,8 +6,8 @@
       </div>
       <div class="tool-avatar-name">{{ user.username }}</div>
     </div>
-    <div class="tool-set">
-      <a-icon class="tool-set-icon" type="setting" @click="showModal('showSetModal')" />
+    <div class="tool-out">
+      <a-icon class="tool-out-icon" type="poweroff" @click="logout" />
     </div>
     <a-tooltip placement="topLeft" arrow-point-at-center>
       <div slot="title">
@@ -40,10 +40,6 @@
         </div>
       </div>
     </a-modal>
-
-    <a-modal title="设置" :visible="showSetModal" footer="" @cancel="handleCancel('showSetModal')">
-      <div>退出 <a-icon class="tool-set-icon" type="poweroff" @click="logout" /></div>
-    </a-modal>
   </div>
 </template>
 
@@ -62,7 +58,6 @@ export default class GenalTool extends Vue {
   @appModule.Mutation('set_user') setUser: Function;
   @chatModule.Getter('socket') socket: SocketIOClient.Socket;
 
-  showSetModal: boolean = false;
   showUserModal: boolean = false;
   username: string = '';
   uploading: boolean = false;
@@ -81,13 +76,13 @@ export default class GenalTool extends Vue {
     this.$emit('logout');
   }
 
-  showModal(modalType: 'showSetModal' | 'showUserModal') {
+  showModal(modalType: string) {
     this.username = this.user.username;
-    this[modalType] = true;
+    this.showUserModal = true;
   }
 
-  handleCancel(modalType: 'showSetModal' | 'showUserModal') {
-    this[modalType] = false;
+  handleCancel(modalType: string) {
+    this.showUserModal = false;
   }
 
   async changeUser() {
@@ -169,7 +164,7 @@ export default class GenalTool extends Vue {
       margin-top: 2px;
     }
   }
-  .tool-set {
+  .tool-out {
     display: flex;
     flex-direction: column;
     font-size: 25px;
@@ -187,10 +182,14 @@ export default class GenalTool extends Vue {
     }
   }
   .github {
+    color: #fff;
     position: absolute;
     font-size: 25px;
     bottom: 60px;
     left: 25px;
+    &:hover {
+      color: skyblue;
+    }
   }
 }
 .tool-user {
@@ -242,7 +241,7 @@ export default class GenalTool extends Vue {
     }
   }
 }
-.tool-set-icon {
+.tool-out-icon {
   transition: all 0.2s linear;
   cursor: pointer;
   margin: 10px;

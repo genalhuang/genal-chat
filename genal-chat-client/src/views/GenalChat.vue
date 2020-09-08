@@ -9,7 +9,7 @@
       <genal-room @setActiveRoom="setActiveRoom"></genal-room>
     </div>
     <div class="chat-part3">
-      <a-icon class="chat-team" type="team" @click="toggleDrawer" />
+      <a-icon class="chat-team" type="message" @click="toggleDrawer" />
       <div class="chat-tool">
         <a-icon type="menu-fold" @click="toggleTool" v-if="visibleTool" />
         <a-icon type="menu-unfold" @click="toggleTool" v-else />
@@ -188,7 +188,7 @@ export default class GenalChat extends Vue {
   .chat-part1 {
     width: 74px;
     height: 100%;
-    background-color: rgb(21, 21, 21, 0.6);
+    background-color: rgb(21, 21, 21, 0.8);
   }
   .chat-part2 {
     width: 230px;

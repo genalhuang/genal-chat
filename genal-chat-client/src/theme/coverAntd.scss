@@ -3,14 +3,16 @@
   margin: 0 0 10px 0!important;
 }
 
+// 抽屉组件重写样式
 .ant-drawer-content-wrapper {
-  background-color: rgba(54, 50, 50, 0.1)!important;
+  background-color: rgba(54, 50, 50, 0.4)!important;
   .ant-drawer-content {
-    background-color: rgba(104, 179, 200, 0.4)!important;
+    background-color: rgba(0, 0, 0, .3)!important;
     .ant-drawer-body {
       padding: 0!important;
+      // 移动端群组部分
       .room-card {
-        background-color: rgba(104, 179, 200, 0.2);
+        background-color: rgba(104, 179, 200, .3);
       }
       .room-card.active {
         background-color: rgba(0, 0, 0, 0.6);
@@ -21,8 +23,50 @@
       .text {
         color: rgb(238, 214, 214);
       }
+
+      // 在线人数部分
+      .active-content {
+        height: 100%;
+        overflow-y: scroll;
+        border-radius: 0 0 5px 5px;
+        text-align: left;
+        .actiev-content-title {
+          text-align: center;
+          height: 60px;
+          line-height: 60px;
+          padding: 0 12px;
+          font-size: 16px;
+          border-bottom: 0.5px solid rgba(0, 0, 0, 1);
+        }
+        .active-content-sum {
+          font-weight: bold;
+          height: 40px;
+          line-height: 40px;
+          padding: 0 12px;
+        }
+        .active-content-users {
+          max-height: calc(100% - 180px);
+          overflow: scroll;
+          .active-content-user {
+            width: 230px;
+            overflow: hidden; //超出的文本隐藏
+            text-overflow: ellipsis; //溢出用省略号显示
+            white-space: nowrap; //溢出不换行
+            text-align: left;
+            height: 40px;
+            line-height: 40px;
+            padding: 0 12px;
+          }
+        }
+        .active-content-out {
+          margin: 12px 0 0 12px;
+        }
+      }
     }
   }
+}
+.ant-drawer-mask {
+  background: transparent!important;
 }
 
 // antd drawer
