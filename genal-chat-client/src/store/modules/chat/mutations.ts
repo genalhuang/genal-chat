@@ -10,6 +10,8 @@ import {
   SET_GROUP_GATHER,
   SET_FRIEND_GATHER,
   SET_USER_GATHER,
+  DEL_GROUP,
+  DEL_FRIEND,
 } from './mutation-types';
 import { ChatState } from './state';
 import { MutationTree } from 'vuex';
@@ -62,7 +64,6 @@ const mutations: MutationTree<ChatState> = {
   },
 
   // 设置私聊记录
-
   [SET_FRIEND_MESSAGES](state, payload: FriendMessage[]) {
     // @ts-ignore
     let userId = this.getters['app/user'].userId;
@@ -93,6 +94,16 @@ const mutations: MutationTree<ChatState> = {
   // 设置所有的好友的用户详细信息(头像,昵称等)
   [SET_FRIEND_GATHER](state, payload: User) {
     Vue.set(state.friendGather, payload.userId, payload);
+  },
+
+  // 退群
+  [DEL_GROUP](state, payload: GroupMap) {
+    Vue.delete(state.groupGather, payload.groupId);
+  },
+
+  // 删好友
+  [DEL_FRIEND](state, payload: UserMap) {
+    Vue.delete(state.friendGather, payload.friendId);
   },
 };
 

@@ -14,6 +14,8 @@ import {
   SET_FRIEND_GATHER,
   SET_USER_GATHER,
   SET_ACTIVE_ROOM,
+  DEL_GROUP,
+  DEL_FRIEND,
 } from './mutation-types';
 
 const actions: ActionTree<ChatState, RootState> = {
@@ -151,6 +153,7 @@ const actions: ActionTree<ChatState, RootState> = {
 
     socket.on('exitGroup', (res: ServerRes) => {
       if(!res.code) {
+        commit(DEL_GROUP, res.data);
         Vue.prototype.$message.success(res.msg);
       } else {
         Vue.prototype.$message.error(res.msg);
@@ -159,6 +162,7 @@ const actions: ActionTree<ChatState, RootState> = {
 
     socket.on('exitFriend', (res: ServerRes) => {
       if(!res.code) {
+        commit(DEL_FRIEND, res.data);
         Vue.prototype.$message.success(res.msg);
       } else {
         Vue.prototype.$message.error(res.msg);

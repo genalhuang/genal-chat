@@ -199,6 +199,22 @@ export class ChatGateway {
         delete friendData._id
         await this.friendRepository.save(friendData)
         client.join(roomId)
+
+        // 如果是删掉的好友重新加, 重新获取一遍私聊消息
+        const userMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: user.userId, friendId: data.friendId });
+        const friendMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: data.friendId, friendId: data.userId });
+        const messages = [...userMessages, ...friendMessages]
+        // 得到私聊消息后先排个序
+        messages.sort((a:any,b:any)=>{
+          return a.time - b.time;
+        })
+        if(messages.length) {
+          // @ts-ignore
+          friend.messages = messages;
+          // @ts-ignore
+          user.messages = messages;
+        }
+        
         this.server.to(data.userId).emit('addFriend', { code: RCode.OK, msg: `添加好友${friend.username}成功`, data: friend })
         this.server.to(data.friendId).emit('addFriend', { code: RCode.OK, msg: `${user.username}添加你为好友`, data: user })
       }
@@ -320,7 +336,7 @@ export class ChatGateway {
   }
 
   // 计算各个群在线人数
-  calculateActiveGroupUser(group: Group, user: User):Promise<any> {
+  calculateActiveGroupUser(group: Group, user: User) {
     if(!this.activeGroupUserGather[group.groupId]) {
       this.activeGroupUserGather[group.groupId] = {}
     }
@@ -342,7 +358,7 @@ export class ChatGateway {
     const map = await this.groupUserRepository.findOne({userId: groupMap.userId, groupId: groupMap.groupId})
     if(user && group && map) {
       await this.groupUserRepository.remove(map)
-      return this.server.to(groupMap.userId).emit('exitGroup',{code: RCode.OK, msg: '退群成功'});
+      return this.server.to(groupMap.userId).emit('exitGroup',{code: RCode.OK, msg: '退群成功', data: groupMap});
     }
     this.server.to(groupMap.userId).emit('exitGroup',{code: RCode.FAIL, msg: '退群失败'});
   }
@@ -357,7 +373,7 @@ export class ChatGateway {
     if(user && friend && map1 && map2) {
       await this.friendRepository.remove(map1)
       await this.friendRepository.remove(map2)
-      return this.server.to(userMap.userId).emit('exitFriend',{code: RCode.OK, msg: '删好友成功'});
+      return this.server.to(userMap.userId).emit('exitFriend',{code: RCode.OK, msg: '删好友成功', data: userMap});
     }
     this.server.to(userMap.userId).emit('exitFriend',{code: RCode.FAIL, msg: '删好友失败'});
   }

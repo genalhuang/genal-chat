@@ -8,3 +8,5 @@ export const ADD_GROUP_MESSAGE = 'add_group_message';
 export const SET_GROUP_MESSAGES = 'set_group_messages';
 export const ADD_FRIEND_MESSAGE = 'add_friend_message';
 export const SET_FRIEND_MESSAGES = 'set_friend_messages';
+export const DEL_GROUP = 'del_group';
+export const DEL_FRIEND = 'del_friend';
