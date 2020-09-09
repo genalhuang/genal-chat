@@ -3,11 +3,13 @@
     <div class="message-header">
       <div v-if="activeRoom">
         <div v-if="groupGather[activeRoom.groupId]" class="message-header-text">
-          {{ groupGather[activeRoom.groupId].groupName }}
+          <span>{{ groupGather[activeRoom.groupId].groupName }}</span>
+          <a-icon type="sync" spin class="message-header-icon" v-if="spinning" />
           <genal-active type="group"></genal-active>
         </div>
         <div v-else class="message-header-text">
-          {{ userGather[activeRoom.userId].username }}
+          <span>{{ userGather[activeRoom.userId].username }}</span>
+          <a-icon type="sync" spin class="message-header-icon" v-if="spinning" />
           <genal-active type="friend"></genal-active>
         </div>
       </div>
@@ -86,10 +88,13 @@ import { parseText } from '@/utils/common';
 })
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
+
+  @chatModule.Getter('socket') socket: SocketIOClient.Socket;
   @chatModule.State('activeRoom') activeRoom: Group & Friend;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('userGather') userGather: FriendGather;
 
+  spinning: boolean = false;
   text: string = '';
   loading: boolean = false;
   messageDom: HTMLElement;
@@ -128,6 +133,16 @@ export default class GenalMessage extends Vue {
   @Watch('activeRoom.messages', { deep: true })
   changeMessages() {
     this.addMessage();
+  }
+
+  // 监听socket断连给出spinning提醒
+  @Watch('socket.disconnected') connectingSocket() {
+    if (this.socket.disconnected) {
+      this.spinning = true;
+      this.$message.info('正在连接');
+    } else {
+      this.spinning = false;
+    }
   }
 
   /**
@@ -378,6 +393,9 @@ export default class GenalMessage extends Vue {
     height: 60px;
     line-height: 60px;
     background-color: rgb(0, 0, 0, 0.3);
+    .message-header-icon {
+      margin-left: 5px;
+    }
   }
   .message-main {
     height: calc(100% - 100px);

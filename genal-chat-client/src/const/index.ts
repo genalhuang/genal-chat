@@ -1,1 +1,1 @@
-export const DEFAULT_GROUP = '阿童木聊天室'
+export const DEFAULT_GROUP = '阿童木聊天室';
