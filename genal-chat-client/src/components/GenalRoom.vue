@@ -121,6 +121,7 @@ export default class GenalRoom extends Vue {
       height: 35px;
       margin-right: 5px;
       border-radius: 50%;
+      object-fit: cover;
     }
     .room-card-message {
       flex: 1;

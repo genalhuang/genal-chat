@@ -156,6 +156,7 @@ export default class GenalTool extends Vue {
       img {
         width: 100%;
         height: 100%;
+        object-fit: cover;
       }
     }
     .tool-avatar-name {
