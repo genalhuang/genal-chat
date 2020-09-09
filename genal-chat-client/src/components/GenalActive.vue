@@ -1,6 +1,6 @@
 <template>
   <div class="active">
-    <div v-if='type==="group"'>
+    <div v-if="type === 'group'">
       <a-icon type="team" @click="toggleGroupUser" class="active-button" :class="{ heightLight: showGroupUser }" />
       <a-drawer
         placement="right"
@@ -19,12 +19,14 @@
               {{ user.username }}
             </div>
           </div>
-          <a-button type="danger" class="active-content-out" @click='exitGroup'>退出</a-button>
+          <a-button type="danger" class="active-content-out" @click="exitGroup">退出</a-button>
         </div>
       </a-drawer>
     </div>
     <div v-else>
-      <a-icon type="user-delete" class="active-button" @click='exitFriend'/>
+      <a-popconfirm title="确定要删除该好友吗？" placement="bottomRight" ok-text="Yes" cancel-text="No" @confirm='exitFriend'>
+        <a-icon type="user-delete" class="active-button"/>
+      </a-popconfirm>
     </div>
   </div>
 </template>
@@ -37,7 +39,7 @@ const appModule = namespace('app');
 
 @Component
 export default class GenalActive extends Vue {
-  @Prop({default: 'group'}) type: string;
+  @Prop({ default: 'group' }) type: string;
 
   @appModule.Getter('user') user: User;
 
@@ -49,7 +51,7 @@ export default class GenalActive extends Vue {
 
   @Watch('type')
   changeType() {
-    if(this.type === 'friend') {
+    if (this.type === 'friend') {
       this.showGroupUser = false;
     }
   }
@@ -70,15 +72,15 @@ export default class GenalActive extends Vue {
   exitGroup() {
     this.socket.emit('exitGroup', {
       userId: this.user.userId,
-      groupId: this.activeRoom.groupId
-    })
+      groupId: this.activeRoom.groupId,
+    });
   }
 
   exitFriend() {
     this.socket.emit('exitFriend', {
       userId: this.user.userId,
-      friendId: this.activeRoom.userId
-    })
+      friendId: this.activeRoom.userId,
+    });
   }
 }
 </script>

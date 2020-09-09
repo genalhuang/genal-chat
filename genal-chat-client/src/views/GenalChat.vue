@@ -229,6 +229,9 @@ export default class GenalChat extends Vue {
       top: 17px;
       left: 60px;
       z-index: 999;
+      &:active {
+        color: skyblue;
+      }
     }
     .chat-tool {
       display: block !important;
@@ -237,6 +240,9 @@ export default class GenalChat extends Vue {
       top: 13px;
       left: 20px;
       z-index: 999;
+      &:active {
+        color: skyblue;
+      }
     }
   }
 }

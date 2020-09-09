@@ -17,6 +17,7 @@ import {
   DEL_GROUP,
   DEL_FRIEND,
 } from './mutation-types';
+import { DEFAULT_GROUP } from '@/const/index';
 
 const actions: ActionTree<ChatState, RootState> = {
   // 初始化socket连接和监听socket事件
@@ -152,22 +153,24 @@ const actions: ActionTree<ChatState, RootState> = {
     });
 
     socket.on('exitGroup', (res: ServerRes) => {
-      if(!res.code) {
+      if (!res.code) {
         commit(DEL_GROUP, res.data);
+        commit(SET_ACTIVE_ROOM, state.groupGather[DEFAULT_GROUP]);
         Vue.prototype.$message.success(res.msg);
       } else {
         Vue.prototype.$message.error(res.msg);
       }
-    })
+    });
 
     socket.on('exitFriend', (res: ServerRes) => {
-      if(!res.code) {
+      if (!res.code) {
         commit(DEL_FRIEND, res.data);
+        commit(SET_ACTIVE_ROOM, state.groupGather[DEFAULT_GROUP]);
         Vue.prototype.$message.success(res.msg);
       } else {
         Vue.prototype.$message.error(res.msg);
       }
-    })
+    });
   },
 
   async handleChatData({ commit, dispatch, state, rootState }, payload) {
@@ -211,7 +214,7 @@ const actions: ActionTree<ChatState, RootState> = {
     let friendGather2 = state.friendGather;
     if (!activeRoom) {
       // 更新完数据没有默认activeRoom设置群为'阿童木聊天室'
-      return commit(SET_ACTIVE_ROOM, groupGather['阿童木聊天室']);
+      return commit(SET_ACTIVE_ROOM, groupGather[DEFAULT_GROUP]);
     }
     commit(SET_ACTIVE_ROOM, groupGather2[activeRoom.groupId] || friendGather2[activeRoom.userId]);
   },

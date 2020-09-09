@@ -46,6 +46,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { setUserAvatar } from '@/api/apis';
+import { DEFAULT_GROUP } from '@/const/index'
 import { namespace } from 'vuex-class';
 import * as apis from '@/api/apis';
 import { processReturn, nameVerify } from '@/utils/common.ts';
@@ -98,7 +99,7 @@ export default class GenalTool extends Vue {
       this.setUser(data);
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
-        groupId: '阿童木聊天室',
+        groupId: DEFAULT_GROUP,
         userId: data.userId,
       });
     } else {
@@ -131,7 +132,7 @@ export default class GenalTool extends Vue {
       this.uploading = false;
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
-        groupId: '阿童木聊天室',
+        groupId: DEFAULT_GROUP,
         userId: data.userId,
       });
     }

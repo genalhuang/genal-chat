@@ -7,7 +7,8 @@
         <a-button v-if="user.role === 'admin'" style="margin-bottom: 5px;" @click="deleteUser(data.userId)" type="primary">
           删除用户
         </a-button>
-        <a-button @click="addFriend(data.userId)" type="primary">添加好友</a-button>
+        <a-button @click="_setActiveRoom(data.userId)" type="primary" v-if='friendGather[data.userId]'>进入私聊</a-button>
+        <a-button @click="addFriend(data.userId)" type="primary" v-else>添加好友</a-button>
       </div>
       <a-avatar class="avatar-img" :src="userGather[data.userId].avatar" />
     </a-popover>
@@ -32,6 +33,7 @@ export default class GenalAvatar extends Vue {
   @chatModule.Getter('userGather') userGather: FriendGather;
   @chatModule.Getter('friendGather') friendGather: FriendGather;
   @chatModule.Getter('socket') socket: SocketIOClient.Socket;
+  @chatModule.Mutation('set_active_room') setActiveRoom: Function;
 
   addFriend(friendId: string) {
     this.socket.emit('addFriend', {
@@ -52,6 +54,10 @@ export default class GenalAvatar extends Vue {
       did: userId,
     });
     let data = processReturn(res);
+  }
+
+  _setActiveRoom(userId: string) {
+    this.setActiveRoom(this.friendGather[userId]);
   }
 }
 </script>
