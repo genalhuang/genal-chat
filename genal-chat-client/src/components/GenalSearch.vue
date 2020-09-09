@@ -42,6 +42,7 @@
     <a-modal v-model="visibleJoinGroup" footer="" title="加入群聊">
       <div style="display:flex">
         <a-select
+          v-if="visibleJoinGroup"
           show-search
           placeholder="搜索群组"
           style="width: 90%"
@@ -62,6 +63,7 @@
     <a-modal v-model="visibleAddFriend" footer="" title="添加好友">
       <div style="display:flex">
         <a-select
+          v-if="visibleAddFriend"
           show-search
           placeholder="搜索用户"
           style="width: 90%"
