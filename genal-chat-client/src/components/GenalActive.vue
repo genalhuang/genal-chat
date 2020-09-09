@@ -15,7 +15,7 @@
           <div class="active-content-sum">在线人数: {{ activeNum }}</div>
           <div class="active-content-users">
             <div class="active-content-user" v-for="user in activeGroupUser[activeRoom.groupId]" :key="user.userId">
-              <a-avatar :src="user.avatar"></a-avatar>
+              <genal-avatar :data="user" :showTime='false'></genal-avatar>
               {{ user.username }}
             </div>
           </div>
@@ -33,11 +33,16 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import GenalAvatar from './GenalAvatar.vue';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
 const appModule = namespace('app');
 
-@Component
+@Component({
+  components: {
+    GenalAvatar,
+  },
+})
 export default class GenalActive extends Vue {
   @Prop({ default: 'group' }) type: string;
 

@@ -1,6 +1,6 @@
 <template>
   <div class="avatar" v-if="userGather[data.userId]">
-    <a-popover v-if='data.userId !== user.userId'>
+    <a-popover v-if='data.userId !== user.userId' trigger="click">
       <div slot="content" class="avatar-card" >
         <a-avatar :size="60" :src="userGather[data.userId].avatar" />
         <div>{{ userGather[data.userId].username }}</div>
@@ -15,7 +15,7 @@
     <a-avatar v-else class="avatar-img" :src="userGather[data.userId].avatar" />
     <div>
       <span class="avatar-name">{{ userGather[data.userId].username }}</span>
-      <span class="avatar-time">{{ _formatTime(data.time) }}</span>
+      <span class="avatar-time" v-if='showTime'>{{ _formatTime(data.time) }}</span>
     </div>
   </div>
 </template>
@@ -31,7 +31,9 @@ import { processReturn } from '@/utils/common.ts';
 
 @Component
 export default class GenalAvatar extends Vue {
-  @Prop() data: User;
+  @Prop() data: User; // 用户信息
+  @Prop({default: true}) showTime: boolean; // 是否显示时间
+
   @appModule.Getter('user') user: User;
   @chatModule.Getter('userGather') userGather: FriendGather;
   @chatModule.Getter('friendGather') friendGather: FriendGather;
