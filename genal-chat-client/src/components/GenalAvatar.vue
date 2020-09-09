@@ -12,8 +12,10 @@
       </div>
       <a-avatar class="avatar-img" :src="userGather[data.userId].avatar" />
     </a-popover>
-    <span class="avatar-name">{{ userGather[data.userId].username }}</span>
-    <span class="avatar-time">{{ _formatTime(data.time) }}</span>
+    <div>
+      <span class="avatar-name">{{ userGather[data.userId].username }}</span>
+      <span class="avatar-time">{{ _formatTime(data.time) }}</span>
+    </div>
   </div>
 </template>
 
@@ -75,7 +77,7 @@ export default class GenalAvatar extends Vue {
     margin-left: 5px;
   }
   .avatar-time {
-    font-size: 14px;
+    font-size: 12px;
     color: rgb(255, 255, 255, 0.8);
     margin-left: 5px;
   }
