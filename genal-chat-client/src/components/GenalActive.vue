@@ -101,7 +101,7 @@ export default class GenalActive extends Vue {
     position: absolute;
     z-index: 999;
     top: -43px;
-    right: 24px;
+    right: 20px;
     font-size: 25px;
     color: #fff;
     cursor: pointer;
