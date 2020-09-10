@@ -48,6 +48,7 @@ const actions: ActionTree<ChatState, RootState> = {
       if (res.code) {
         return Vue.prototype.$message.error(res.msg);
       }
+      Vue.prototype.$message.success(res.msg);
       commit(SET_GROUP_GATHER, res.data);
     });
 
