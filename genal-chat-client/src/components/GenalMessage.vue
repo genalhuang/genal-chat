@@ -2,12 +2,12 @@
   <div class="message">
     <div class="message-header">
       <div v-if="activeRoom">
-        <div v-if="groupGather[activeRoom.groupId]" class="message-header-text">
-          <span>{{ groupGather[activeRoom.groupId].groupName }}</span>
+        <div v-if="groupGather[activeRoom.groupId]" class="message-header-box">
+          <span class="message-header-text">{{ groupGather[activeRoom.groupId].groupName }}</span>
           <a-icon type="sync" spin class="message-header-icon" v-if="spinning" />
           <genal-active type="group"></genal-active>
         </div>
-        <div v-else class="message-header-text">
+        <div v-else class="message-header-box">
           <span>{{ userGather[activeRoom.userId].username }}</span>
           <a-icon type="sync" spin class="message-header-icon" v-if="spinning" />
           <genal-active type="friend"></genal-active>
@@ -139,7 +139,6 @@ export default class GenalMessage extends Vue {
   @Watch('socket.disconnected') connectingSocket() {
     if (this.socket.disconnected) {
       this.spinning = true;
-      this.$message.info('正在连接');
     } else {
       this.spinning = false;
     }
@@ -421,7 +420,7 @@ export default class GenalMessage extends Vue {
       .message-content-image {
         max-width: 600px;
         display: inline-block;
-        background-color: rgb(0, 0, 0, 0.2);
+        background-color: rgb(0, 0, 0, 0.3);
         padding: 6px;
         font-size: 16px;
         border-radius: 5px;
@@ -511,12 +510,21 @@ export default class GenalMessage extends Vue {
   }
 }
 @media screen and (max-width: 500px) {
-  .message-header-text {
-    width: 100px;
-    margin: 0 auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .message-header-box {
+    .message-header-text {
+      display: block;
+      width: 110px;
+      margin: 0 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .message-header-icon {
+      position: absolute;
+      top: 17px;
+      right: 60px;
+      font-size: 25px;
+    }
   }
 }
 </style>
