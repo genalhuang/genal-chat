@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import {
   SET_SOCKET,
+  SET_GROPPED,
   SET_ACTIVE_GROUP_USER,
   ADD_GROUP_MESSAGE,
   SET_GROUP_MESSAGES,
@@ -18,8 +19,13 @@ import { MutationTree } from 'vuex';
 
 const mutations: MutationTree<ChatState> = {
   // 保存socket
-  [SET_SOCKET](state, payload: any) {
+  [SET_SOCKET](state, payload: SocketIOClient.Socket) {
     state.socket = payload;
+  },
+
+  // 设置用户是否处于掉线重连状态
+  [SET_GROPPED](state, payload: boolean) {
+    state.dropped = payload;
   },
 
   // 设置群在线人数

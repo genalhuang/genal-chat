@@ -4,12 +4,12 @@
       <div v-if="activeRoom">
         <div v-if="groupGather[activeRoom.groupId]" class="message-header-box">
           <span class="message-header-text">{{ groupGather[activeRoom.groupId].groupName }}</span>
-          <a-icon type="sync" spin class="message-header-icon" v-if="spinning" />
+          <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
           <genal-active type="group"></genal-active>
         </div>
         <div v-else class="message-header-box">
           <span>{{ userGather[activeRoom.userId].username }}</span>
-          <a-icon type="sync" spin class="message-header-icon" v-if="spinning" />
+          <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
           <genal-active type="friend"></genal-active>
         </div>
       </div>
@@ -89,12 +89,13 @@ import { parseText } from '@/utils/common';
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
 
-  @chatModule.Getter('socket') socket: SocketIOClient.Socket;
   @chatModule.State('activeRoom') activeRoom: Group & Friend;
+  @chatModule.Getter('socket') socket: SocketIOClient.Socket;
+  @chatModule.Getter('dropped') dropped: boolean;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('userGather') userGather: FriendGather;
+  @chatModule.Mutation('set_dropped') set_dropped: Function;
 
-  spinning: boolean = false;
   text: string = '';
   loading: boolean = false;
   messageDom: HTMLElement;
@@ -135,12 +136,10 @@ export default class GenalMessage extends Vue {
     this.addMessage();
   }
 
-  // 监听socket断连给出spinning提醒
+  // 监听socket断连给出重连状态提醒
   @Watch('socket.disconnected') connectingSocket() {
     if (this.socket.disconnected) {
-      this.spinning = true;
-    } else {
-      this.spinning = false;
+      this.set_dropped(true)
     }
   }
 

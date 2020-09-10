@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 import Vue from 'vue';
 import {
   SET_SOCKET,
+  SET_GROPPED,
   SET_ACTIVE_GROUP_USER,
   ADD_GROUP_MESSAGE,
   SET_GROUP_MESSAGES,
@@ -150,6 +151,7 @@ const actions: ActionTree<ChatState, RootState> = {
         return Vue.prototype.$message.error(res.msg);
       }
       dispatch('handleChatData', res.data);
+      commit(SET_GROPPED, false);
     });
 
     socket.on('exitGroup', (res: ServerRes) => {
