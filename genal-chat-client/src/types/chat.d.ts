@@ -85,3 +85,15 @@ interface ImageSize {
   width: number;
   height: number;
 }
+
+// socket返回值格式
+interface ServerRes {
+  code: number;
+  msg: string;
+  data: any;
+}
+
+// 所有群的在线用户合集
+interface ActiveGroupUser {
+  [key: string]: User;
+}

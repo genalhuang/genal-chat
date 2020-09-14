@@ -7,7 +7,7 @@ const mutations: MutationTree<AppState> = {
   [SET_USER](state, payload) {
     state.user = payload;
     // 数据持久化
-    cookie.set('user', payload);
+    cookie.set('user', payload, { expires: 3650 });
   },
 
   [CLEAR_USER](state, payload) {

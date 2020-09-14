@@ -1,5 +1,7 @@
 export interface ChatState {
-  socket: any;
+  socket: SocketIOClient.Socket;
+  dropped: boolean;
+  activeGroupUser: ActiveGroupUser;
   activeRoom: (Group & Friend) | null;
   groupGather: GroupGather;
   userGather: FriendGather;
@@ -7,7 +9,10 @@ export interface ChatState {
 }
 
 const chatState: ChatState = {
+  // @ts-ignore
   socket: null,
+  dropped: false,
+  activeGroupUser: {},
   activeRoom: null,
   groupGather: {},
   userGather: {},

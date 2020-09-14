@@ -18,6 +18,7 @@ import {
   Upload,
   Tooltip,
   Drawer,
+  Popconfirm,
 } from 'ant-design-vue';
 
 Vue.use(Avatar);
@@ -36,4 +37,5 @@ Vue.use(Select);
 Vue.use(Upload);
 Vue.use(Tooltip);
 Vue.use(Drawer);
+Vue.use(Popconfirm);
 Vue.prototype.$message = message;

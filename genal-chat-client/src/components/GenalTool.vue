@@ -6,8 +6,8 @@
       </div>
       <div class="tool-avatar-name">{{ user.username }}</div>
     </div>
-    <div class="tool-set">
-      <a-icon class="tool-set-icon" type="setting" @click="showModal('showSetModal')" />
+    <div class="tool-out">
+      <a-icon class="tool-out-icon" type="poweroff" @click="logout" />
     </div>
     <a-tooltip placement="topLeft" arrow-point-at-center>
       <div slot="title">
@@ -40,16 +40,13 @@
         </div>
       </div>
     </a-modal>
-
-    <a-modal title="设置" :visible="showSetModal" footer="" @cancel="handleCancel('showSetModal')">
-      <div>退出 <a-icon class="tool-set-icon" type="poweroff" @click="logout" /></div>
-    </a-modal>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { setUserAvatar } from '@/api/apis';
+import { DEFAULT_GROUP } from '@/const/index';
 import { namespace } from 'vuex-class';
 import * as apis from '@/api/apis';
 import { processReturn, nameVerify } from '@/utils/common.ts';
@@ -60,9 +57,8 @@ const chatModule = namespace('chat');
 export default class GenalTool extends Vue {
   @appModule.Getter('user') user: User;
   @appModule.Mutation('set_user') setUser: Function;
-  @chatModule.Getter('socket') socket: any;
+  @chatModule.Getter('socket') socket: SocketIOClient.Socket;
 
-  showSetModal: boolean = false;
   showUserModal: boolean = false;
   username: string = '';
   uploading: boolean = false;
@@ -81,13 +77,13 @@ export default class GenalTool extends Vue {
     this.$emit('logout');
   }
 
-  showModal(modalType: 'showSetModal' | 'showUserModal') {
+  showModal(modalType: string) {
     this.username = this.user.username;
-    this[modalType] = true;
+    this.showUserModal = true;
   }
 
-  handleCancel(modalType: 'showSetModal' | 'showUserModal') {
-    this[modalType] = false;
+  handleCancel(modalType: string) {
+    this.showUserModal = false;
   }
 
   async changeUser() {
@@ -103,7 +99,7 @@ export default class GenalTool extends Vue {
       this.setUser(data);
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
-        groupId: '阿童木聊天室',
+        groupId: DEFAULT_GROUP,
         userId: data.userId,
       });
     } else {
@@ -136,7 +132,7 @@ export default class GenalTool extends Vue {
       this.uploading = false;
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
-        groupId: '阿童木聊天室',
+        groupId: DEFAULT_GROUP,
         userId: data.userId,
       });
     }
@@ -160,6 +156,7 @@ export default class GenalTool extends Vue {
       img {
         width: 100%;
         height: 100%;
+        object-fit: cover;
       }
     }
     .tool-avatar-name {
@@ -169,7 +166,7 @@ export default class GenalTool extends Vue {
       margin-top: 2px;
     }
   }
-  .tool-set {
+  .tool-out {
     display: flex;
     flex-direction: column;
     font-size: 25px;
@@ -187,10 +184,14 @@ export default class GenalTool extends Vue {
     }
   }
   .github {
+    color: #fff;
     position: absolute;
     font-size: 25px;
     bottom: 60px;
     left: 25px;
+    &:hover {
+      color: skyblue;
+    }
   }
 }
 .tool-user {
@@ -242,7 +243,7 @@ export default class GenalTool extends Vue {
     }
   }
 }
-.tool-set-icon {
+.tool-out-icon {
   transition: all 0.2s linear;
   cursor: pointer;
   margin: 10px;

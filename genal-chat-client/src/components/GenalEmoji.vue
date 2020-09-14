@@ -95,7 +95,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 
 @Component
-export default class GenalMessage extends Vue {
+export default class GenalEmoji extends Vue {
   addEmoji(emoji: string) {
     this.$emit('addEmoji', emoji);
   }

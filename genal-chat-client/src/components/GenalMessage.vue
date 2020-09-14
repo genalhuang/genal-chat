@@ -2,11 +2,15 @@
   <div class="message">
     <div class="message-header">
       <div v-if="activeRoom">
-        <div v-if="groupGather[activeRoom.groupId]" class="message-header-text">
-          {{ groupGather[activeRoom.groupId].groupName }}
+        <div v-if="groupGather[activeRoom.groupId]" class="message-header-box">
+          <span class="message-header-text">{{ groupGather[activeRoom.groupId].groupName }}</span>
+          <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
+          <genal-active type="group"></genal-active>
         </div>
-        <div v-else class="message-header-text">
-          {{ userGather[activeRoom.userId].username }}
+        <div v-else class="message-header-box">
+          <span>{{ userGather[activeRoom.userId].username }}</span>
+          <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
+          <genal-active type="friend"></genal-active>
         </div>
       </div>
     </div>
@@ -19,9 +23,9 @@
               <genal-avatar :data="item"></genal-avatar>
               <div>
                 <div class="message-content-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
-                <div class="message-content-image" v-if="item.messageType === 'image'">
+                <div class="message-content-image" v-if="item.messageType === 'image'" :style="getImageStyle(item.content)">
                   <viewer>
-                    <img :src="'api/static/' + item.content" alt="" :style="getImageStyle(item.content)" />
+                    <img :src="'api/static/' + item.content" alt="" />
                   </viewer>
                 </div>
               </div>
@@ -69,6 +73,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue';
 import GenalEmoji from './GenalEmoji.vue';
+import GenalActive from './GenalActive.vue';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
 const appModule = namespace('app');
@@ -76,22 +81,27 @@ import { parseText } from '@/utils/common';
 
 @Component({
   components: {
+    GenalActive,
     GenalAvatar,
     GenalEmoji,
   },
 })
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
+
   @chatModule.State('activeRoom') activeRoom: Group & Friend;
+  @chatModule.Getter('socket') socket: SocketIOClient.Socket;
+  @chatModule.Getter('dropped') dropped: boolean;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('userGather') userGather: FriendGather;
+  @chatModule.Mutation('set_dropped') set_dropped: Function;
 
   text: string = '';
   loading: boolean = false;
   messageDom: HTMLElement;
   messageContentDom: HTMLElement;
   pagingMessage: Array<GroupMessage | FriendMessage> = [];
-  messageCount: number = 15;
+  messageCount: number = 30;
   messageOpacity: number = 0;
   lastTime: number = 0;
   lastMessagePosition: number = 0;
@@ -113,7 +123,7 @@ export default class GenalMessage extends Vue {
   @Watch('activeRoom')
   changeActiveRoom() {
     this.messageOpacity = 0;
-    this.messageCount = 15;
+    this.messageCount = 30;
     this.initPagingMessage();
     this.scrollToBottom();
   }
@@ -126,6 +136,13 @@ export default class GenalMessage extends Vue {
     this.addMessage();
   }
 
+  // 监听socket断连给出重连状态提醒
+  @Watch('socket.disconnected') connectingSocket() {
+    if (this.socket.disconnected) {
+      this.set_dropped(true)
+    }
+  }
+
   /**
    * 初始化分页消息
    */
@@ -133,10 +150,10 @@ export default class GenalMessage extends Vue {
     if (!this.activeRoom.messages) {
       return (this.pagingMessage = []);
     }
-    if (this.activeRoom.messages.length <= 15) {
+    if (this.activeRoom.messages.length <= 30) {
       return (this.pagingMessage = this.activeRoom.messages);
     }
-    this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - 15);
+    this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - 30);
   }
 
   handleScroll(event: Event) {
@@ -145,7 +162,7 @@ export default class GenalMessage extends Vue {
       if (this.messageDom.scrollTop === 0 && this.activeRoom.messages && this.activeRoom.messages.length > this.messageCount) {
         this.lastMessagePosition = this.messageContentDom.offsetHeight;
         this.loading = true;
-        this.messageCount += 15;
+        this.messageCount += 30;
         this.getPagingMessage();
       }
     }
@@ -273,13 +290,27 @@ export default class GenalMessage extends Vue {
   }
 
   /**
-   * 根据图片url设置消息框宽高
+   * 根据图片url设置图片框宽高, 注意是图片框
    */
   getImageStyle(src: string) {
+    let isMobile = document.body.clientWidth <= 768;
     let arr = src.split('$');
+    let width = Number(arr[2]);
+    let height = Number(arr[3]);
+    if (isMobile) {
+      // 如果是移动端,图片最大宽度138, 返回值加12是因为设置的是图片框的宽高要加入padding值
+      if (width > 138) {
+        height = (height * 138) / width;
+        width = 138;
+        return {
+          width: `${width + 12}px`,
+          height: `${height + 12}px`,
+        };
+      }
+    }
     return {
-      width: `${arr[2]}px`,
-      height: `${arr[3]}px`,
+      width: `${width + 12}px`,
+      height: `${height + 12}px`,
     };
   }
 
@@ -288,11 +319,13 @@ export default class GenalMessage extends Vue {
    */
   getImageSize(data: ImageSize) {
     let { width, height } = data;
-    if (width > 350 || height > 350) {
+    if (width > 335 || height > 335) {
       if (width > height) {
-        height = 350 * (height / width);
+        height = 335 * (height / width);
+        width = 335;
       } else {
-        width = 350 * (width / height);
+        width = 335 * (width / height);
+        height = 335;
       }
     }
     return {
@@ -358,9 +391,12 @@ export default class GenalMessage extends Vue {
     height: 60px;
     line-height: 60px;
     background-color: rgb(0, 0, 0, 0.3);
+    .message-header-icon {
+      margin-left: 5px;
+    }
   }
   .message-main {
-    height: calc(100% - 115px);
+    height: calc(100% - 100px);
     overflow: auto;
     position: relative;
     .text-right {
@@ -383,7 +419,7 @@ export default class GenalMessage extends Vue {
       .message-content-image {
         max-width: 600px;
         display: inline-block;
-        background-color: rgb(0, 200, 255, 0.4);
+        background-color: rgb(0, 0, 0, 0.3);
         padding: 6px;
         font-size: 16px;
         border-radius: 5px;
@@ -406,9 +442,8 @@ export default class GenalMessage extends Vue {
     display: flex;
     flex-wrap: nowrap;
     position: absolute;
-    width: 99%;
-    margin-top: 10px;
-    bottom: 10px;
+    width: 100%;
+    bottom: 0px;
     input {
       height: 40px;
     }
@@ -463,29 +498,32 @@ export default class GenalMessage extends Vue {
 
 // 移动端样式
 @media screen and (max-width: 768px) {
-  .message-input {
-    bottom: 0 !important;
-  }
   .message-main {
-    height: calc(100% - 102px) !important;
     .message-content-image {
-      width: 150px !important;
-      height: inherit !important;
       img {
         cursor: pointer;
-        width: 137px !important;
+        max-width: 138px !important;
         height: inherit !important;
       }
     }
   }
 }
 @media screen and (max-width: 500px) {
-  .message-header-text {
-    width: 100px;
-    margin: 0 auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .message-header-box {
+    .message-header-text {
+      display: block;
+      width: 110px;
+      margin: 0 auto;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .message-header-icon {
+      position: absolute;
+      top: 17px;
+      right: 60px;
+      font-size: 25px;
+    }
   }
 }
 </style>

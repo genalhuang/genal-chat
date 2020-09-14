@@ -121,6 +121,7 @@ export default class GenalRoom extends Vue {
       height: 35px;
       margin-right: 5px;
       border-radius: 50%;
+      object-fit: cover;
     }
     .room-card-message {
       flex: 1;
@@ -138,7 +139,7 @@ export default class GenalRoom extends Vue {
           text-overflow: ellipsis; //溢出用省略号显示
           white-space: nowrap; //溢出不换行
         }
-        color: gray;
+        color: rgb(255, 255, 255, 0.6);
         font-size: 14px;
       }
     }

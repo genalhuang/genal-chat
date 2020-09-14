@@ -9,7 +9,7 @@ import { Component, Vue } from 'vue-property-decorator';
 @Component
 export default class GenalChat extends Vue {
   mounted() {
-    this.runStarrySky();
+    // this.runStarrySky();
   }
 
   // 星空代码
@@ -268,6 +268,7 @@ export default class GenalChat extends Vue {
   height: 100%;
   width: 100%;
   overflow: hidden;
+  background: url(~@/assets/background1.jpg);
   background-size: cover;
   #canvas {
     position: absolute;

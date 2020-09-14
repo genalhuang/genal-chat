@@ -1,5 +1,6 @@
 <template>
   <div class="chat">
+    <genal-music></genal-music>
     <div class="chat-part1" v-if="visibleTool">
       <genal-tool @logout="logout"></genal-tool>
     </div>
@@ -8,16 +9,18 @@
       <genal-room @setActiveRoom="setActiveRoom"></genal-room>
     </div>
     <div class="chat-part3">
-      <a-icon class="chat-team" type="team" @click="toggleDrawer" />
+      <a-icon class="chat-team" type="message" @click="toggleDrawer" />
       <div class="chat-tool">
         <a-icon type="menu-fold" @click="toggleTool" v-if="visibleTool" />
         <a-icon type="menu-unfold" @click="toggleTool" v-else />
       </div>
       <genal-message @sendMessage="sendMessage"></genal-message>
     </div>
-    <a-drawer placement="left" :closable="false" :visible="visibleDrawer" @close="toggleDrawer">
-      <genal-search @addGroup="addGroup" @joinGroup="joinGroup" @addFriend="addFriend" @setActiveRoom="setActiveRoom"> </genal-search>
-      <genal-room @setActiveRoom="setActiveRoom"></genal-room>
+    <a-drawer placement="left" :closable="false" :visible="visibleDrawer" @close="toggleDrawer" style="height:100%">
+      <div class="chat-drawer">
+        <genal-search @addGroup="addGroup" @joinGroup="joinGroup" @addFriend="addFriend" @setActiveRoom="setActiveRoom"> </genal-search>
+        <genal-room @setActiveRoom="setActiveRoom"></genal-room>
+      </div>
     </a-drawer>
     <genal-join @regist="handleregist" @login="handlelogin" :showModal="showModal"></genal-join>
   </div>
@@ -30,6 +33,7 @@ import GenalJoin from '@/components/GenalJoin.vue';
 import GenalRoom from '@/components/GenalRoom.vue';
 import GenalMessage from '@/components/GenalMessage.vue';
 import GenalSearch from '@/components/GenalSearch.vue';
+import GenalMusic from '@/components/GenalMusic.vue';
 import { namespace } from 'vuex-class';
 const appModule = namespace('app');
 const chatModule = namespace('chat');
@@ -41,6 +45,7 @@ const chatModule = namespace('chat');
     GenalRoom,
     GenalMessage,
     GenalSearch,
+    GenalMusic,
   },
 })
 export default class GenalChat extends Vue {
@@ -52,7 +57,7 @@ export default class GenalChat extends Vue {
   @appModule.Action('login') login: Function;
   @appModule.Action('regist') regist: Function;
 
-  @chatModule.Getter('socket') socket: any;
+  @chatModule.Getter('socket') socket: SocketIOClient.Socket;
   @chatModule.Getter('userGather') userGather: FriendGather;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('activeRoom') activeRoom: Friend & Group;
@@ -180,26 +185,20 @@ export default class GenalChat extends Vue {
   box-shadow: 6px 10px 10px rgb(153, 153, 153, 0.2);
   display: flex;
   border-radius: 5px;
-  .chat-header {
-    position: absolute;
-    display: flex;
-    right: 0;
-    top: -50px;
-  }
   .chat-part1 {
     width: 74px;
     height: 100%;
-    background-color: rgb(21, 21, 21, 0.6);
+    background-color: rgb(21, 21, 21, 0.8);
   }
   .chat-part2 {
     width: 230px;
     height: 100%;
-    background-color: rgb(21, 21, 21, 0.4);
+    background-color: rgb(21, 21, 21, 0.3);
   }
   .chat-part3 {
     flex: 1;
     height: 100%;
-    background-color: rgb(21, 21, 21, 0.2);
+    background-color: rgb(21, 21, 21, 0.1);
     overflow-y: hidden;
     position: relative;
     .chat-group {
@@ -230,6 +229,9 @@ export default class GenalChat extends Vue {
       top: 17px;
       left: 60px;
       z-index: 999;
+      &:active {
+        color: skyblue;
+      }
     }
     .chat-tool {
       display: block !important;
@@ -238,6 +240,9 @@ export default class GenalChat extends Vue {
       top: 13px;
       left: 20px;
       z-index: 999;
+      &:active {
+        color: skyblue;
+      }
     }
   }
 }

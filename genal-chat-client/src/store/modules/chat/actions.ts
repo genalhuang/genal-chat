@@ -1,12 +1,12 @@
 import { ActionTree } from 'vuex';
 import { ChatState } from './state';
 import { RootState } from '../../index';
-import fetch from '@/api/fetch';
 import io from 'socket.io-client';
 import Vue from 'vue';
-import { processReturn } from '@/utils/common.ts';
 import {
   SET_SOCKET,
+  SET_GROPPED,
+  SET_ACTIVE_GROUP_USER,
   ADD_GROUP_MESSAGE,
   SET_GROUP_MESSAGES,
   ADD_FRIEND_MESSAGE,
@@ -15,14 +15,17 @@ import {
   SET_FRIEND_GATHER,
   SET_USER_GATHER,
   SET_ACTIVE_ROOM,
+  DEL_GROUP,
+  DEL_FRIEND,
 } from './mutation-types';
+import { DEFAULT_GROUP } from '@/const/index';
 
 const actions: ActionTree<ChatState, RootState> = {
   // 初始化socket连接和监听socket事件
   async connectSocket({ commit, state, dispatch, rootState }, callback) {
     let user = rootState.app.user;
     let friendGather = state.friendGather;
-    let socket = io.connect(`/?userId=${user.userId}`, { reconnection: true });
+    let socket: SocketIOClient.Socket = io.connect(`/?userId=${user.userId}`, { reconnection: true });
 
     socket.on('connect', async () => {
       console.log('连接成功');
@@ -35,15 +38,21 @@ const actions: ActionTree<ChatState, RootState> = {
     });
 
     // 初始化事件监听
-    socket.on('addGroup', (res: any) => {
+    socket.on('activeGroupUser', (data: any) => {
+      console.log('activeGroupUser', data);
+      commit(SET_ACTIVE_GROUP_USER, data.data);
+    });
+
+    socket.on('addGroup', (res: ServerRes) => {
       console.log('on addGroup', res);
       if (res.code) {
         return Vue.prototype.$message.error(res.msg);
       }
+      Vue.prototype.$message.success(res.msg);
       commit(SET_GROUP_GATHER, res.data);
     });
 
-    socket.on('joinGroup', async (res: any) => {
+    socket.on('joinGroup', async (res: ServerRes) => {
       console.log('on joinGroup', res);
       if (res.code) {
         return Vue.prototype.$message.error(res.msg);
@@ -66,7 +75,7 @@ const actions: ActionTree<ChatState, RootState> = {
       }
     });
 
-    socket.on('joinGroupSocket', (res: any) => {
+    socket.on('joinGroupSocket', (res: ServerRes) => {
       console.log('on joinGroupSocket', res);
       if (res.code) {
         return Vue.prototype.$message.error(res.msg);
@@ -99,19 +108,19 @@ const actions: ActionTree<ChatState, RootState> = {
       }
     });
 
-    socket.on('groupMessage', (res: any) => {
+    socket.on('groupMessage', (res: ServerRes) => {
       console.log('on groupMessage', res);
       if (!res.code) {
         commit(ADD_GROUP_MESSAGE, res.data);
       }
     });
 
-    socket.on('addFriend', (res: any) => {
+    socket.on('addFriend', (res: ServerRes) => {
       console.log('on addFriend', res);
       if (!res.code) {
         commit(SET_FRIEND_GATHER, res.data);
         commit(SET_USER_GATHER, res.data);
-        Vue.prototype.$message.info(`添加好友${res.data.username}成功`);
+        Vue.prototype.$message.info(res.msg);
         socket.emit('joinFriendSocket', {
           userId: user.userId,
           friendId: res.data.userId,
@@ -121,16 +130,15 @@ const actions: ActionTree<ChatState, RootState> = {
       }
     });
 
-    socket.on('joinFriendSocket', (res: any) => {
+    socket.on('joinFriendSocket', (res: ServerRes) => {
       console.log('on joinFriendSocket', res);
       if (!res.code) {
         console.log('成功加入私聊房间');
       }
     });
 
-    socket.on('friendMessage', (res: any) => {
+    socket.on('friendMessage', (res: ServerRes) => {
       console.log('on friendMessage', res);
-
       if (!res.code) {
         if (res.data.friendId === user.userId || res.data.userId === user.userId) {
           console.log('ADD_FRIEND_MESSAGE', res.data);
@@ -139,11 +147,32 @@ const actions: ActionTree<ChatState, RootState> = {
       }
     });
 
-    socket.on('chatData', (res: any) => {
+    socket.on('chatData', (res: ServerRes) => {
       if (res.code) {
         return Vue.prototype.$message.error(res.msg);
       }
       dispatch('handleChatData', res.data);
+      commit(SET_GROPPED, false);
+    });
+
+    socket.on('exitGroup', (res: ServerRes) => {
+      if (!res.code) {
+        commit(DEL_GROUP, res.data);
+        commit(SET_ACTIVE_ROOM, state.groupGather[DEFAULT_GROUP]);
+        Vue.prototype.$message.success(res.msg);
+      } else {
+        Vue.prototype.$message.error(res.msg);
+      }
+    });
+
+    socket.on('exitFriend', (res: ServerRes) => {
+      if (!res.code) {
+        commit(DEL_FRIEND, res.data);
+        commit(SET_ACTIVE_ROOM, state.groupGather[DEFAULT_GROUP]);
+        Vue.prototype.$message.success(res.msg);
+      } else {
+        Vue.prototype.$message.error(res.msg);
+      }
     });
   },
 
@@ -188,7 +217,7 @@ const actions: ActionTree<ChatState, RootState> = {
     let friendGather2 = state.friendGather;
     if (!activeRoom) {
       // 更新完数据没有默认activeRoom设置群为'阿童木聊天室'
-      return commit(SET_ACTIVE_ROOM, groupGather['阿童木聊天室']);
+      return commit(SET_ACTIVE_ROOM, groupGather[DEFAULT_GROUP]);
     }
     commit(SET_ACTIVE_ROOM, groupGather2[activeRoom.groupId] || friendGather2[activeRoom.userId]);
   },
