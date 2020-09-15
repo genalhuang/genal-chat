@@ -18,22 +18,24 @@
 
 ### 项目界面
 #### PC端
-<img src="./assets/genal.gif" alt="PC" style="max-width:800px" />
+<img src="./assets/v5_pc.png" alt="PC" style="max-width:800px" />
 
 #### 移动端
 <p align="center">
-  <img src="./assets/mobile1.jpg" alt="Mobile" width="350"/><img src="./assets/mobile2.jpg" alt="Mobile" width="350"  hspace="50"/>
+  <img src="./assets/v5_m1.png" alt="Mobile" width="350"/><img src="./assets/v5_m2.png" alt="Mobile" width="350"  hspace="50"/>
 </p>
 
 ### 功能介绍
 - 群聊/私聊
-- 创建群/加入群聊/模糊搜索群
-- 添加好友/模糊搜索好友
+- 创建群/加入群聊/退群/模糊搜索群
+- 添加好友/删好友/模糊搜索好友
 - 图片上传/粘贴发送图片/图片预览
 - 更改用户名/头像上传
 - 表情包
 - 消息分页
 - 移动端兼容
+- 在线人数统计
+- 重连提醒
 
 ### 技术概览
 - **Typescript**：JavaScript 的一个超集，它最大的优势是提供了类型系统和提高了代码的可读性和可维护性。
@@ -96,6 +98,8 @@ npm run start:dev
 - 更改用户名/头像上传
 - 表情包
 - 消息分页
+##### v3.0.0界面
+同v2.0.0
 
 ### v4.0.0
 ##### 功能
@@ -107,6 +111,23 @@ npm run start:dev
 - 表情包
 - 消息分页
 - 移动端兼容
+##### v4.0.0界面
+同v2.0.0
+
+### v5.0.0
+##### 功能
+- 群聊/私聊
+- 创建群/加入群聊/退群/模糊搜索群
+- 添加好友/删好友/模糊搜索好友
+- 图片上传/粘贴发送图片/图片预览
+- 更改用户名/头像上传
+- 表情包
+- 消息分页
+- 移动端兼容
+- 在线人数统计
+- 重连提醒
+##### v5.0.0界面
+![](./assets/v5_pc.png)
 
 </details>
 
