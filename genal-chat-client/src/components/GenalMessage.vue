@@ -139,7 +139,7 @@ export default class GenalMessage extends Vue {
   // 监听socket断连给出重连状态提醒
   @Watch('socket.disconnected') connectingSocket() {
     if (this.socket.disconnected) {
-      this.set_dropped(true)
+      this.set_dropped(true);
     }
   }
 

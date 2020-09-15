@@ -1,4 +1,4 @@
-import { Controller, Post, HttpCode, Get, 
+import { Controller, Post, Get, 
   Body, Query, Patch, Param, Delete, UseInterceptors,
   UploadedFile, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';

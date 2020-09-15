@@ -40,8 +40,3 @@ interface FriendMessageDto {
   messageType: string;
   time: number;
 }
-
-enum MessageType {
-  string = 'string',
-  image = 'image'
-}

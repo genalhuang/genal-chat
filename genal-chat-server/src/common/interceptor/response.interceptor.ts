@@ -4,7 +4,6 @@ import {
   CallHandler,
   Injectable,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { map } from 'rxjs/operators';
 import { RCode } from '../constant/rcode';
 
@@ -14,7 +13,6 @@ export class ResponseInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): import('rxjs').Observable<any> | Promise<import('rxjs').Observable<any>> {
-    const response = context.switchToHttp().getResponse<Response>();
     return next.handle().pipe(
       map(content => {
         return {
