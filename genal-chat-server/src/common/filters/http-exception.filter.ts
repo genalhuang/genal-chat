@@ -12,12 +12,10 @@ export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
     const status = exception.getStatus();
-    console.log(exception)
     const exceptionRes: any = exception.getResponse();
-    let {
-      error,
-      message,
-    } = exceptionRes;
+    const error = exceptionRes.error;
+    let message = exceptionRes.message;
+
     if(status === 401) {
       message = '身份过期，请重新登录'
     }

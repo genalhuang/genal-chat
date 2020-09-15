@@ -1,6 +1,5 @@
-import { Controller, Post, HttpCode, Get, Body, Query, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, UseGuards } from '@nestjs/common';
 import { GroupService } from './group.service'
-import { Group } from './entity/group.entity';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('group')

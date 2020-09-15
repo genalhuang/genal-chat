@@ -33,7 +33,6 @@ export class UserService {
       let data;
       if(userId) {
         data = await this.userRepository.findOne({
-          select: ['userId','username','avatar','role','tag','createTime'],
           where:{userId: userId}
         })
         return { msg:'获取用户成功', data }
@@ -51,7 +50,6 @@ export class UserService {
         for(const userId of userIdArr) {
           if(userId) {
             const data = await this.userRepository.findOne({
-              select: ['userId','username','avatar','role','tag','createTime'],
               where:{userId: userId}
             })
             userArr.push(data)
@@ -198,7 +196,6 @@ export class UserService {
     try {
       if(username) {
         const users = await this.userRepository.find({
-          select: ['userId','username','avatar','role','tag','createTime'],
           where:{username: Like(`%${username}%`)}
         });
         return { data: users }

@@ -8,7 +8,7 @@ export class User {
   @Column({ default: '陈冠希' })
   username: string;
 
-  @Column({ default: '123456' })
+  @Column({ default: '123456', select: false })
   password: string;
 
   @Column({ default: 'chenguanxi.png' })
