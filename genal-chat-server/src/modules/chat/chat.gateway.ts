@@ -369,7 +369,9 @@ export class ChatGateway {
     const userArr = [];
     for(const userId of userIdArr) {
       const user = await this.userRepository.findOne({userId: userId});
-      userArr.push(user)
+      if(user) {
+        userArr.push(user)
+      } 
     }
 
     const activeGrouUserGather = {}
