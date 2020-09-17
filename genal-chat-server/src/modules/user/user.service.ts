@@ -87,14 +87,14 @@ export class UserService {
 
   async updateUser(userId: string, user: User) {
     try {
-      const oldUser = await this.userRepository.findOne({userId: userId})
-      if(user.password === oldUser.password) {
+      const oldUser = await this.userRepository.findOne({userId: userId, password: user.password})
+      if(oldUser) {
         const isHaveName = await this.userRepository.findOne({username: user.username})
         if(isHaveName) {
           return {code: 1, msg:'用户名重复', data: ''}
         }
         await this.userRepository.update(oldUser,user)
-        const newUser = await this.userRepository.findOne({userId: userId})
+        const newUser = user;
         return { msg:'更新用户信息成功', data: newUser}
       } 
       return {code: RCode.FAIL, msg:'密码错误', data: '' }
@@ -104,17 +104,12 @@ export class UserService {
   }
 
   async jurisdiction(userId: string) {
-    try {
-      const user = await this.userRepository.findOne({userId: userId})
-      const newUser = JSON.parse(JSON.stringify(user))
-      if(user.username === '陈冠希') {
-        newUser.role = 'admin';
-        await this.userRepository.update(user,newUser)
-        return { msg:'更新用户信息成功', data: newUser}
-      }
-
-    } catch(e) {
-
+    const user = await this.userRepository.findOne({userId: userId})
+    const newUser = JSON.parse(JSON.stringify(user))
+    if(user.username === '陈冠希') {
+      newUser.role = 'admin';
+      await this.userRepository.update(user,newUser)
+      return { msg:'更新用户信息成功', data: newUser}
     }
   }
 
