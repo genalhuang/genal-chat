@@ -24,7 +24,7 @@
               <div>
                 <div class="message-content-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
                 <div class="message-content-image" v-if="item.messageType === 'image'" :style="getImageStyle(item.content)">
-                  <viewer>
+                  <viewer style="display:flex;">
                     <img :src="'api/static/' + item.content" alt="" />
                   </viewer>
                 </div>
@@ -419,13 +419,14 @@ export default class GenalMessage extends Vue {
       .message-content-image {
         max-width: 600px;
         display: inline-block;
-        background-color: rgb(0, 0, 0, 0.3);
+        overflow: hidden;
+        margin-top: 4px;
         padding: 6px;
+        background-color: rgb(0, 0, 0, 0.3);
         font-size: 16px;
         border-radius: 5px;
         text-align: left;
         word-break: break-word;
-        margin-top: 4px;
       }
       .message-content-image {
         max-height: 350px;
