@@ -17,8 +17,8 @@
         </a-select-option>
       </a-select>
 
-      <a-dropdown class='search-dropdown'>
-        <a-icon type="plus-circle" class='search-dropdown-button'/>
+      <a-dropdown class="search-dropdown">
+        <a-icon type="plus-circle" class="search-dropdown-button" />
         <a-menu slot="overlay">
           <a-menu-item>
             <div @click="() => (visibleAddGroup = !visibleAddGroup)">创建群</div>
@@ -33,13 +33,15 @@
       </a-dropdown>
     </div>
 
-    <a-modal v-model="visibleAddGroup" cancelText="取消" okText="确定" title="创建群聊" @ok="addGroup">
-      <a-input v-model="groupName" placeholder="请输入群昵称"></a-input>
+    <a-modal v-model="visibleAddGroup" footer="" title="创建群聊">
+      <div style="display:flex">
+        <a-input v-model="groupName" placeholder="请输入群昵称"></a-input>
+        <a-button @click="addGroup" type="primary">确定</a-button>
+      </div>
     </a-modal>
     <a-modal v-model="visibleJoinGroup" footer="" title="加入群聊">
-      <div style="display:flex">
+      <div style="display:flex" v-if="visibleJoinGroup">
         <a-select
-          v-if="visibleJoinGroup"
           show-search
           placeholder="搜索群组"
           style="width: 90%"
@@ -58,9 +60,8 @@
       </div>
     </a-modal>
     <a-modal v-model="visibleAddFriend" footer="" title="添加好友">
-      <div style="display:flex">
+      <div style="display:flex" v-if="visibleAddFriend">
         <a-select
-          v-if="visibleAddFriend"
           show-search
           placeholder="搜索用户"
           style="width: 90%"
@@ -211,9 +212,9 @@ export default class GenalSearch extends Vue {
   display: flex;
   align-items: center;
   .search-select {
-    width:100%;
+    width: 100%;
     .ant-select {
-      width:100%;
+      width: 100%;
     }
   }
   .search-dropdown {
@@ -225,7 +226,7 @@ export default class GenalSearch extends Vue {
     font-size: 20px;
     cursor: pointer;
     line-height: 40px;
-    color:gray;
+    color: gray;
     transition: 0.2s all linear;
     border-radius: 4px;
     &:hover {

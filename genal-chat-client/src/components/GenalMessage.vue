@@ -472,7 +472,7 @@ export default class GenalMessage extends Vue {
   position: absolute;
   left: 0;
   top: 0;
-  width: 40px;
+  width: 50px;
   height: 40px;
   text-align: center;
   line-height: 42px;
