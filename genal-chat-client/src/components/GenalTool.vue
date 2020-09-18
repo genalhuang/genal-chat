@@ -255,11 +255,11 @@ export default class GenalTool extends Vue {
     justify-content: left;
     align-items: center;
     .ant-input {
-      width: 200px;
+      width: 100%;
       margin-right: 5px;
     }
     .tool-user-title {
-      width: 100px;
+      width: 200px;
       text-align: left;
       font-weight: bold;
       word-break: keep-all;
