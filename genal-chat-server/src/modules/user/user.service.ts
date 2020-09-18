@@ -175,18 +175,6 @@ export class UserService {
     }
   }
 
-  async login(user: {username: string, password: string}) {
-    try {
-      const data = await this.userRepository.findOne({username:user.username, password: user.password})
-      if(!data) {
-        return {code: 1 , msg:'密码错误', data: ''}
-      }
-      return { msg:'登录成功', data: data}
-    }catch(e) {
-      return {code: RCode.ERROR, msg:'登录失败', data: e}
-    }
-  }
-
   async getUsersByName(username: string) {
     try {
       if(username) {

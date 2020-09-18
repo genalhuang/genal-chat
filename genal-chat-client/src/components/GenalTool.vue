@@ -102,8 +102,6 @@ export default class GenalTool extends Vue {
         groupId: DEFAULT_GROUP,
         userId: data.userId,
       });
-    } else {
-      this.username = '';
     }
   }
 

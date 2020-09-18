@@ -24,7 +24,7 @@
               <div>
                 <div class="message-content-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
                 <div class="message-content-image" v-if="item.messageType === 'image'" :style="getImageStyle(item.content)">
-                  <viewer style="display:flex;">
+                  <viewer style="display:flex;align-items:center;">
                     <img :src="'api/static/' + item.content" alt="" />
                   </viewer>
                 </div>
