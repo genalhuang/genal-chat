@@ -33,17 +33,17 @@
       </a-dropdown>
     </div>
 
-    <a-modal v-model="visibleAddGroup" footer="" title="创建群聊">
+    <a-modal v-model="visibleAddGroup" footer="" title="创建群">
       <div style="display:flex">
-        <a-input v-model="groupName" placeholder="请输入群昵称"></a-input>
+        <a-input v-model="groupName" placeholder="请输入群名字"></a-input>
         <a-button @click="addGroup" type="primary">确定</a-button>
       </div>
     </a-modal>
-    <a-modal v-model="visibleJoinGroup" footer="" title="加入群聊">
+    <a-modal v-model="visibleJoinGroup" footer="" title="搜索群">
       <div style="display:flex" v-if="visibleJoinGroup">
         <a-select
           show-search
-          placeholder="搜索群组"
+          placeholder="请输入群名字"
           style="width: 90%"
           :default-active-first-option="false"
           :show-arrow="false"
@@ -59,11 +59,11 @@
         <a-button @click="joinGroup" type="primary">确定</a-button>
       </div>
     </a-modal>
-    <a-modal v-model="visibleAddFriend" footer="" title="添加好友">
+    <a-modal v-model="visibleAddFriend" footer="" title="搜索用户">
       <div style="display:flex" v-if="visibleAddFriend">
         <a-select
           show-search
-          placeholder="搜索用户"
+          placeholder="请输入用户名"
           style="width: 90%"
           :default-active-first-option="false"
           :show-arrow="false"
