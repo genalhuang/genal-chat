@@ -16,6 +16,7 @@ import {
   SET_ACTIVE_ROOM,
   DEL_GROUP,
   DEL_FRIEND,
+  ADD_UNREAD_GATHER,
 } from './mutation-types';
 import { DEFAULT_GROUP } from '@/const/index';
 
@@ -111,6 +112,10 @@ const actions: ActionTree<ChatState, RootState> = {
       console.log('on groupMessage', res);
       if (!res.code) {
         commit(ADD_GROUP_MESSAGE, res.data);
+        let activeRoom = state.activeRoom;
+        if (activeRoom && activeRoom.groupId !== res.data.groupId) {
+          commit(ADD_UNREAD_GATHER, res.data.groupId);
+        }
       }
     });
 
@@ -142,6 +147,10 @@ const actions: ActionTree<ChatState, RootState> = {
         if (res.data.friendId === user.userId || res.data.userId === user.userId) {
           console.log('ADD_FRIEND_MESSAGE', res.data);
           commit(ADD_FRIEND_MESSAGE, res.data);
+          let activeRoom = state.activeRoom;
+          if (activeRoom && activeRoom.userId !== res.data.userId) {
+            commit(ADD_UNREAD_GATHER, res.data.userId);
+          }
         }
       }
     });

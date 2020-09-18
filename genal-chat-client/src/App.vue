@@ -16,7 +16,7 @@ export default class GenalChat extends Vue {
 
   mounted() {
     // this.runStarrySky();
-    this.setMobile(this.isMobile())
+    this.setMobile(this.isMobile());
   }
 
   isMobile() {

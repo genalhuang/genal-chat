@@ -71,7 +71,7 @@ export function formatTime(time: number) {
 export function nameVerify(name: string): boolean {
   //名字正则，只含有汉字、数字、字母、下划线不能以下划线开头和结尾
   let nameReg = /^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$/;
-  if (name.length > 10) {
+  if (name.length > 9) {
     Vue.prototype.$message.error('名字太长');
     return false;
   }

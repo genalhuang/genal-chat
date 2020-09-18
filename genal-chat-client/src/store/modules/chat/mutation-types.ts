@@ -11,3 +11,5 @@ export const ADD_FRIEND_MESSAGE = 'add_friend_message';
 export const SET_FRIEND_MESSAGES = 'set_friend_messages';
 export const DEL_GROUP = 'del_group';
 export const DEL_FRIEND = 'del_friend';
+export const ADD_UNREAD_GATHER = 'set_unread_gather';
+export const LOSE_UNREAD_GATHER = 'lose_unread_gather';

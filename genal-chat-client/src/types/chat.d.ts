@@ -97,3 +97,8 @@ interface ServerRes {
 interface ActiveGroupUser {
   [key: string]: User;
 }
+
+// 未读消息对象
+interface UnReadGather {
+  [key: string]: number;
+}

@@ -7,6 +7,7 @@
         :class="{ active: activeRoom && activeRoom.groupId === chat.groupId }"
         @click="changeActiveRoom(chat)"
       >
+        <a-badge class="room-card-badge" :count="unReadGather[chat.groupId]" />
         <img class="room-card-type" src="~@/assets/group.png" alt="" />
         <div class="room-card-message">
           <div class="room-card-name">{{ chat.groupName }}</div>
@@ -26,6 +27,7 @@
         :class="{ active: activeRoom && !activeRoom.groupId && activeRoom.userId === chat.userId }"
         @click="changeActiveRoom(chat)"
       >
+        <a-badge class="room-card-badge" :count="unReadGather[chat.userId]" />
         <img class="room-card-type" :src="friendGather[chat.userId].avatar" alt="" />
         <div class="room-card-message">
           <div class="room-card-name">{{ chat.username }}</div>
@@ -54,6 +56,9 @@ export default class GenalRoom extends Vue {
   @chatModule.State('activeRoom') activeRoom: Group & Friend;
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('friendGather') friendGather: FriendGather;
+  @chatModule.Getter('unReadGather') unReadGather: UnReadGather;
+  @chatModule.Mutation('lose_unread_gather') lose_unread_gather: Function;
+
   chatArr: Array<Group | Friend> = [];
 
   created() {
@@ -90,6 +95,7 @@ export default class GenalRoom extends Vue {
 
   changeActiveRoom(activeRoom: User & Group) {
     this.$emit('setActiveRoom', activeRoom);
+    this.lose_unread_gather(activeRoom.groupId || activeRoom.userId);
   }
 
   _parseText(text: string) {
@@ -102,6 +108,7 @@ export default class GenalRoom extends Vue {
   height: calc(100% - 60px);
   overflow: auto;
   .room-card {
+    position: relative;
     min-height: 60px;
     display: flex;
     align-items: center;
@@ -115,6 +122,14 @@ export default class GenalRoom extends Vue {
     }
     &.active {
       background-color: rgb(0, 0, 0, 0.3);
+    }
+    .room-card-badge {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      ::v-deep.ant-badge-count {
+        box-shadow: none;
+      }
     }
     .room-card-type {
       width: 35px;

@@ -127,9 +127,9 @@ export default class GenalMessage extends Vue {
     this.messageCount = 30;
     this.initPagingMessage();
     this.scrollToBottom();
-    this.$nextTick(()=>{
+    this.$nextTick(() => {
       this.focusInput();
-    })
+    });
   }
 
   /**
@@ -289,7 +289,7 @@ export default class GenalMessage extends Vue {
   }
 
   focusInput() {
-    if(!this.mobile) {
+    if (!this.mobile) {
       // @ts-ignore
       this.$refs.input.focus();
     }
