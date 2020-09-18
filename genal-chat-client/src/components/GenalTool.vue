@@ -167,8 +167,8 @@ export default class GenalTool extends Vue {
   }
 
   changeBackground() {
-    console.log(this.background);
     this.set_background(this.background);
+    this.showBackgroundModal = false;
   }
 }
 </script>
