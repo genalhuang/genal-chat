@@ -19,20 +19,21 @@
     <a href="https://github.com/genaller/genal-chat" target="_blank" class="github"><a-icon type="github"/></a>
     <a-modal title="用户信息" :visible="showUserModal" footer="" @cancel="handleCancel('showUserModal')">
       <div class="tool-user">
-        <a-avatar :src="user.avatar" class="tool-user-img" :size="100"></a-avatar>
-        <div class="tool-user-avatar">
-          <div class="tool-user-avatar-title">更改头像</div>
-          <a-upload style="margin-left: 17px;" :show-upload-list="false" :before-upload="beforeUpload">
-            <div class="upload">
+        <div
+          @mouseover="showUpload = true"
+          @mouseleave="showUpload = false"
+          class="tool-user-avatar"
+          :class="{ active: showUpload || uploading }"
+        >
+          <a-avatar :src="user.avatar" class="img" :size="100"></a-avatar>
+          <a-upload v-if="showUpload && !uploading" class="tool-user-upload" :show-upload-list="false" :before-upload="beforeUpload">
+            <div class="text">
               <a-icon type="upload" style="margin-right: 4px;" />
-              {{ avatar.name ? avatar.name : '请选择' }}
+              <span>请选择</span>
             </div>
           </a-upload>
-          <a-button class="button" type="primary" :disabled="!avatar" :loading="uploading" @click="handleUpload">
-            {{ uploading ? '更换中' : '确定' }}
-          </a-button>
+          <a-icon class="icon" v-if="uploading" type="loading" spin />
         </div>
-
         <div class="tool-user-name">
           <div class="tool-user-name-title">更改用户名</div>
           <a-input v-model="username" placeholder="请输入用户名"></a-input>
@@ -59,6 +60,7 @@ export default class GenalTool extends Vue {
   @appModule.Mutation('set_user') setUser: Function;
   @chatModule.Getter('socket') socket: SocketIOClient.Socket;
 
+  showUpload: boolean = false;
   showUserModal: boolean = false;
   username: string = '';
   uploading: boolean = false;
@@ -115,6 +117,7 @@ export default class GenalTool extends Vue {
       return this.$message.error('图片必须小于500K!');
     }
     this.avatar = file;
+    this.handleUpload();
     return false;
   }
 
@@ -128,6 +131,7 @@ export default class GenalTool extends Vue {
     if (data) {
       this.setUser(data);
       this.uploading = false;
+      this.showUpload = false;
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
         groupId: DEFAULT_GROUP,
@@ -195,39 +199,37 @@ export default class GenalTool extends Vue {
 .tool-user {
   text-align: center;
   font-size: 16px;
-  .tool-user-img {
-    margin-bottom: 24px;
-  }
   .tool-user-avatar {
-    display: flex;
-    margin-bottom: 15px;
-    .upload {
-      display: flex;
-      flex-wrap: nowrap;
-      cursor: pointer;
-      align-items: center;
-      border: 1px solid #d9d9d9;
-      height: 33px;
-      padding: 0 5px;
-      max-width: 300px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      border-radius: 5px;
-      transition: 0.1s all linear;
-      &:hover {
-        border: 1px solid skyblue;
-        color: skyblue;
+    width: 100px;
+    margin: 0 auto 24px;
+    position: relative;
+    .tool-user-upload {
+      .text {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        line-height: 100px;
+        font-weight: bold;
       }
     }
-    .tool-user-avatar-title {
+    .icon {
+      position: absolute;
+      top: 35px;
+      left: 33px;
+      color: #fff;
+      font-size: 35px;
       font-weight: bold;
-      word-break: keep-all;
-      margin-right: 15px;
     }
-    .button {
-      margin-left: 5px;
+    &.active {
+      .img {
+        filter: blur(3px);
+      }
     }
   }
+
   .tool-user-name {
     display: flex;
     align-items: center;
