@@ -1,23 +1,22 @@
 <template>
   <div class="tool">
     <div class="tool-avatar">
-      <div class="tool-avatar-img" @click="showModal('showUserModal')">
+      <div class="tool-avatar-img" @click="showUserInfo('showUserModal')">
         <img v-if="user" :src="user.avatar" alt="" />
       </div>
       <div class="tool-avatar-name">{{ user.username }}</div>
-    </div>
-    <div class="tool-out">
-      <a-icon class="tool-out-icon" type="poweroff" @click="logout" />
     </div>
     <a-tooltip placement="topLeft" arrow-point-at-center>
       <div slot="title">
         <div>请文明聊天</div>
         <div>截图粘贴可发送图片</div>
       </div>
-      <a-icon type="bulb" class="tip" />
+      <a-icon type="bulb" class="tool-tip icon" />
     </a-tooltip>
-    <a href="https://github.com/genaller/genal-chat" target="_blank" class="github"><a-icon type="github"/></a>
-    <a-modal title="用户信息" :visible="showUserModal" footer="" @cancel="handleCancel('showUserModal')">
+    <a-icon type="skin" class="tool-skin icon" @click="showBackgroundModal = true" />
+    <a href="https://github.com/genaller/genal-chat" target="_blank" class="tool-github icon"><a-icon type="github"/></a>
+    <a-icon class="tool-out icon" type="poweroff" @click="logout" />
+    <a-modal title="用户信息" :visible="showUserModal" footer="" @cancel="showUserModal = false">
       <div class="tool-user">
         <div
           @mouseover="showUpload = true"
@@ -25,14 +24,14 @@
           class="tool-user-avatar"
           :class="{ active: showUpload || uploading }"
         >
-          <a-avatar :src="user.avatar" class="img" :size="100"></a-avatar>
+          <a-avatar :src="user.avatar" class="img" :size="120"></a-avatar>
           <a-upload v-if="showUpload && !uploading" class="tool-user-upload" :show-upload-list="false" :before-upload="beforeUpload">
             <div class="text">
               <a-icon type="upload" style="margin-right: 4px;" />
               <span>更换头像</span>
             </div>
           </a-upload>
-          <a-icon class="icon" v-if="uploading" type="loading" spin />
+          <a-icon class="loading" v-if="uploading" type="loading" spin />
         </div>
         <div class="tool-user-info">
           <div class="tool-user-title">更改用户名</div>
@@ -44,6 +43,13 @@
           <a-input v-model="password" placeholder="请输入密码"></a-input>
           <a-button type="primary" @click="changePassword">确认</a-button>
         </div>
+      </div>
+    </a-modal>
+    <a-modal title="主题" :visible="showBackgroundModal" footer="" @cancel="showBackgroundModal = false">
+      <div class="tool-user-info">
+        <div class="tool-user-title" style="width: 100px;">更改背景</div>
+        <a-input v-model="background" placeholder="输入主题图片网址"></a-input>
+        <a-button type="primary" @click="changeBackground">确认</a-button>
       </div>
     </a-modal>
   </div>
@@ -62,13 +68,17 @@ const chatModule = namespace('chat');
 @Component
 export default class GenalTool extends Vue {
   @appModule.Getter('user') user: User;
+  @appModule.Mutation('set_background') set_background: Function;
   @appModule.Mutation('set_user') setUser: Function;
   @chatModule.Getter('socket') socket: SocketIOClient.Socket;
 
   showUpload: boolean = false;
   showUserModal: boolean = false;
+  showBackgroundModal: boolean = false;
+
   username: string = '';
   password: string = '';
+  background: string = '';
   uploading: boolean = false;
   avatar: any = '';
 
@@ -87,13 +97,9 @@ export default class GenalTool extends Vue {
     this.$emit('logout');
   }
 
-  showModal(modalType: string) {
+  showUserInfo() {
     this.username = this.user.username;
     this.showUserModal = true;
-  }
-
-  handleCancel(modalType: string) {
-    this.showUserModal = false;
   }
 
   async changeUserName() {
@@ -159,6 +165,11 @@ export default class GenalTool extends Vue {
       });
     }
   }
+
+  changeBackground() {
+    console.log(this.background);
+    this.set_background(this.background);
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -188,29 +199,27 @@ export default class GenalTool extends Vue {
       margin-top: 2px;
     }
   }
+  .tool-tip {
+    bottom: 190px;
+  }
+  .tool-skin {
+    bottom: 130px;
+  }
+  .tool-github {
+    color: #fff;
+    bottom: 70px;
+  }
   .tool-out {
+    bottom: 10px;
+  }
+  .icon {
     display: flex;
     flex-direction: column;
-    font-size: 25px;
     position: absolute;
-    bottom: 0px;
-    left: 13px;
-  }
-  .tip {
-    position: absolute;
-    font-size: 25px;
-    bottom: 125px;
     left: 25px;
-    :hover {
-      color: skyblue;
-    }
-  }
-  .github {
-    color: #fff;
-    position: absolute;
     font-size: 25px;
-    bottom: 60px;
-    left: 25px;
+    cursor: pointer;
+    z-index: 100;
     &:hover {
       color: skyblue;
     }
@@ -220,9 +229,8 @@ export default class GenalTool extends Vue {
   text-align: center;
   font-size: 16px;
   .tool-user-avatar {
-    width: 100px;
-    margin: 0 auto 24px;
     position: relative;
+    margin: 0 auto 24px;
     .tool-user-upload {
       .text {
         position: absolute;
@@ -231,14 +239,15 @@ export default class GenalTool extends Vue {
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        line-height: 100px;
+        line-height: 120px;
         font-weight: bold;
       }
     }
-    .icon {
+    .loading {
       position: absolute;
-      top: 35px;
-      left: 33px;
+      top: 50%;
+      left: 50%;
+      margin: -18px 0 0 -18px;
       color: #fff;
       font-size: 35px;
       font-weight: bold;
@@ -249,33 +258,25 @@ export default class GenalTool extends Vue {
       }
     }
   }
-
-  .tool-user-info {
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    .ant-input {
-      width: 100%;
-      margin-right: 5px;
-    }
-    .tool-user-title {
-      width: 200px;
-      text-align: left;
-      font-weight: bold;
-      word-break: keep-all;
-      margin-right: 15px;
-    }
-    &:nth-child(2) {
-      margin-bottom: 15px;
-    }
-  }
 }
-.tool-out-icon {
-  transition: all 0.2s linear;
-  cursor: pointer;
-  margin: 10px;
-  &:hover {
-    color: skyblue;
+
+.tool-user-info {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  .ant-input {
+    width: 100%;
+    margin-right: 5px;
+  }
+  .tool-user-title {
+    width: 200px;
+    text-align: left;
+    font-weight: bold;
+    word-break: keep-all;
+    margin-right: 15px;
+  }
+  &:nth-child(2) {
+    margin-bottom: 15px;
   }
 }
 </style>

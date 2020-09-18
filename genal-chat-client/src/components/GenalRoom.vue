@@ -112,7 +112,7 @@ export default class GenalRoom extends Vue {
     min-height: 60px;
     display: flex;
     align-items: center;
-    background-color: rgba(54, 50, 50, 0.1);
+    background-color: rgba(0, 0, 0, 0.1);
     padding: 5px 10px;
     text-align: left;
     transition: all 0.2s linear;

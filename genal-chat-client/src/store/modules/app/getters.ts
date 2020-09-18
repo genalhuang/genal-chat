@@ -12,9 +12,12 @@ const getters: GetterTree<AppState, RootState> = {
     state.user = JSON.parse(user);
     return state.user;
   },
-
   mobile(state) {
     return state.mobile;
+  },
+  background(state) {
+    state.background;
+    return cookie.get('background');
   },
 };
 

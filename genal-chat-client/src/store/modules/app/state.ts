@@ -2,6 +2,7 @@ export interface AppState {
   user: User;
   token: string;
   mobile: boolean;
+  background: string;
 }
 
 const appState: AppState = {
@@ -14,6 +15,7 @@ const appState: AppState = {
   },
   token: '',
   mobile: false,
+  background: '',
 };
 
 export default appState;
