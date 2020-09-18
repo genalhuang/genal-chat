@@ -19,8 +19,9 @@ export class AuthService {
     const payload = {username: user.username, password: user.password};
     const data = await this.userRepository.findOne({username:user.username, password: user.password})
     if(!data) {
-      return {code: 1 , msg:'登录失败', data: ''}
+      return {code: 1 , msg:'密码错误', data: ''}
     }
+    data.password = user.password;
 
     return {
       msg:'登录成功',

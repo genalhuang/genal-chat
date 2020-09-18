@@ -1,43 +1,63 @@
 <template>
   <div class="tool">
     <div class="tool-avatar">
-      <div class="tool-avatar-img" @click="showModal('showUserModal')">
+      <div class="tool-avatar-img" @click="showUserInfo('showUserModal')">
         <img v-if="user" :src="user.avatar" alt="" />
       </div>
       <div class="tool-avatar-name">{{ user.username }}</div>
-    </div>
-    <div class="tool-out">
-      <a-icon class="tool-out-icon" type="poweroff" @click="logout" />
     </div>
     <a-tooltip placement="topLeft" arrow-point-at-center>
       <div slot="title">
         <div>请文明聊天</div>
         <div>截图粘贴可发送图片</div>
       </div>
-      <a-icon type="bulb" class="tip" />
+      <a-icon type="bulb" class="tool-tip icon" />
     </a-tooltip>
-    <a href="https://github.com/genaller/genal-chat" target="_blank" class="github"><a-icon type="github"/></a>
-    <a-modal title="用户信息" :visible="showUserModal" footer="" @cancel="handleCancel('showUserModal')">
+    <a-icon type="skin" class="tool-skin icon" @click="showBackgroundModal = true" />
+    <a href="https://github.com/genaller/genal-chat" target="_blank" class="tool-github icon"><a-icon type="github"/></a>
+    <a-icon class="tool-out icon" type="poweroff" @click="logout" />
+    <a-modal title="用户信息" :visible="showUserModal" footer="" @cancel="showUserModal = false">
       <div class="tool-user">
-        <a-avatar :src="user.avatar" class="tool-user-img" :size="100"></a-avatar>
-        <div class="tool-user-avatar">
-          <div class="tool-user-avatar-title">更改头像</div>
-          <a-upload style="margin-left: 17px;" :show-upload-list="false" :before-upload="beforeUpload">
-            <div class="upload">
+        <div
+          @mouseover="showUpload = true"
+          @mouseleave="showUpload = false"
+          class="tool-user-avatar"
+          :class="{ active: showUpload || uploading }"
+        >
+          <a-avatar :src="user.avatar" class="img" :size="120"></a-avatar>
+          <a-upload v-if="showUpload && !uploading" class="tool-user-upload" :show-upload-list="false" :before-upload="beforeUpload">
+            <div class="text">
               <a-icon type="upload" style="margin-right: 4px;" />
-              {{ avatar.name ? avatar.name : '请选择' }}
+              <span>更换头像</span>
             </div>
           </a-upload>
-          <a-button class="button" type="primary" :disabled="!avatar" :loading="uploading" @click="handleUpload">
-            {{ uploading ? '更换中' : '确定' }}
-          </a-button>
+          <a-icon class="loading" v-if="uploading" type="loading" spin />
         </div>
-
-        <div class="tool-user-name">
-          <div class="tool-user-name-title">更改用户名</div>
+        <div class="tool-user-info">
+          <div class="tool-user-title">更改用户名</div>
           <a-input v-model="username" placeholder="请输入用户名"></a-input>
-          <a-button type="primary" @click="changeUser">确认</a-button>
+          <a-button type="primary" @click="changeUserName">确认</a-button>
         </div>
+        <div class="tool-user-info">
+          <div class="tool-user-title">更改密码</div>
+          <a-input v-model="password" placeholder="请输入密码"></a-input>
+          <a-button type="primary" @click="changePassword">确认</a-button>
+        </div>
+      </div>
+    </a-modal>
+    <a-modal title="主题" :visible="showBackgroundModal" footer="" @cancel="showBackgroundModal = false">
+      <div class="tool-user-info">
+        <div class="tool-user-title" style="width: 100px;">
+          <span>背景图</span>
+          <a-tooltip placement="topLeft" arrow-point-at-center>
+            <div slot="title">
+              <span>输入空格时为默认背景</span>
+            </div>
+            <a-icon type="exclamation-circle" style="margin-left: 5px;" />
+          </a-tooltip>
+        </div>
+        <a-input v-model="background" placeholder="请输入背景图片网址"></a-input>
+        <a-button type="primary" @click="changeBackground">确认</a-button>
       </div>
     </a-modal>
   </div>
@@ -49,50 +69,54 @@ import { setUserAvatar } from '@/api/apis';
 import { DEFAULT_GROUP } from '@/const/index';
 import { namespace } from 'vuex-class';
 import * as apis from '@/api/apis';
-import { processReturn, nameVerify } from '@/utils/common.ts';
+import { processReturn, nameVerify, passwordVerify } from '@/utils/common.ts';
 const appModule = namespace('app');
 const chatModule = namespace('chat');
 
 @Component
 export default class GenalTool extends Vue {
   @appModule.Getter('user') user: User;
+  @appModule.Mutation('set_background') set_background: Function;
   @appModule.Mutation('set_user') setUser: Function;
   @chatModule.Getter('socket') socket: SocketIOClient.Socket;
 
+  showUpload: boolean = false;
   showUserModal: boolean = false;
+  showBackgroundModal: boolean = false;
+
   username: string = '';
+  password: string = '';
+  background: string = '';
   uploading: boolean = false;
   avatar: any = '';
 
   @Watch('user')
   userChange() {
     this.username = this.user.username;
+    this.password = this.user.password;
   }
 
   created() {
     this.username = this.user.username;
+    this.password = this.user.password;
   }
 
   logout() {
     this.$emit('logout');
   }
 
-  showModal(modalType: string) {
+  showUserInfo() {
     this.username = this.user.username;
     this.showUserModal = true;
   }
 
-  handleCancel(modalType: string) {
-    this.showUserModal = false;
-  }
-
-  async changeUser() {
+  async changeUserName() {
     if (!nameVerify(this.username)) {
       return;
     }
     let user: User = JSON.parse(JSON.stringify(this.user));
     user.username = this.username;
-    let res = await apis.patchUser(user);
+    let res = await apis.patchUserName(user);
     let data = processReturn(res);
     if (data) {
       console.log(data);
@@ -102,8 +126,18 @@ export default class GenalTool extends Vue {
         groupId: DEFAULT_GROUP,
         userId: data.userId,
       });
-    } else {
-      this.username = '';
+    }
+  }
+
+  async changePassword() {
+    if (!passwordVerify(this.username)) {
+      return;
+    }
+    let user: User = JSON.parse(JSON.stringify(this.user));
+    let res = await apis.patchPassword(user, this.password);
+    let data = processReturn(res);
+    if (data) {
+      this.setUser(data);
     }
   }
 
@@ -117,6 +151,7 @@ export default class GenalTool extends Vue {
       return this.$message.error('图片必须小于500K!');
     }
     this.avatar = file;
+    this.handleUpload();
     return false;
   }
 
@@ -125,17 +160,23 @@ export default class GenalTool extends Vue {
     const formData = new FormData();
     formData.append('avatar', this.avatar);
     formData.append('userId', this.user.userId);
-
+    formData.append('password', this.user.password);
     let data = processReturn(await setUserAvatar(formData));
     if (data) {
       this.setUser(data);
       this.uploading = false;
+      this.showUpload = false;
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
         groupId: DEFAULT_GROUP,
         userId: data.userId,
       });
     }
+  }
+
+  changeBackground() {
+    this.set_background(this.background);
+    this.showBackgroundModal = false;
   }
 }
 </script>
@@ -166,29 +207,27 @@ export default class GenalTool extends Vue {
       margin-top: 2px;
     }
   }
+  .tool-tip {
+    bottom: 190px;
+  }
+  .tool-skin {
+    bottom: 130px;
+  }
+  .tool-github {
+    color: #fff;
+    bottom: 70px;
+  }
   .tool-out {
+    bottom: 10px;
+  }
+  .icon {
     display: flex;
     flex-direction: column;
-    font-size: 25px;
     position: absolute;
-    bottom: 0px;
-    left: 13px;
-  }
-  .tip {
-    position: absolute;
-    font-size: 25px;
-    bottom: 125px;
     left: 25px;
-    :hover {
-      color: skyblue;
-    }
-  }
-  .github {
-    color: #fff;
-    position: absolute;
     font-size: 25px;
-    bottom: 60px;
-    left: 25px;
+    cursor: pointer;
+    z-index: 100;
     &:hover {
       color: skyblue;
     }
@@ -197,58 +236,57 @@ export default class GenalTool extends Vue {
 .tool-user {
   text-align: center;
   font-size: 16px;
-  .tool-user-img {
-    margin-bottom: 24px;
-  }
   .tool-user-avatar {
-    display: flex;
-    margin-bottom: 15px;
-    .upload {
-      display: flex;
-      flex-wrap: nowrap;
-      cursor: pointer;
-      align-items: center;
-      border: 1px solid #d9d9d9;
-      height: 33px;
-      padding: 0 5px;
-      max-width: 300px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      border-radius: 5px;
-      transition: 0.1s all linear;
-      &:hover {
-        border: 1px solid skyblue;
-        color: skyblue;
+    position: relative;
+    margin: 0 auto 24px;
+    .tool-user-upload {
+      .text {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        line-height: 120px;
+        font-weight: bold;
       }
     }
-    .tool-user-avatar-title {
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -18px 0 0 -18px;
+      color: #fff;
+      font-size: 35px;
       font-weight: bold;
-      word-break: keep-all;
-      margin-right: 15px;
     }
-    .button {
-      margin-left: 5px;
-    }
-  }
-  .tool-user-name {
-    display: flex;
-    align-items: center;
-    > * {
-      margin-right: 5px;
-    }
-    .tool-user-name-title {
-      font-weight: bold;
-      word-break: keep-all;
-      margin-right: 15px;
+    &.active {
+      .img {
+        filter: blur(3px);
+      }
     }
   }
 }
-.tool-out-icon {
-  transition: all 0.2s linear;
-  cursor: pointer;
-  margin: 10px;
-  &:hover {
-    color: skyblue;
+
+.tool-user-info {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  .ant-input {
+    width: 100%;
+    margin-right: 5px;
+  }
+  .tool-user-title {
+    display: flex;
+    align-items: center;
+    width: 200px;
+    text-align: left;
+    font-weight: bold;
+    word-break: keep-all;
+    margin-right: 15px;
+  }
+  &:nth-child(2) {
+    margin-bottom: 15px;
   }
 }
 </style>

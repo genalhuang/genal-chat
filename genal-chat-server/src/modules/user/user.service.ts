@@ -85,9 +85,9 @@ export class UserService {
     }
   }
 
-  async updateUser(userId: string, user: User) {
+  async updateUserName(user: User) {
     try {
-      const oldUser = await this.userRepository.findOne({userId: userId, password: user.password})
+      const oldUser = await this.userRepository.findOne({userId: user.userId, password: user.password})
       if(oldUser) {
         const isHaveName = await this.userRepository.findOne({username: user.username})
         if(isHaveName) {
@@ -95,11 +95,26 @@ export class UserService {
         }
         await this.userRepository.update(oldUser,user)
         const newUser = user;
-        return { msg:'更新用户信息成功', data: newUser}
+        return { msg:'更新用户名成功', data: newUser}
       } 
       return {code: RCode.FAIL, msg:'密码错误', data: '' }
     } catch(e) {
-      return {code: RCode.ERROR, msg: '更新用户信息失败', data: e }
+      return {code: RCode.ERROR, msg: '更新用户名失败', data: e }
+    }
+  }
+
+  async updatePassword(user: User, password: string) {
+    try {
+      const oldUser = await this.userRepository.findOne({userId: user.userId, username: user.username, password: user.password})
+      if(oldUser) {
+        const newUser = JSON.parse(JSON.stringify(oldUser))
+        newUser.password = password;
+        await this.userRepository.update(oldUser, newUser)
+        return { msg:'更新用户密码成功', data: newUser}
+      } 
+      return {code: RCode.FAIL, msg:'密码错误', data: '' }
+    } catch(e) {
+      return {code: RCode.ERROR, msg: '更新用户密码失败', data: e }
     }
   }
 
@@ -175,18 +190,6 @@ export class UserService {
     }
   }
 
-  async login(user: {username: string, password: string}) {
-    try {
-      const data = await this.userRepository.findOne({username:user.username, password: user.password})
-      if(!data) {
-        return {code: 1 , msg:'密码错误', data: ''}
-      }
-      return { msg:'登录成功', data: data}
-    }catch(e) {
-      return {code: RCode.ERROR, msg:'登录失败', data: e}
-    }
-  }
-
   async getUsersByName(username: string) {
     try {
       if(username) {
@@ -206,8 +209,9 @@ export class UserService {
       const random = Date.now() + '&'
       const writeSream = createWriteStream(join('public/avatar', random + file.originalname))
       writeSream.write(file.buffer)
-      const newUser = await this.userRepository.findOne({userId: user.userId})
+      const newUser = await this.userRepository.findOne({userId: user.userId, password: user.password})
       newUser.avatar = `api/avatar/${random}${file.originalname}`
+      newUser.password = user.password;
       await this.userRepository.save(newUser)
       return { msg: '修改头像成功', data: newUser}
     } catch (e) {

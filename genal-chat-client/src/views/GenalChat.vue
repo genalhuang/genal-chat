@@ -49,9 +49,6 @@ const chatModule = namespace('chat');
   },
 })
 export default class GenalChat extends Vue {
-  showModal: boolean = false;
-  visibleDrawer: boolean = false;
-  visibleTool: boolean = true;
   @appModule.Getter('user') user: User;
   @appModule.Mutation('clear_user') clearUser: Function;
   @appModule.Action('login') login: Function;
@@ -63,6 +60,10 @@ export default class GenalChat extends Vue {
   @chatModule.Getter('activeRoom') activeRoom: Friend & Group;
   @chatModule.Mutation('set_active_room') _setActiveRoom: Function;
   @chatModule.Action('connectSocket') connectSocket: Function;
+
+  showModal: boolean = false;
+  visibleDrawer: boolean = false;
+  visibleTool: boolean = true;
 
   created() {
     if (!this.user.userId) {
@@ -182,23 +183,23 @@ export default class GenalChat extends Vue {
   min-height: 300px;
   position: relative;
   margin: auto 20px;
-  box-shadow: 6px 10px 10px rgb(153, 153, 153, 0.2);
+  box-shadow: 10px 20px 80px rgba(0, 0, 0, 0.8);
   display: flex;
   border-radius: 5px;
   .chat-part1 {
     width: 74px;
     height: 100%;
-    background-color: rgb(21, 21, 21, 0.8);
+    background-color: rgb(0, 0, 0, 0.8);
   }
   .chat-part2 {
     width: 230px;
     height: 100%;
-    background-color: rgb(21, 21, 21, 0.3);
+    background-color: rgb(0, 0, 0, 0.4);
   }
   .chat-part3 {
     flex: 1;
     height: 100%;
-    background-color: rgb(21, 21, 21, 0.1);
+    background-color: rgb(0, 0, 0, 0.3);
     overflow-y: hidden;
     position: relative;
     .chat-group {

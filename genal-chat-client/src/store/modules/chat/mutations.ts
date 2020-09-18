@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {
   SET_SOCKET,
-  SET_GROPPED,
+  SET_DROPPED,
   SET_ACTIVE_GROUP_USER,
   ADD_GROUP_MESSAGE,
   SET_GROUP_MESSAGES,
@@ -13,6 +13,8 @@ import {
   SET_USER_GATHER,
   DEL_GROUP,
   DEL_FRIEND,
+  ADD_UNREAD_GATHER,
+  LOSE_UNREAD_GATHER,
 } from './mutation-types';
 import { ChatState } from './state';
 import { MutationTree } from 'vuex';
@@ -24,7 +26,7 @@ const mutations: MutationTree<ChatState> = {
   },
 
   // 设置用户是否处于掉线重连状态
-  [SET_GROPPED](state, payload: boolean) {
+  [SET_DROPPED](state, payload: boolean) {
     state.dropped = payload;
   },
 
@@ -110,6 +112,20 @@ const mutations: MutationTree<ChatState> = {
   // 删好友
   [DEL_FRIEND](state, payload: UserMap) {
     Vue.delete(state.friendGather, payload.friendId);
+  },
+
+  // 给某个聊天组添加未读消息
+  [ADD_UNREAD_GATHER](state, payload: string) {
+    if (!state.unReadGather[payload]) {
+      Vue.set(state.unReadGather, payload, 1);
+    } else {
+      ++state.unReadGather[payload];
+    }
+  },
+
+  // 给某个聊天组清空未读消息
+  [LOSE_UNREAD_GATHER](state, payload: string) {
+    Vue.set(state.unReadGather, payload, 0);
   },
 };
 

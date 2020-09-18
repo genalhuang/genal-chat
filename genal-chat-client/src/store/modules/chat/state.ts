@@ -6,6 +6,7 @@ export interface ChatState {
   groupGather: GroupGather;
   userGather: FriendGather;
   friendGather: FriendGather;
+  unReadGather: UnReadGather;
 }
 
 const chatState: ChatState = {
@@ -17,6 +18,7 @@ const chatState: ChatState = {
   groupGather: {},
   userGather: {},
   friendGather: {},
+  unReadGather: {},
 };
 
 export default chatState;

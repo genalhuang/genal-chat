@@ -5,10 +5,9 @@ import io from 'socket.io-client';
 import Vue from 'vue';
 import {
   SET_SOCKET,
-  SET_GROPPED,
+  SET_DROPPED,
   SET_ACTIVE_GROUP_USER,
   ADD_GROUP_MESSAGE,
-  SET_GROUP_MESSAGES,
   ADD_FRIEND_MESSAGE,
   SET_FRIEND_MESSAGES,
   SET_GROUP_GATHER,
@@ -17,6 +16,7 @@ import {
   SET_ACTIVE_ROOM,
   DEL_GROUP,
   DEL_FRIEND,
+  ADD_UNREAD_GATHER,
 } from './mutation-types';
 import { DEFAULT_GROUP } from '@/const/index';
 
@@ -24,7 +24,6 @@ const actions: ActionTree<ChatState, RootState> = {
   // 初始化socket连接和监听socket事件
   async connectSocket({ commit, state, dispatch, rootState }, callback) {
     let user = rootState.app.user;
-    let friendGather = state.friendGather;
     let socket: SocketIOClient.Socket = io.connect(`/?userId=${user.userId}`, { reconnection: true });
 
     socket.on('connect', async () => {
@@ -82,6 +81,7 @@ const actions: ActionTree<ChatState, RootState> = {
       }
       let newUser: Friend = res.data.user;
       let group: Group = res.data.group;
+      let friendGather = state.friendGather;
       if (newUser.userId != user.userId) {
         commit(SET_USER_GATHER, newUser);
         if (friendGather[newUser.userId]) {
@@ -112,6 +112,10 @@ const actions: ActionTree<ChatState, RootState> = {
       console.log('on groupMessage', res);
       if (!res.code) {
         commit(ADD_GROUP_MESSAGE, res.data);
+        let activeRoom = state.activeRoom;
+        if (activeRoom && activeRoom.groupId !== res.data.groupId) {
+          commit(ADD_UNREAD_GATHER, res.data.groupId);
+        }
       }
     });
 
@@ -143,6 +147,10 @@ const actions: ActionTree<ChatState, RootState> = {
         if (res.data.friendId === user.userId || res.data.userId === user.userId) {
           console.log('ADD_FRIEND_MESSAGE', res.data);
           commit(ADD_FRIEND_MESSAGE, res.data);
+          let activeRoom = state.activeRoom;
+          if (activeRoom && activeRoom.userId !== res.data.userId) {
+            commit(ADD_UNREAD_GATHER, res.data.userId);
+          }
         }
       }
     });
@@ -152,7 +160,7 @@ const actions: ActionTree<ChatState, RootState> = {
         return Vue.prototype.$message.error(res.msg);
       }
       dispatch('handleChatData', res.data);
-      commit(SET_GROPPED, false);
+      commit(SET_DROPPED, false);
     });
 
     socket.on('exitGroup', (res: ServerRes) => {

@@ -1,12 +1,24 @@
 import fetch from '@/api/fetch';
 
 /**
- * 更新用户信息
+ * 更新用户名
  * @param params
  */
-export const patchUser = (params: User) => {
-  return fetch.patch(`/user/${params.userId}`, {
+export const patchUserName = (params: User) => {
+  return fetch.patch(`/user/username`, {
     ...params,
+  });
+};
+
+/**
+ * 更新用户密码
+ * @param user
+ * @param password
+ *
+ */
+export const patchPassword = (user: User, password: string) => {
+  return fetch.patch(`/user/password?password=${password}`, {
+    ...user,
   });
 };
 

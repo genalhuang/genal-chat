@@ -1,5 +1,5 @@
 <template>
-  <div class="music" v-if="!isMobile">
+  <div class="music" v-if="!mobile">
     <iframe
       frameborder="no"
       border="0"
@@ -14,15 +14,12 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+const appModule = namespace('app');
 
 @Component
 export default class GenalMusic extends Vue {
-  get isMobile() {
-    let flag = navigator.userAgent.match(
-      /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
-    );
-    return flag;
-  }
+  @appModule.Getter('mobile') mobile: boolean;
 }
 </script>
 <style lang="scss" scoped>

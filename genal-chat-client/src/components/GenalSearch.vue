@@ -4,7 +4,6 @@
       <a-select
         show-search
         placeholder="搜索聊天组"
-        style="width: 200px"
         :default-active-first-option="false"
         :show-arrow="false"
         :filter-option="false"
@@ -18,33 +17,33 @@
         </a-select-option>
       </a-select>
 
-      <a-dropdown>
-        <div class="ant-dropdown-link" @click="(e) => e.preventDefault()">
-          <a-button><a-icon type="plus"/></a-button>
-        </div>
+      <a-dropdown class="search-dropdown">
+        <a-icon type="plus-circle" class="search-dropdown-button" />
         <a-menu slot="overlay">
           <a-menu-item>
             <div @click="() => (visibleAddGroup = !visibleAddGroup)">创建群</div>
           </a-menu-item>
           <a-menu-item>
-            <div @click="() => (visibleJoinGroup = !visibleJoinGroup)">加入群聊</div>
+            <div @click="() => (visibleJoinGroup = !visibleJoinGroup)">搜索群</div>
           </a-menu-item>
           <a-menu-item>
-            <div @click="() => (visibleAddFriend = !visibleAddFriend)">添加好友</div>
+            <div @click="() => (visibleAddFriend = !visibleAddFriend)">搜索用户</div>
           </a-menu-item>
         </a-menu>
       </a-dropdown>
     </div>
 
-    <a-modal v-model="visibleAddGroup" cancelText="取消" okText="确定" title="创建群聊" @ok="addGroup">
-      <a-input v-model="groupName" placeholder="请输入群昵称"></a-input>
-    </a-modal>
-    <a-modal v-model="visibleJoinGroup" footer="" title="加入群聊">
+    <a-modal v-model="visibleAddGroup" footer="" title="创建群">
       <div style="display:flex">
+        <a-input v-model="groupName" placeholder="请输入群名字"></a-input>
+        <a-button @click="addGroup" type="primary">确定</a-button>
+      </div>
+    </a-modal>
+    <a-modal v-model="visibleJoinGroup" footer="" title="搜索群">
+      <div style="display:flex" v-if="visibleJoinGroup">
         <a-select
-          v-if="visibleJoinGroup"
           show-search
-          placeholder="搜索群组"
+          placeholder="请输入群名字"
           style="width: 90%"
           :default-active-first-option="false"
           :show-arrow="false"
@@ -60,12 +59,11 @@
         <a-button @click="joinGroup" type="primary">确定</a-button>
       </div>
     </a-modal>
-    <a-modal v-model="visibleAddFriend" footer="" title="添加好友">
-      <div style="display:flex">
+    <a-modal v-model="visibleAddFriend" footer="" title="搜索用户">
+      <div style="display:flex" v-if="visibleAddFriend">
         <a-select
-          v-if="visibleAddFriend"
           show-search
-          placeholder="搜索用户"
+          placeholder="请输入用户名"
           style="width: 90%"
           :default-active-first-option="false"
           :show-arrow="false"
@@ -208,11 +206,33 @@ export default class GenalSearch extends Vue {
 </script>
 <style lang="scss" scoped>
 .search {
+  position: relative;
+  height: 60px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
   .search-select {
-    display: flex;
-    height: 60px;
-    padding: 10px;
-    align-items: center;
+    width: 100%;
+    .ant-select {
+      width: 100%;
+    }
+  }
+  .search-dropdown {
+    position: absolute;
+    right: 10px;
+    top: 13px;
+    width: 40px;
+    height: 34px;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 40px;
+    color: gray;
+    transition: 0.2s all linear;
+    border-radius: 4px;
+    &:hover {
+      background-color: skyblue;
+      color: #fff;
+    }
   }
 }
 </style>

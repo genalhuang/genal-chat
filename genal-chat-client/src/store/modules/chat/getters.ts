@@ -24,6 +24,9 @@ const getters: GetterTree<ChatState, RootState> = {
   userGather(state) {
     return state.userGather;
   },
+  unReadGather(state) {
+    return state.unReadGather;
+  },
 };
 
 export default getters;

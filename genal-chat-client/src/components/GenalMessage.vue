@@ -24,7 +24,7 @@
               <div>
                 <div class="message-content-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
                 <div class="message-content-image" v-if="item.messageType === 'image'" :style="getImageStyle(item.content)">
-                  <viewer style="display:flex;">
+                  <viewer style="display:flex;align-items:center;">
                     <img :src="'api/static/' + item.content" alt="" />
                   </viewer>
                 </div>
@@ -88,6 +88,7 @@ import { parseText } from '@/utils/common';
 })
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
+  @appModule.Getter('mobile') mobile: boolean;
 
   @chatModule.State('activeRoom') activeRoom: Group & Friend;
   @chatModule.Getter('socket') socket: SocketIOClient.Socket;
@@ -126,6 +127,9 @@ export default class GenalMessage extends Vue {
     this.messageCount = 30;
     this.initPagingMessage();
     this.scrollToBottom();
+    this.$nextTick(() => {
+      this.focusInput();
+    });
   }
 
   /**
@@ -285,19 +289,20 @@ export default class GenalMessage extends Vue {
   }
 
   focusInput() {
-    // @ts-ignore
-    this.$refs.input.focus();
+    if (!this.mobile) {
+      // @ts-ignore
+      this.$refs.input.focus();
+    }
   }
 
   /**
    * 根据图片url设置图片框宽高, 注意是图片框
    */
   getImageStyle(src: string) {
-    let isMobile = document.body.clientWidth <= 768;
     let arr = src.split('$');
     let width = Number(arr[2]);
     let height = Number(arr[3]);
-    if (isMobile) {
+    if (this.mobile) {
       // 如果是移动端,图片最大宽度138, 返回值加12是因为设置的是图片框的宽高要加入padding值
       if (width > 138) {
         height = (height * 138) / width;
@@ -390,7 +395,7 @@ export default class GenalMessage extends Vue {
   .message-header {
     height: 60px;
     line-height: 60px;
-    background-color: rgb(0, 0, 0, 0.3);
+    background-color: rgb(0, 0, 0, 0.5);
     .message-header-icon {
       margin-left: 5px;
     }
@@ -422,7 +427,7 @@ export default class GenalMessage extends Vue {
         overflow: hidden;
         margin-top: 4px;
         padding: 6px;
-        background-color: rgb(0, 0, 0, 0.3);
+        background-color: rgb(0, 0, 0, 0.4);
         font-size: 16px;
         border-radius: 5px;
         text-align: left;
@@ -467,7 +472,7 @@ export default class GenalMessage extends Vue {
   position: absolute;
   left: 0;
   top: 0;
-  width: 40px;
+  width: 50px;
   height: 40px;
   text-align: center;
   line-height: 42px;

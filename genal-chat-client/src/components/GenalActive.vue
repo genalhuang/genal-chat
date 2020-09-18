@@ -70,7 +70,6 @@ export default class GenalActive extends Vue {
   }
 
   getElement() {
-    console.log('asdf', document.getElementsByClassName('message')[0]);
     return document.getElementsByClassName('message')[0];
   }
 
