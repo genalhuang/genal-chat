@@ -88,6 +88,7 @@ import { parseText } from '@/utils/common';
 })
 export default class GenalMessage extends Vue {
   @appModule.Getter('user') user: User;
+  @appModule.Getter('mobile') mobile: boolean;
 
   @chatModule.State('activeRoom') activeRoom: Group & Friend;
   @chatModule.Getter('socket') socket: SocketIOClient.Socket;
@@ -126,6 +127,9 @@ export default class GenalMessage extends Vue {
     this.messageCount = 30;
     this.initPagingMessage();
     this.scrollToBottom();
+    this.$nextTick(()=>{
+      this.focusInput();
+    })
   }
 
   /**
@@ -285,19 +289,20 @@ export default class GenalMessage extends Vue {
   }
 
   focusInput() {
-    // @ts-ignore
-    this.$refs.input.focus();
+    if(!this.mobile) {
+      // @ts-ignore
+      this.$refs.input.focus();
+    }
   }
 
   /**
    * 根据图片url设置图片框宽高, 注意是图片框
    */
   getImageStyle(src: string) {
-    let isMobile = document.body.clientWidth <= 768;
     let arr = src.split('$');
     let width = Number(arr[2]);
     let height = Number(arr[3]);
-    if (isMobile) {
+    if (this.mobile) {
       // 如果是移动端,图片最大宽度138, 返回值加12是因为设置的是图片框的宽高要加入padding值
       if (width > 138) {
         height = (height * 138) / width;

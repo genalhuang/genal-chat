@@ -6,10 +6,24 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { namespace } from 'vuex-class';
+const appModule = namespace('app');
+
 @Component
 export default class GenalChat extends Vue {
+  @appModule.Getter('user') user: User;
+  @appModule.Mutation('set_mobile') setMobile: Function;
+
   mounted() {
     // this.runStarrySky();
+    this.setMobile(this.isMobile())
+  }
+
+  isMobile() {
+    let flag = navigator.userAgent.match(
+      /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+    );
+    return flag && flag.length;
   }
 
   // 星空代码

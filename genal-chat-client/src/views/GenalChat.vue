@@ -49,9 +49,6 @@ const chatModule = namespace('chat');
   },
 })
 export default class GenalChat extends Vue {
-  showModal: boolean = false;
-  visibleDrawer: boolean = false;
-  visibleTool: boolean = true;
   @appModule.Getter('user') user: User;
   @appModule.Mutation('clear_user') clearUser: Function;
   @appModule.Action('login') login: Function;
@@ -64,6 +61,10 @@ export default class GenalChat extends Vue {
   @chatModule.Mutation('set_active_room') _setActiveRoom: Function;
   @chatModule.Action('connectSocket') connectSocket: Function;
 
+  showModal: boolean = false;
+  visibleDrawer: boolean = false;
+  visibleTool: boolean = true;
+  
   created() {
     if (!this.user.userId) {
       this.showModal = true;

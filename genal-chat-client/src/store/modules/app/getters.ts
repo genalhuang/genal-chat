@@ -12,6 +12,10 @@ const getters: GetterTree<AppState, RootState> = {
     state.user = JSON.parse(user);
     return state.user;
   },
+
+  mobile(state) {
+    return state.mobile;
+  }
 };
 
 export default getters;
