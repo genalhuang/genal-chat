@@ -112,16 +112,16 @@ export default class GenalRoom extends Vue {
     min-height: 60px;
     display: flex;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.2);
     padding: 5px 10px;
     text-align: left;
     transition: all 0.2s linear;
     cursor: pointer;
     &:hover {
-      background-color: rgb(0, 0, 0, 0.3);
+      background-color: rgb(0, 0, 0, 0.4);
     }
     &.active {
-      background-color: rgb(0, 0, 0, 0.3);
+      background-color: rgb(0, 0, 0, 0.4);
     }
     .room-card-badge {
       position: absolute;

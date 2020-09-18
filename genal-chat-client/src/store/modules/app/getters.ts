@@ -17,7 +17,7 @@ const getters: GetterTree<AppState, RootState> = {
   },
   background(state) {
     state.background;
-    return cookie.get('background');
+    return localStorage.getItem('background');
   },
 };
 

@@ -395,7 +395,7 @@ export default class GenalMessage extends Vue {
   .message-header {
     height: 60px;
     line-height: 60px;
-    background-color: rgb(0, 0, 0, 0.3);
+    background-color: rgb(0, 0, 0, 0.4);
     .message-header-icon {
       margin-left: 5px;
     }

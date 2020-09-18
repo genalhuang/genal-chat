@@ -32,7 +32,7 @@ const mutations: MutationTree<AppState> = {
 
   [SET_BACKGROUND](state, payload: string) {
     state.background = payload;
-    cookie.set('background', payload, { expires: 3650 });
+    localStorage.setItem('background', payload);
   },
 };
 

@@ -40,8 +40,8 @@ export default class GenalChat extends Vue {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  // background: url(~@/assets/bg3.jpg);
-  background: url(~@/assets/bg3.jpg);
+  background: url('https://d-paper.i4.cn/max/2019/04/04/15/1554362711395_207730.jpg');
+  // background: url(https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85);
   background-size: cover;
   background-color: #fff;
   .background {
