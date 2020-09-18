@@ -51,9 +51,9 @@
           <span>背景图</span>
           <a-tooltip placement="topLeft" arrow-point-at-center>
             <div slot="title">
-              <span>输入空时为默认背景</span>
+              <span>输入空格时为默认背景</span>
             </div>
-            <a-icon type="question-circle" style='margin-left: 5px;' />
+            <a-icon type="exclamation-circle" style="margin-left: 5px;" />
           </a-tooltip>
         </div>
         <a-input v-model="background" placeholder="请输入背景图片网址"></a-input>
