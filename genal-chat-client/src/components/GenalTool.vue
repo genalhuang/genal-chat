@@ -48,7 +48,7 @@
     <a-modal title="主题" :visible="showBackgroundModal" footer="" @cancel="showBackgroundModal = false">
       <div class="tool-user-info">
         <div class="tool-user-title" style="width: 100px;">更改背景</div>
-        <a-input v-model="background" placeholder="输入主题图片网址"></a-input>
+        <a-input v-model="background" placeholder="请输入背景图片网址"></a-input>
         <a-button type="primary" @click="changeBackground">确认</a-button>
       </div>
     </a-modal>
