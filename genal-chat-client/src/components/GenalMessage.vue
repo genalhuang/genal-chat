@@ -427,7 +427,7 @@ export default class GenalMessage extends Vue {
         overflow: hidden;
         margin-top: 4px;
         padding: 6px;
-        background-color: rgb(0, 0, 0, 0.3);
+        background-color: rgb(0, 0, 0, 0.4);
         font-size: 16px;
         border-radius: 5px;
         text-align: left;
