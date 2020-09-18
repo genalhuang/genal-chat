@@ -15,7 +15,7 @@ const getters: GetterTree<AppState, RootState> = {
 
   mobile(state) {
     return state.mobile;
-  }
+  },
 };
 
 export default getters;

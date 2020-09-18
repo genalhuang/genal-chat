@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import {
   SET_SOCKET,
-  SET_GROPPED,
+  SET_DROPPED,
   SET_ACTIVE_GROUP_USER,
   ADD_GROUP_MESSAGE,
   SET_GROUP_MESSAGES,
@@ -24,7 +24,7 @@ const mutations: MutationTree<ChatState> = {
   },
 
   // 设置用户是否处于掉线重连状态
-  [SET_GROPPED](state, payload: boolean) {
+  [SET_DROPPED](state, payload: boolean) {
     state.dropped = payload;
   },
 

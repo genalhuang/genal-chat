@@ -5,10 +5,9 @@ import io from 'socket.io-client';
 import Vue from 'vue';
 import {
   SET_SOCKET,
-  SET_GROPPED,
+  SET_DROPPED,
   SET_ACTIVE_GROUP_USER,
   ADD_GROUP_MESSAGE,
-  SET_GROUP_MESSAGES,
   ADD_FRIEND_MESSAGE,
   SET_FRIEND_MESSAGES,
   SET_GROUP_GATHER,
@@ -24,7 +23,6 @@ const actions: ActionTree<ChatState, RootState> = {
   // 初始化socket连接和监听socket事件
   async connectSocket({ commit, state, dispatch, rootState }, callback) {
     let user = rootState.app.user;
-    let friendGather = state.friendGather;
     let socket: SocketIOClient.Socket = io.connect(`/?userId=${user.userId}`, { reconnection: true });
 
     socket.on('connect', async () => {
@@ -82,6 +80,7 @@ const actions: ActionTree<ChatState, RootState> = {
       }
       let newUser: Friend = res.data.user;
       let group: Group = res.data.group;
+      let friendGather = state.friendGather;
       if (newUser.userId != user.userId) {
         commit(SET_USER_GATHER, newUser);
         if (friendGather[newUser.userId]) {
@@ -152,7 +151,7 @@ const actions: ActionTree<ChatState, RootState> = {
         return Vue.prototype.$message.error(res.msg);
       }
       dispatch('handleChatData', res.data);
-      commit(SET_GROPPED, false);
+      commit(SET_DROPPED, false);
     });
 
     socket.on('exitGroup', (res: ServerRes) => {

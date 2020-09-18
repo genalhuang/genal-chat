@@ -64,7 +64,7 @@ export default class GenalChat extends Vue {
   showModal: boolean = false;
   visibleDrawer: boolean = false;
   visibleTool: boolean = true;
-  
+
   created() {
     if (!this.user.userId) {
       this.showModal = true;

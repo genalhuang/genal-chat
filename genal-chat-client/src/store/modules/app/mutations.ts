@@ -28,7 +28,7 @@ const mutations: MutationTree<AppState> = {
 
   [SET_MOBILE](state, payload) {
     state.mobile = payload;
-  }
+  },
 };
 
 export default mutations;

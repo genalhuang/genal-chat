@@ -29,7 +29,7 @@
           <a-upload v-if="showUpload && !uploading" class="tool-user-upload" :show-upload-list="false" :before-upload="beforeUpload">
             <div class="text">
               <a-icon type="upload" style="margin-right: 4px;" />
-              <span>请选择</span>
+              <span>更换头像</span>
             </div>
           </a-upload>
           <a-icon class="icon" v-if="uploading" type="loading" spin />
@@ -126,7 +126,7 @@ export default class GenalTool extends Vue {
     const formData = new FormData();
     formData.append('avatar', this.avatar);
     formData.append('userId', this.user.userId);
-
+    formData.append('password', this.user.password);
     let data = processReturn(await setUserAvatar(formData));
     if (data) {
       this.setUser(data);

@@ -194,8 +194,9 @@ export class UserService {
       const random = Date.now() + '&'
       const writeSream = createWriteStream(join('public/avatar', random + file.originalname))
       writeSream.write(file.buffer)
-      const newUser = await this.userRepository.findOne({userId: user.userId})
+      const newUser = await this.userRepository.findOne({userId: user.userId, password: user.password})
       newUser.avatar = `api/avatar/${random}${file.originalname}`
+      newUser.password = user.password;
       await this.userRepository.save(newUser)
       return { msg: '修改头像成功', data: newUser}
     } catch (e) {
