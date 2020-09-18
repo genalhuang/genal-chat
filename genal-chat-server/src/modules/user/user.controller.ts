@@ -20,9 +20,14 @@ export class UserController {
     return this.userService.postUsers(userIds)
   }
 
-  @Patch(':userId')
-  updateUser(@Param('userId') userId, @Body() user) {
-    return this.userService.updateUser(userId, user)
+  @Patch('username')
+  updateUserName(@Body() user) {
+    return this.userService.updateUserName(user)
+  }
+
+  @Patch('password')
+  updatePassword(@Body() user, @Query('password') password) {
+    return this.userService.updatePassword(user, password)
   }
 
   @Patch('/jurisdiction/:userId')

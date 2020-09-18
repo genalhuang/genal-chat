@@ -34,10 +34,15 @@
           </a-upload>
           <a-icon class="icon" v-if="uploading" type="loading" spin />
         </div>
-        <div class="tool-user-name">
-          <div class="tool-user-name-title">更改用户名</div>
+        <div class="tool-user-info">
+          <div class="tool-user-title">更改用户名</div>
           <a-input v-model="username" placeholder="请输入用户名"></a-input>
-          <a-button type="primary" @click="changeUser">确认</a-button>
+          <a-button type="primary" @click="changeUserName">确认</a-button>
+        </div>
+        <div class="tool-user-info">
+          <div class="tool-user-title">更改密码</div>
+          <a-input v-model="password" placeholder="请输入密码"></a-input>
+          <a-button type="primary" @click="changePassword">确认</a-button>
         </div>
       </div>
     </a-modal>
@@ -50,7 +55,7 @@ import { setUserAvatar } from '@/api/apis';
 import { DEFAULT_GROUP } from '@/const/index';
 import { namespace } from 'vuex-class';
 import * as apis from '@/api/apis';
-import { processReturn, nameVerify } from '@/utils/common.ts';
+import { processReturn, nameVerify, passwordVerify } from '@/utils/common.ts';
 const appModule = namespace('app');
 const chatModule = namespace('chat');
 
@@ -63,16 +68,19 @@ export default class GenalTool extends Vue {
   showUpload: boolean = false;
   showUserModal: boolean = false;
   username: string = '';
+  password: string = '';
   uploading: boolean = false;
   avatar: any = '';
 
   @Watch('user')
   userChange() {
     this.username = this.user.username;
+    this.password = this.user.password;
   }
 
   created() {
     this.username = this.user.username;
+    this.password = this.user.password;
   }
 
   logout() {
@@ -88,13 +96,13 @@ export default class GenalTool extends Vue {
     this.showUserModal = false;
   }
 
-  async changeUser() {
+  async changeUserName() {
     if (!nameVerify(this.username)) {
       return;
     }
     let user: User = JSON.parse(JSON.stringify(this.user));
     user.username = this.username;
-    let res = await apis.patchUser(user);
+    let res = await apis.patchUserName(user);
     let data = processReturn(res);
     if (data) {
       console.log(data);
@@ -104,6 +112,18 @@ export default class GenalTool extends Vue {
         groupId: DEFAULT_GROUP,
         userId: data.userId,
       });
+    }
+  }
+
+  async changePassword() {
+    if (!passwordVerify(this.username)) {
+      return;
+    }
+    let user: User = JSON.parse(JSON.stringify(this.user));
+    let res = await apis.patchPassword(user, this.password);
+    let data = processReturn(res);
+    if (data) {
+      this.setUser(data);
     }
   }
 
@@ -230,16 +250,23 @@ export default class GenalTool extends Vue {
     }
   }
 
-  .tool-user-name {
+  .tool-user-info {
     display: flex;
+    justify-content: left;
     align-items: center;
-    > * {
+    .ant-input {
+      width: 200px;
       margin-right: 5px;
     }
-    .tool-user-name-title {
+    .tool-user-title {
+      width: 100px;
+      text-align: left;
       font-weight: bold;
       word-break: keep-all;
       margin-right: 15px;
+    }
+    &:nth-child(2) {
+      margin-bottom: 15px;
     }
   }
 }

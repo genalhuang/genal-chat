@@ -27,8 +27,6 @@ export function isContainStr(str1: string, str2: string) {
 export function parseText(text: string) {
   let HTML = /<\/?.+?>/gi;
   let COOKIE = /document\.cookie/gi;
-  let URL = /^\w+[^\s]+(\.[^\s]+){1,}$/gi;
-  let HTTP = /http:\/\//gi;
   if (HTML.test(text)) {
     return '无效输入,别耍花样!';
   }
@@ -81,6 +79,22 @@ export function nameVerify(name: string): boolean {
   }
   if (!nameReg.test(name)) {
     Vue.prototype.$message.error('名字只含有汉字、数字、字母、下划线不能以下划线开头和结尾');
+    return false;
+  }
+  return true;
+}
+
+/**
+ * 密码校验
+ * @param password
+ */
+export function passwordVerify(password: string): boolean {
+  if (password.length > 9) {
+    Vue.prototype.$message.error('密码太长');
+    return false;
+  }
+  if (password.length === 0) {
+    Vue.prototype.$message.error('请输入密码');
     return false;
   }
   return true;
