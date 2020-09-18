@@ -47,7 +47,15 @@
     </a-modal>
     <a-modal title="主题" :visible="showBackgroundModal" footer="" @cancel="showBackgroundModal = false">
       <div class="tool-user-info">
-        <div class="tool-user-title" style="width: 100px;">更改背景</div>
+        <div class="tool-user-title" style="width: 100px;">
+          <span>背景图</span>
+          <a-tooltip placement="topLeft" arrow-point-at-center>
+            <div slot="title">
+              <span>输入空时为默认背景</span>
+            </div>
+            <a-icon type="question-circle" style='margin-left: 5px;' />
+          </a-tooltip>
+        </div>
         <a-input v-model="background" placeholder="请输入背景图片网址"></a-input>
         <a-button type="primary" @click="changeBackground">确认</a-button>
       </div>
@@ -269,6 +277,8 @@ export default class GenalTool extends Vue {
     margin-right: 5px;
   }
   .tool-user-title {
+    display: flex;
+    align-items: center;
     width: 200px;
     text-align: left;
     font-weight: bold;
