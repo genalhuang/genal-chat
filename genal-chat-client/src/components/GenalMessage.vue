@@ -17,9 +17,10 @@
     <div class="message-main" :style="{ opacity: messageOpacity }">
       <div class="message-content">
         <div v-if="activeRoom">
+          <a-button @click="getMoreMessage">获取更多</a-button>
           <div class="message-content-tips" v-if="MAX_MESSAGE_SIZE <= messageCount && MAX_MESSAGE_SIZE <= activeRoom.messages.length">
-            最多只能查看最近500条消息~
-            <!--            <a-button @click='getMoreMessage'>获取更多</a-button>-->
+            <div>最多只能查看最近500条消息~</div>
+
           </div>
           <template v-for="item in pagingMessages">
             <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
@@ -47,10 +48,11 @@ import GenalAvatar from './GenalAvatar.vue';
 import GenalEmoji from './GenalEmoji.vue';
 import GenalActive from './GenalActive.vue';
 import GenalInput from './GenalInput.vue';
+import * as api from '@/api/apis';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
 const appModule = namespace('app');
-import { parseText } from '@/utils/common';
+import { parseText, processReturn } from '@/utils/common';
 
 @Component({
   components: {
@@ -70,6 +72,8 @@ export default class GenalMessage extends Vue {
   @chatModule.Getter('groupGather') groupGather: GroupGather;
   @chatModule.Getter('userGather') userGather: FriendGather;
   @chatModule.Mutation('set_dropped') set_dropped: Function;
+  @chatModule.Mutation('set_group_messages') set_group_messages: Function;
+  @chatModule.Mutation('set_user_gather') set_user_gather: Function;
 
   text: string = '';
   messageDom: HTMLElement;
@@ -78,7 +82,7 @@ export default class GenalMessage extends Vue {
   messageCount: number = 30;
   messageOpacity: number = 0;
   lastMessagePosition: number = 0;
-  MAX_MESSAGE_SIZE: number = 50;
+  MAX_MESSAGE_SIZE: number = 2;
 
   mounted() {
     this.messageDom = document.getElementsByClassName('message-main')[0] as HTMLElement;
@@ -224,6 +228,33 @@ export default class GenalMessage extends Vue {
    */
   _parseText(text: string) {
     return parseText(text);
+  }
+
+  /**
+   * 获取群消息
+   * @params text
+   */
+  async getMoreMessage() {
+    let groupId = this.activeRoom.groupId;
+    let current = this.activeRoom.messages.length;
+    if (this.activeRoom.groupId) {
+      let data: PagingResponse = processReturn(
+        await api.getGroupMessages({
+          groupId,
+          current,
+          pageSize: 2,
+        })
+      );
+      if (!data.messageArr.length) {
+        return this.$message.info('已经没有更多数据了');
+      }
+      this.set_group_messages([...data.messageArr, ...this.activeRoom.messages]);
+      for (let user of data.userArr) {
+        if (!this.userGather[user.userId]) {
+          this.set_user_gather(user);
+        }
+      }
+    }
   }
 }
 </script>

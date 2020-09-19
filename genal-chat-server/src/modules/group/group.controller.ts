@@ -23,13 +23,13 @@ export class GroupController {
     return this.groupService.getGroupUsers(groupId)
   }
 
-  @Get('/messages')
-  getGroupMessages(@Query('groupId') groupId: string) {
-    return this.groupService.getGroupMessages(groupId);
-  }
-
   @Get('/findByName')
   getGroupsByName(@Query('groupName') groupName: string) {
     return this.groupService.getGroupsByName(groupName);
+  }
+
+  @Get('/groupMessages')
+  getGroupMessages(@Query('groupId') groupId: string, @Query('current') current: number, @Query('pageSize') pageSize: number) {
+    return this.groupService.getGroupMessages(groupId, current, pageSize);
   }
 }

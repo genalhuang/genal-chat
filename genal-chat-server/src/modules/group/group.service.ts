@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Group, GroupMap } from './entity/group.entity';
 import { GroupMessage } from './entity/groupMessage.entity'
 import { RCode } from 'src/common/constant/rcode';
+import { User } from '../user/entity/user.entity';
 
 @Injectable()
 export class GroupService {
@@ -59,17 +60,29 @@ export class GroupService {
     }
   }
 
-  async getGroupMessages(groupId: string) {
-    try {
-      let data;
-      if(groupId) {
-        data = await this.groupMessageRepository.find({groupId: groupId})
-        return { msg: '获取群消息成功', data}
+  async getGroupMessages(groupId: string, current: number, pageSize: number) {
+    let groupMessage = await getRepository(GroupMessage)
+    .createQueryBuilder("groupMessage")
+    .orderBy("groupMessage.time", "DESC")
+    .where("groupMessage.groupId = :id", { id: groupId })
+    .skip(current)
+    .take(pageSize)
+    .getMany()
+    groupMessage = groupMessage.reverse()
+
+    let userGather: {[key: string]: User} = {};
+    let userArr: FriendDto[] = [];
+    for(let message of groupMessage) {
+      if(!userGather[message.userId]) {
+        let user = await getRepository(User)
+        .createQueryBuilder("user")
+        .where("user.userId = :id", { id: message.userId })
+        .getOne()
+        userGather[message.userId] = user
       }
-      return { msg: '获取所有群消息成功', data: await this.groupMessageRepository.find()}
-    } catch (e) {
-      return {code: RCode.ERROR, msg:'获取群消息失败', data: e}
     }
+    userArr = Object.values(userGather);
+    return {msg: '获取分页群消息成功', data: { messageArr: groupMessage, userArr: userArr }};
   }
 
   async getGroupsByName(groupName: string) {

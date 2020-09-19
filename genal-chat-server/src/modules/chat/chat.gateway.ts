@@ -268,7 +268,7 @@ export class ChatGateway {
         .createQueryBuilder("groupMessage")
         .orderBy("groupMessage.time", "DESC")
         .where("groupMessage.groupId = :id", { id: item.groupId })
-        .take(500)
+        .take(2)
         .getMany()
         groupMessage = groupMessage.reverse()
         // 这里获取一下发消息的用户的用户信息

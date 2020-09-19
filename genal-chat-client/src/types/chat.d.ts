@@ -86,7 +86,7 @@ interface ImageSize {
   height: number;
 }
 
-// socket返回值格式
+// 服务端返回值格式
 interface ServerRes {
   code: number;
   msg: string;
@@ -101,4 +101,17 @@ interface ActiveGroupUser {
 // 未读消息对象
 interface UnReadGather {
   [key: string]: number;
+}
+
+// 获取群分页消息参数
+interface PagingParams {
+  groupId: string;
+  current: number;
+  pageSize: number;
+}
+
+// 群分页消息返回值
+interface PagingResponse {
+  messageArr: GroupMessage[];
+  userArr: User[];
 }
