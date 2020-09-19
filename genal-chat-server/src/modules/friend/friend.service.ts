@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, getRepository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserMap } from './entity/friend.entity';
 import { FriendMessage } from './entity/friendMessage.entity';
@@ -26,19 +26,14 @@ export class FriendService {
     }
   }
 
-  async getFriendMessages(userId: string, friendId: string) {
-    try {
-      let data = []
-      const userMessages = await this.friendMessageResponsity.find({userId: userId, friendId: friendId });
-      const friendMessages = await this.friendMessageResponsity.find({userId: friendId, friendId: userId });
-      data = [...userMessages, ...friendMessages]
-      // 得到私聊消息后先排个序
-      data.sort((a:any,b:any)=>{
-        return a.time - b.time;
-      })
-      return { data: data }
-    } catch(e) {
-      return { code:RCode.ERROR, msg:'获取好友消息失败', data:e }
-    }
+  async getFriendMessages(userId: string, friendId: string, current: number, pageSize: number) {
+    const friendMessage = await getRepository(FriendMessage)
+    .createQueryBuilder("friendMessage")
+    .orderBy("friendMessage.time", "ASC")
+    .where("friendMessage.userId = :userId AND friendMessage.userId = :friendId", { userId: userId, friendId: friendId })
+    .skip(current)
+    .take(pageSize)
+    .getMany()
+    return {msg: '', data: { messageArr: friendMessage }};
   }
 }

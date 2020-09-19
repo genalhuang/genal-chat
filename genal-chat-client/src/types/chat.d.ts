@@ -105,7 +105,9 @@ interface UnReadGather {
 
 // 获取群分页消息参数
 interface PagingParams {
-  groupId: string;
+  groupId?: string;
+  userId?: string;
+  friendId?: string;
   current: number;
   pageSize: number;
 }

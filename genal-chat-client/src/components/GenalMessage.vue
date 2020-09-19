@@ -17,12 +17,11 @@
     <div class="message-main" :style="{ opacity: messageOpacity }">
       <div class="message-content">
         <div v-if="activeRoom">
-          <a-button @click="getMoreMessage">获取更多</a-button>
-          <div class="message-content-tips" v-if="MAX_MESSAGE_SIZE <= messageCount && MAX_MESSAGE_SIZE <= activeRoom.messages.length">
-            <div>最多只能查看最近500条消息~</div>
-
+          <div class="message-content-tips" v-if="spinning">
+            <a-icon type="sync" spin class="message-content-loading" />
           </div>
-          <template v-for="item in pagingMessages">
+          <div class="message-content-tips" v-if="isNoData">没有更多消息了~</div>
+          <template v-for="item in activeRoom.messages">
             <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
               <genal-avatar :data="item"></genal-avatar>
               <div>
@@ -76,13 +75,14 @@ export default class GenalMessage extends Vue {
   @chatModule.Mutation('set_user_gather') set_user_gather: Function;
 
   text: string = '';
+  needScrollToBottom: boolean = true;
   messageDom: HTMLElement;
   messageContentDom: HTMLElement;
-  pagingMessages: Array<GroupMessage | FriendMessage> = [];
-  messageCount: number = 30;
-  messageOpacity: number = 0;
+  messageOpacity: number = 1;
   lastMessagePosition: number = 0;
-  MAX_MESSAGE_SIZE: number = 2;
+  spinning: boolean = false;
+  pageSize: number = 15;
+  isNoData: boolean = false;
 
   mounted() {
     this.messageDom = document.getElementsByClassName('message-main')[0] as HTMLElement;
@@ -95,9 +95,6 @@ export default class GenalMessage extends Vue {
    */
   @Watch('activeRoom')
   changeActiveRoom() {
-    this.messageOpacity = 0;
-    this.messageCount = 30;
-    this.initPagingMessage();
     this.scrollToBottom();
   }
 
@@ -106,7 +103,10 @@ export default class GenalMessage extends Vue {
    */
   @Watch('activeRoom.messages', { deep: true })
   changeMessages() {
-    this.addMessage();
+    if (this.needScrollToBottom) {
+      this.addMessage();
+    }
+    this.needScrollToBottom = true;
   }
 
   // 监听socket断连给出重连状态提醒
@@ -117,16 +117,19 @@ export default class GenalMessage extends Vue {
   }
 
   /**
-   * 初始化分页消息
+   * 在分页信息的基础上来了新消息
    */
-  initPagingMessage() {
-    if (!this.activeRoom.messages) {
-      return (this.pagingMessages = []);
+  addMessage() {
+    if (this.activeRoom.messages) {
+      // 新消息来了只有是自己发的消息和消息框本身在底部才会滚动到底部
+      let messages = this.activeRoom.messages;
+      if (
+        messages[messages.length - 1].userId === this.user.userId ||
+        (this.messageDom && this.messageDom.scrollTop + this.messageDom.offsetHeight + 100 > this.messageContentDom.scrollHeight)
+      ) {
+        this.scrollToBottom();
+      }
     }
-    if (this.activeRoom.messages.length <= 30) {
-      return (this.pagingMessages = this.activeRoom.messages);
-    }
-    this.pagingMessages = this.activeRoom.messages.slice(this.activeRoom.messages.length - 30);
   }
 
   /**
@@ -135,57 +138,63 @@ export default class GenalMessage extends Vue {
   handleScroll(event: Event) {
     if (event.currentTarget) {
       // 只有有消息且滚动到顶部时才进入
-      if (this.messageDom.scrollTop === 0 && this.activeRoom.messages && this.activeRoom.messages.length > this.messageCount) {
+      if (this.messageDom.scrollTop === 0) {
         this.lastMessagePosition = this.messageContentDom.offsetHeight;
-        this.messageCount += 30;
-        this.getPagingMessage();
+        if (this.activeRoom.messages.length >= this.pageSize) {
+          this.getMoreMessage();
+        }
       }
     }
   }
 
   /**
-   * 获取分页消息
+   * 获取更多消息
+   * @params text
    */
-  getPagingMessage() {
-    if (this.activeRoom.messages) {
-      this.messageOpacity = 0;
-      this.$nextTick(() => {
-        this.messageDom.scrollTop = this.messageContentDom.offsetHeight - this.lastMessagePosition;
-        this.messageOpacity = 1;
-      });
-      if (this.activeRoom.messages.length < this.messageCount) {
-        return (this.pagingMessages = this.activeRoom.messages);
-      }
-      this.pagingMessages = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
+  async getMoreMessage() {
+    if (this.isNoData) {
+      return false;
     }
-  }
-
-  /**
-   * 在分页信息的基础上来了新消息
-   */
-  addMessage() {
-    if (this.activeRoom.messages) {
-      // 新消息来了只有是自己发的消息和消息框本身在底部才会滚动到底部
-      if (this.judgeScrollToBottom()) {
-        this.scrollToBottom();
+    this.spinning = true;
+    let groupId = this.activeRoom.groupId;
+    let current = this.activeRoom.messages.length;
+    if (this.activeRoom.groupId) {
+      let data: PagingResponse = processReturn(
+        await api.getGroupMessages({
+          groupId,
+          current,
+          pageSize: 15,
+        })
+      );
+      this.spinning = false;
+      this.needScrollToBottom = false;
+      if (!data.messageArr.length) {
+        return this.isNoData = true;
       }
-      ++this.messageCount;
-      if (this.activeRoom.messages.length < this.messageCount) {
-        return (this.pagingMessages = this.activeRoom.messages);
+      this.set_group_messages([...data.messageArr, ...this.activeRoom.messages]);
+      for (let user of data.userArr) {
+        if (!this.userGather[user.userId]) {
+          this.set_user_gather(user);
+        }
       }
-      this.pagingMessages = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
+    } else {
+      let data: PagingResponse = processReturn(
+        await api.getFriendMessage({
+          userId: this.activeRoom.userId,
+          current,
+          pageSize: 15,
+        })
+      );
+      this.spinning = false;
+      this.needScrollToBottom = false;
+      if (!data.messageArr.length) {
+        return this.isNoData = true;
+      }
     }
-  }
-
-  /**
-   * 判断是否应该滚动到底部
-   */
-  judgeScrollToBottom() {
-    let messages = this.activeRoom.messages;
-    return (
-      messages[messages.length - 1].userId === this.user.userId ||
-      (this.messageDom && this.messageDom.scrollTop + this.messageDom.offsetHeight + 80 > this.messageContentDom.scrollHeight)
-    );
+    this.$nextTick(() => {
+      this.messageDom.scrollTop = this.messageContentDom.offsetHeight - this.lastMessagePosition;
+      this.messageOpacity = 1;
+    });
   }
 
   /**
@@ -229,33 +238,6 @@ export default class GenalMessage extends Vue {
   _parseText(text: string) {
     return parseText(text);
   }
-
-  /**
-   * 获取群消息
-   * @params text
-   */
-  async getMoreMessage() {
-    let groupId = this.activeRoom.groupId;
-    let current = this.activeRoom.messages.length;
-    if (this.activeRoom.groupId) {
-      let data: PagingResponse = processReturn(
-        await api.getGroupMessages({
-          groupId,
-          current,
-          pageSize: 2,
-        })
-      );
-      if (!data.messageArr.length) {
-        return this.$message.info('已经没有更多数据了');
-      }
-      this.set_group_messages([...data.messageArr, ...this.activeRoom.messages]);
-      for (let user of data.userArr) {
-        if (!this.userGather[user.userId]) {
-          this.set_user_gather(user);
-        }
-      }
-    }
-  }
 }
 </script>
 <style lang="scss" scoped>
@@ -278,7 +260,7 @@ export default class GenalMessage extends Vue {
     position: relative;
     .message-content {
       .message-content-tips {
-        color: skyblue;
+        color: #fff;
         line-height: 50px;
       }
       .message-content-loading {
@@ -286,6 +268,7 @@ export default class GenalMessage extends Vue {
         font-size: 20px;
         padding: 8px;
         border-radius: 50%;
+        color: #fff;
         background-color: rgb(0, 0, 0, 0.8);
       }
       .message-content-message {

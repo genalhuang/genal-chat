@@ -1,5 +1,4 @@
 import fetch from '@/api/fetch';
-import { AxiosResponse } from 'axios';
 
 /**
  * 群名模糊搜索用户

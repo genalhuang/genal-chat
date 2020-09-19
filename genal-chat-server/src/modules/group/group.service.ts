@@ -82,7 +82,7 @@ export class GroupService {
       }
     }
     userArr = Object.values(userGather);
-    return {msg: '获取分页群消息成功', data: { messageArr: groupMessage, userArr: userArr }};
+    return {msg: '', data: { messageArr: groupMessage, userArr: userArr }};
   }
 
   async getGroupsByName(groupName: string) {
