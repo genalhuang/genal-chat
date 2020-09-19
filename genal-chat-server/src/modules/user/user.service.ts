@@ -130,59 +130,25 @@ export class UserService {
 
   async delUser(uid: string, psw: string, did: string) {
     try {
-      const user = await this.userRepository.findOne({userId: uid})
-      if(user.role === 'admin') {
-        if(user.password === psw) {
-          await getConnection()
-            .createQueryBuilder()
-            .delete()
-            .from(User)
-            .where("userId = :id", { id: did })
-            .execute();
-          await getConnection()
-            .createQueryBuilder()
-            .delete()
-            .from(Group)
-            .where("userId = :id", { id: did })
-            .execute();
-          await getConnection()
-            .createQueryBuilder()
-            .delete()
-            .from(GroupMap)
-            .where("userId = :id", { id: did })
-            .execute();
-          await getConnection()
-            .createQueryBuilder()
-            .delete()
-            .from(GroupMessage)
-            .where("userId = :id", { id: did })
-            .execute();
-          await getConnection()
-            .createQueryBuilder()
-            .delete()
-            .from(UserMap)
-            .where("userId = :id", { id: did })
-            .execute();
-          await getConnection()
-            .createQueryBuilder()
-            .delete()
-            .from(UserMap)
-            .where("friendId = :id", { id: did })
-            .execute();
-          await getConnection()
-            .createQueryBuilder()
-            .delete()
-            .from(FriendMessage)
-            .where("userId = :id", { id: did })
-            .execute();
-          await getConnection()
-            .createQueryBuilder()
-            .delete()
-            .from(FriendMessage)
-            .where("friendId = :id", { id: did })
-            .execute();
-          return { msg: '用户删除成功'}
+      const user = await this.userRepository.findOne({userId: uid, password: psw})
+      if(user.role === 'admin' && user.username === '陈冠希') {
+        // 被删用户自己创建的群
+        const groups = await this.groupRepository.find({userId: did})
+        for(const group of groups) {
+          await this.groupRepository.delete({groupId: group.groupId});
+          await this.groupUserRepository.delete({groupId: group.groupId});
+          await this.groupMessageRepository.delete({groupId: group.groupId});
         }
+        // 被删用户加入的群
+        await this.groupUserRepository.delete({userId: did});
+        await this.groupMessageRepository.delete({userId: did});
+        // 被删用户好友
+        await this.friendRepository.delete({userId: did});
+        await this.friendRepository.delete({friendId: did});
+        await this.friendMessageRepository.delete({userId: did});
+        await this.friendMessageRepository.delete({friendId: did});
+        await this.userRepository.delete({userId: did});
+        return { msg: '用户删除成功'};
       }
       return {code: RCode.FAIL, msg:'用户删除失败'}
     } catch(e) {
