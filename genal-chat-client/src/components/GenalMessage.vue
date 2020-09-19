@@ -17,9 +17,9 @@
     <div class="message-main" :style="{ opacity: messageOpacity }">
       <div class="message-content">
         <div v-if="activeRoom">
-          <div class='message-content-tips' v-if="MAX_MESSAGE_SIZE <= messageCount && MAX_MESSAGE_SIZE <= activeRoom.messages.length">
+          <div class="message-content-tips" v-if="MAX_MESSAGE_SIZE <= messageCount && MAX_MESSAGE_SIZE <= activeRoom.messages.length">
             最多只能查看最近500条消息~
-            <a-button @click='getMoreMessage'>获取更多</a-button>
+            <!--            <a-button @click='getMoreMessage'>获取更多</a-button>-->
           </div>
           <template v-for="item in pagingMessages">
             <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
@@ -37,46 +37,16 @@
         </div>
       </div>
     </div>
-    <div class="message-input" v-if="activeRoom">
-      <a-popover placement="topLeft" trigger="hover" class="message-popver">
-        <template slot="content">
-          <a-tabs default-key="1" size="small">
-            <a-tab-pane key="1" tab="Emoji">
-              <genal-emoji @addEmoji="addEmoji"></genal-emoji>
-            </a-tab-pane>
-            <a-tab-pane key="2" tab="工具">
-              <div class="message-tool-item">
-                <a-upload :show-upload-list="false" :before-upload="beforeImgUpload">
-                  <div class="message-tool-contant">
-                    <img src="~@/assets/photo.png" class="message-tool-item-img" alt="" />
-                    <div class="message-tool-item-text">图片</div>
-                  </div>
-                </a-upload>
-              </div>
-            </a-tab-pane>
-          </a-tabs>
-        </template>
-        <div class="messagte-tool-icon">😃</div>
-      </a-popover>
-      <a-input
-        type="text"
-        placeholder="say hello..."
-        v-model="text"
-        ref="input"
-        autoFocus
-        style="color:#000;"
-        @pressEnter="throttle(sendMessage)"
-      />
-      <img class="message-input-button" @click="throttle(sendMessage)" src="~@/assets/send.png" alt="" />
-    </div>
+    <genal-input></genal-input>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue';
 import GenalEmoji from './GenalEmoji.vue';
 import GenalActive from './GenalActive.vue';
+import GenalInput from './GenalInput.vue';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
 const appModule = namespace('app');
@@ -87,6 +57,7 @@ import { parseText } from '@/utils/common';
     GenalActive,
     GenalAvatar,
     GenalEmoji,
+    GenalInput,
   },
 })
 export default class GenalMessage extends Vue {
@@ -106,12 +77,10 @@ export default class GenalMessage extends Vue {
   pagingMessages: Array<GroupMessage | FriendMessage> = [];
   messageCount: number = 30;
   messageOpacity: number = 0;
-  lastTime: number = 0;
   lastMessagePosition: number = 0;
   MAX_MESSAGE_SIZE: number = 50;
 
   mounted() {
-    this.initPaste();
     this.messageDom = document.getElementsByClassName('message-main')[0] as HTMLElement;
     this.messageContentDom = document.getElementsByClassName('message-content')[0] as HTMLElement;
     this.messageDom.addEventListener('scroll', this.handleScroll);
@@ -126,9 +95,6 @@ export default class GenalMessage extends Vue {
     this.messageCount = 30;
     this.initPagingMessage();
     this.scrollToBottom();
-    this.$nextTick(() => {
-      this.focusInput();
-    });
   }
 
   /**
@@ -159,6 +125,9 @@ export default class GenalMessage extends Vue {
     this.pagingMessages = this.activeRoom.messages.slice(this.activeRoom.messages.length - 30);
   }
 
+  /**
+   * 监听滚动事件
+   */
   handleScroll(event: Event) {
     if (event.currentTarget) {
       // 只有有消息且滚动到顶部时才进入
@@ -226,73 +195,6 @@ export default class GenalMessage extends Vue {
   }
 
   /**
-   * 监听图片粘贴事件
-   */
-  initPaste() {
-    document.addEventListener('paste', (event) => {
-      let items = event.clipboardData && event.clipboardData.items;
-      let url = window.URL || window.webkitURL;
-      let file = null;
-      if (items && items.length) {
-        // 检索剪切板items
-        for (var i = 0; i < items.length; i++) {
-          if (items[i].type.indexOf('image') !== -1) {
-            file = items[i].getAsFile();
-            break;
-          }
-        }
-      }
-      if (file) {
-        this.throttle(this.handleImgUpload, file);
-      }
-    });
-  }
-
-  /**
-   * 消息发送节流
-   */
-  throttle(fn: Function, file?: File) {
-    let nowTime = +new Date();
-    if (nowTime - this.lastTime < 500) {
-      return this.$message.error('消息发送太频繁！');
-    }
-    fn(file);
-    this.lastTime = nowTime;
-  }
-
-  sendMessage() {
-    if (!this.text.trim()) {
-      this.$message.error('不能发送空消息!');
-      return;
-    }
-    if (this.text.length > 500) {
-      this.$message.error('消息太长!');
-      return;
-    }
-    if (this.activeRoom.groupId) {
-      this.$emit('sendMessage', { type: 'group', message: this.text, messageType: 'text' });
-    } else {
-      this.$emit('sendMessage', { type: 'friend', message: this.text, messageType: 'text' });
-    }
-    this.text = '';
-  }
-
-  /**
-   * 添加emoji到input
-   */
-  addEmoji(emoji: string) {
-    this.text += emoji;
-    this.focusInput();
-  }
-
-  focusInput() {
-    if (!this.mobile) {
-      // @ts-ignore
-      this.$refs.input.focus();
-    }
-  }
-
-  /**
    * 根据图片url设置图片框宽高, 注意是图片框
    */
   getImageStyle(src: string) {
@@ -317,69 +219,11 @@ export default class GenalMessage extends Vue {
   }
 
   /**
-   * 计算图片的比例
-   */
-  getImageSize(data: ImageSize) {
-    let { width, height } = data;
-    if (width > 335 || height > 335) {
-      if (width > height) {
-        height = 335 * (height / width);
-        width = 335;
-      } else {
-        width = 335 * (width / height);
-        height = 335;
-      }
-    }
-    return {
-      width,
-      height,
-    };
-  }
-
-  /**
    * 文本转译/校验
    * @params text
    */
   _parseText(text: string) {
     return parseText(text);
-  }
-
-  /**
-   * 图片上传校验
-   * @params file
-   */
-  beforeImgUpload(file: File) {
-    this.throttle(this.handleImgUpload, file);
-    return false;
-  }
-
-  /**
-   * 图片消息发送
-   * @params file
-   */
-  async handleImgUpload(imageFile: File) {
-    const isJpgOrPng =
-      imageFile.type === 'image/jpeg' || imageFile.type === 'image/png' || imageFile.type === 'image/jpg' || imageFile.type === 'image/gif';
-    if (!isJpgOrPng) {
-      return this.$message.error('请选择jpeg/jpg/png/gif格式的图片!');
-    }
-    const isLt1M = imageFile.size / 1024 / 1024 < 0.5;
-    if (!isLt1M) {
-      return this.$message.error('图片必须小于500K!');
-    }
-    let image = new Image();
-    let url = window.URL || window.webkitURL;
-    image.src = url.createObjectURL(imageFile);
-    image.onload = () => {
-      let imageSize: ImageSize = this.getImageSize({ width: image.width, height: image.height });
-      this.$emit('sendMessage', {
-        type: this.activeRoom.groupId ? 'group' : 'friend',
-        message: imageFile,
-        width: imageSize.width,
-        height: imageSize.height,
-        messageType: 'image',
-      });
-    };
   }
 }
 </script>

@@ -68,15 +68,15 @@ interface FriendMessage {
 
 interface SendMessage {
   type: string;
-  message: string;
+  message: string | File;
   width?: number;
   height?: number;
-  messageType: MessageType;
+  messageType: MessageType[0] | MessageType[1];
 }
 
 // 消息类型
 declare enum MessageType {
-  string = 'string',
+  text = 'text',
   image = 'image',
 }
 
