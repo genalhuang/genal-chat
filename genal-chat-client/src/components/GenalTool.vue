@@ -51,7 +51,7 @@
           <span>背景图</span>
           <a-tooltip placement="topLeft" arrow-point-at-center>
             <div slot="title">
-              <span>输入空格时为默认背景</span>
+              <span>输入空格时为默认背景, 支持 jpg, png, gif等</span>
             </div>
             <a-icon type="exclamation-circle" style="margin-left: 5px;" />
           </a-tooltip>
@@ -238,7 +238,9 @@ export default class GenalTool extends Vue {
   font-size: 16px;
   .tool-user-avatar {
     position: relative;
+    width: 120px;
     margin: 0 auto 24px;
+    border-radius: 50%;
     .tool-user-upload {
       .text {
         position: absolute;

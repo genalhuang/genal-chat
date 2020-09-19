@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, getRepository } from 'typeorm';
 import { User } from '../user/entity/user.entity';
 import { Group, GroupMap } from '../group/entity/group.entity';
 import { GroupMessage } from '../group/entity/groupMessage.entity';
@@ -192,13 +192,13 @@ export class ChatGateway {
         client.join(roomId)
 
         // 如果是删掉的好友重新加, 重新获取一遍私聊消息
-        const userMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: user.userId, friendId: data.friendId });
-        const friendMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: data.friendId, friendId: data.userId });
-        const messages = [...userMessages, ...friendMessages]
-        // 得到私聊消息后先排个序
-        messages.sort((a:any,b:any)=>{
-          return a.time - b.time;
-        })
+        const messages = await getRepository(FriendMessage)
+        .createQueryBuilder("friendMessage")
+        .orderBy("friendMessage.time", "ASC")
+        .where("friendMessage.userId = :userId OR friendMessage.userId = :friendId", { userId: user.userId, friendId: data.friendId })
+        .take(500)
+        .getMany()
+
         if(messages.length) {
           // @ts-ignore
           friend.messages = messages;
@@ -254,7 +254,9 @@ export class ChatGateway {
     try {
       let groupArr: GroupDto[] = [];
       let friendArr: FriendDto[] = [];
-      const userArr: FriendDto[] = [];
+      let userGather: {[key: string]: User} = {};
+      let userArr: FriendDto[] = [];
+    
       const groupMap: GroupMap[] = await this.groupUserRepository.find({userId: user.userId}) 
       const friendMap: UserMap[] = await this.friendRepository.find({userId: user.userId})
 
@@ -262,24 +264,36 @@ export class ChatGateway {
         return await this.groupRepository.findOne({groupId: item.groupId})
       })
       const groupMessagePromise = groupMap.map(async (item) => {
-        return await this.groupMessageRepository.find({groupId: item.groupId})
+        let groupMessage = await getRepository(GroupMessage)
+        .createQueryBuilder("groupMessage")
+        .orderBy("groupMessage.time", "DESC")
+        .where("groupMessage.groupId = :id", { id: item.groupId })
+        .take(500)
+        .getMany()
+        groupMessage = groupMessage.reverse()
+        // 这里获取一下发消息的用户的用户信息
+        for(let message of groupMessage) {
+          if(!userGather[message.userId]) {
+            let user = await this.userRepository.findOne({userId: message.userId});
+            userGather[message.userId] = user
+          }
+        }
+        return groupMessage
       })
 
       const friendPromise = friendMap.map(async (item) => {
         return await this.userRepository.findOne({
-  
           where:{userId: item.friendId}
         })
       })
       const friendMessagePromise = friendMap.map(async (item) => {
-        const userMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: user.userId, friendId: item.friendId });
-        const friendMessages: FriendMessageDto[] = await this.friendMessageRepository.find({userId: item.friendId, friendId: user.userId });
-        const data = [...userMessages, ...friendMessages]
-        // 得到私聊消息后先排个序
-        data.sort((a:any,b:any)=>{
-          return a.time - b.time;
-        })
-        return data
+        const friendMessage = await getRepository(FriendMessage)
+        .createQueryBuilder("friendMessage")
+        .orderBy("friendMessage.time", "ASC")
+        .where("friendMessage.userId = :userId OR friendMessage.userId = :friendId", { userId: item.userId, friendId: item.friendId })
+        .take(500)
+        .getMany()
+        return friendMessage;
       })
 
       const groups: GroupDto[]  = await Promise.all(groupPromise)
@@ -290,6 +304,7 @@ export class ChatGateway {
         }
       })
       groupArr = groups
+      userArr = Object.values(userGather);
 
       const friends: FriendDto[] = await Promise.all(friendPromise)
       const friendsMessage: Array<FriendMessageDto[]> = await Promise.all(friendMessagePromise)
@@ -299,15 +314,6 @@ export class ChatGateway {
         }
       })
       friendArr = friends
-
-      const userMap = await this.groupUserRepository.find({groupId: this.defaultGroup})
-      for(const item of userMap) {
-        const user = await this.userRepository.findOne({
-  
-          where:{userId: item.userId}
-        })
-        userArr.push(user)
-      }
 
       this.server.to(user.userId).emit('chatData', {code:RCode.OK, msg: '获取聊天数据成功', data: {
         groupData: groupArr,

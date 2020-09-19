@@ -17,8 +17,11 @@
     <div class="message-main" :style="{ opacity: messageOpacity }">
       <div class="message-content">
         <div v-if="activeRoom">
-          <a-icon type="sync" spin class="message-content-loading" v-if="showLoading" />
-          <template v-for="item in pagingMessage">
+          <div class='message-content-tips' v-if="MAX_MESSAGE_SIZE <= messageCount && MAX_MESSAGE_SIZE <= activeRoom.messages.length">
+            最多只能查看最近500条消息~
+            <a-button @click='getMoreMessage'>获取更多</a-button>
+          </div>
+          <template v-for="item in pagingMessages">
             <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
               <genal-avatar :data="item"></genal-avatar>
               <div>
@@ -98,14 +101,14 @@ export default class GenalMessage extends Vue {
   @chatModule.Mutation('set_dropped') set_dropped: Function;
 
   text: string = '';
-  loading: boolean = false;
   messageDom: HTMLElement;
   messageContentDom: HTMLElement;
-  pagingMessage: Array<GroupMessage | FriendMessage> = [];
+  pagingMessages: Array<GroupMessage | FriendMessage> = [];
   messageCount: number = 30;
   messageOpacity: number = 0;
   lastTime: number = 0;
   lastMessagePosition: number = 0;
+  MAX_MESSAGE_SIZE: number = 50;
 
   mounted() {
     this.initPaste();
@@ -114,12 +117,8 @@ export default class GenalMessage extends Vue {
     this.messageDom.addEventListener('scroll', this.handleScroll);
   }
 
-  get showLoading() {
-    return this.loading && this.activeRoom.messages && this.activeRoom.messages.length;
-  }
-
   /**
-   * 点击房间进入此方法
+   * 点击切换房间进入此方法
    */
   @Watch('activeRoom')
   changeActiveRoom() {
@@ -152,12 +151,12 @@ export default class GenalMessage extends Vue {
    */
   initPagingMessage() {
     if (!this.activeRoom.messages) {
-      return (this.pagingMessage = []);
+      return (this.pagingMessages = []);
     }
     if (this.activeRoom.messages.length <= 30) {
-      return (this.pagingMessage = this.activeRoom.messages);
+      return (this.pagingMessages = this.activeRoom.messages);
     }
-    this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - 30);
+    this.pagingMessages = this.activeRoom.messages.slice(this.activeRoom.messages.length - 30);
   }
 
   handleScroll(event: Event) {
@@ -165,7 +164,6 @@ export default class GenalMessage extends Vue {
       // 只有有消息且滚动到顶部时才进入
       if (this.messageDom.scrollTop === 0 && this.activeRoom.messages && this.activeRoom.messages.length > this.messageCount) {
         this.lastMessagePosition = this.messageContentDom.offsetHeight;
-        this.loading = true;
         this.messageCount += 30;
         this.getPagingMessage();
       }
@@ -182,11 +180,10 @@ export default class GenalMessage extends Vue {
         this.messageDom.scrollTop = this.messageContentDom.offsetHeight - this.lastMessagePosition;
         this.messageOpacity = 1;
       });
-      this.loading = false;
       if (this.activeRoom.messages.length < this.messageCount) {
-        return (this.pagingMessage = this.activeRoom.messages);
+        return (this.pagingMessages = this.activeRoom.messages);
       }
-      this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
+      this.pagingMessages = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
     }
   }
 
@@ -201,9 +198,9 @@ export default class GenalMessage extends Vue {
       }
       ++this.messageCount;
       if (this.activeRoom.messages.length < this.messageCount) {
-        return (this.pagingMessage = this.activeRoom.messages);
+        return (this.pagingMessages = this.activeRoom.messages);
       }
-      this.pagingMessage = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
+      this.pagingMessages = this.activeRoom.messages.slice(this.activeRoom.messages.length - this.messageCount);
     }
   }
 
@@ -348,7 +345,7 @@ export default class GenalMessage extends Vue {
   }
 
   /**
-   * 点击图片校验
+   * 图片上传校验
    * @params file
    */
   beforeImgUpload(file: File) {
@@ -404,42 +401,48 @@ export default class GenalMessage extends Vue {
     height: calc(100% - 100px);
     overflow: auto;
     position: relative;
-    .text-right {
-      text-align: right !important;
-      .avatar {
-        justify-content: flex-end;
+    .message-content {
+      .message-content-tips {
+        color: skyblue;
+        line-height: 50px;
       }
-    }
-    .message-content-loading {
-      margin: 10px auto;
-      font-size: 20px;
-      padding: 8px;
-      border-radius: 50%;
-      background-color: rgb(0, 0, 0, 0.8);
-    }
-    .message-content-message {
-      text-align: left;
-      margin: 10px 20px;
-      .message-content-text,
-      .message-content-image {
-        max-width: 600px;
-        display: inline-block;
-        overflow: hidden;
-        margin-top: 4px;
-        padding: 6px;
-        background-color: rgb(0, 0, 0, 0.4);
-        font-size: 16px;
-        border-radius: 5px;
+      .message-content-loading {
+        margin: 10px auto;
+        font-size: 20px;
+        padding: 8px;
+        border-radius: 50%;
+        background-color: rgb(0, 0, 0, 0.8);
+      }
+      .message-content-message {
         text-align: left;
-        word-break: break-word;
+        margin: 10px 20px;
+        .message-content-text,
+        .message-content-image {
+          max-width: 600px;
+          display: inline-block;
+          overflow: hidden;
+          margin-top: 4px;
+          padding: 6px;
+          background-color: rgb(0, 0, 0, 0.4);
+          font-size: 16px;
+          border-radius: 5px;
+          text-align: left;
+          word-break: break-word;
+        }
+        .message-content-image {
+          max-height: 350px;
+          max-width: 350px;
+          img {
+            cursor: pointer;
+            max-width: 335px;
+            max-height: 335px;
+          }
+        }
       }
-      .message-content-image {
-        max-height: 350px;
-        max-width: 350px;
-        img {
-          cursor: pointer;
-          max-width: 335px;
-          max-height: 335px;
+      .text-right {
+        text-align: right !important;
+        .avatar {
+          justify-content: flex-end;
         }
       }
     }

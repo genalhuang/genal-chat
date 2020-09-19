@@ -9,7 +9,6 @@ import { RCode } from 'src/common/constant/rcode';
 import { GroupMessage } from '../group/entity/groupMessage.entity';
 import { UserMap } from '../friend/entity/friend.entity';
 import { FriendMessage } from '../friend/entity/friendMessage.entity';
-import { getConnection } from "typeorm";
 
 @Injectable()
 export class UserService {
