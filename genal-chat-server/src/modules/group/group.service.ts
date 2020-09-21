@@ -70,11 +70,11 @@ export class GroupService {
     .getMany()
     groupMessage = groupMessage.reverse()
 
-    let userGather: {[key: string]: User} = {};
+    const userGather: {[key: string]: User} = {};
     let userArr: FriendDto[] = [];
-    for(let message of groupMessage) {
+    for(const message of groupMessage) {
       if(!userGather[message.userId]) {
-        let user = await getRepository(User)
+        const user = await getRepository(User)
         .createQueryBuilder("user")
         .where("user.userId = :id", { id: message.userId })
         .getOne()

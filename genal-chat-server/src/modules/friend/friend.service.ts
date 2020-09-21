@@ -11,7 +11,7 @@ export class FriendService {
     @InjectRepository(UserMap)
     private readonly friendRepository: Repository<UserMap>,
     @InjectRepository(FriendMessage)
-    private readonly friendMessageResponsity: Repository<FriendMessage>,
+    private readonly friendMessageRepository: Repository<FriendMessage>,
   ){}
 
   async getFriends(userId: string) {
@@ -27,13 +27,14 @@ export class FriendService {
   }
 
   async getFriendMessages(userId: string, friendId: string, current: number, pageSize: number) {
-    const friendMessage = await getRepository(FriendMessage)
-    .createQueryBuilder("friendMessage")
-    .orderBy("friendMessage.time", "ASC")
-    .where("friendMessage.userId = :userId AND friendMessage.userId = :friendId", { userId: userId, friendId: friendId })
-    .skip(current)
-    .take(pageSize)
-    .getMany()
-    return {msg: '', data: { messageArr: friendMessage }};
+    const messages = await getRepository(FriendMessage)
+      .createQueryBuilder("friendMessage")
+      .orderBy("friendMessage.time", "DESC")
+      .where("friendMessage.userId = :userId AND friendMessage.friendId = :friendId", { userId: userId, friendId: friendId })
+      .orWhere("friendMessage.userId = :friendId AND friendMessage.friendId = :userId", { userId: userId, friendId: friendId })
+      .skip(current)
+      .take(pageSize)
+      .getMany();
+    return {msg: '', data: { messageArr: messages.reverse() }};
   }
 }

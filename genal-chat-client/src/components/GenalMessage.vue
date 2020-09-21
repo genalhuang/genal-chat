@@ -17,10 +17,12 @@
     <div class="message-main" :style="{ opacity: messageOpacity }">
       <div class="message-content">
         <div v-if="activeRoom">
-          <div class="message-content-tips" v-if="spinning">
-            <a-icon type="sync" spin class="message-content-loading" />
-          </div>
-          <div class="message-content-tips" v-if="isNoData">没有更多消息了~</div>
+          <transition name="loading">
+            <div class="message-content-tips" v-if="spinning && !isNoData">
+              <a-icon type="sync" spin class="message-content-loading" />
+            </div>
+            <div class="message-content-tips" v-if="isNoData">没有更多消息了~</div>
+          </transition>
           <template v-for="item in activeRoom.messages">
             <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
               <genal-avatar :data="item"></genal-avatar>
@@ -72,6 +74,7 @@ export default class GenalMessage extends Vue {
   @chatModule.Getter('userGather') userGather: FriendGather;
   @chatModule.Mutation('set_dropped') set_dropped: Function;
   @chatModule.Mutation('set_group_messages') set_group_messages: Function;
+  @chatModule.Mutation('set_friend_messages') set_friend_messages: Function;
   @chatModule.Mutation('set_user_gather') set_user_gather: Function;
 
   text: string = '';
@@ -81,8 +84,9 @@ export default class GenalMessage extends Vue {
   messageOpacity: number = 1;
   lastMessagePosition: number = 0;
   spinning: boolean = false;
-  pageSize: number = 15;
+  pageSize: number = 30;
   isNoData: boolean = false;
+  lastTime: number = 0;
 
   mounted() {
     this.messageDom = document.getElementsByClassName('message-main')[0] as HTMLElement;
@@ -95,6 +99,8 @@ export default class GenalMessage extends Vue {
    */
   @Watch('activeRoom')
   changeActiveRoom() {
+    this.messageOpacity = 0;
+    this.isNoData = false;
     this.scrollToBottom();
   }
 
@@ -141,10 +147,22 @@ export default class GenalMessage extends Vue {
       if (this.messageDom.scrollTop === 0) {
         this.lastMessagePosition = this.messageContentDom.offsetHeight;
         if (this.activeRoom.messages.length >= this.pageSize) {
-          this.getMoreMessage();
+          this.throttle(this.getMoreMessage);
         }
       }
     }
+  }
+
+  /**
+   * 消息获取节流
+   */
+  throttle(fn: Function, file?: File) {
+    let nowTime = +new Date();
+    if (nowTime - this.lastTime < 1000) {
+      return this.$message.error('消息获取太频繁！');
+    }
+    fn(file);
+    this.lastTime = nowTime;
   }
 
   /**
@@ -163,13 +181,13 @@ export default class GenalMessage extends Vue {
         await api.getGroupMessages({
           groupId,
           current,
-          pageSize: 15,
+          pageSize: this.pageSize,
         })
       );
       this.spinning = false;
       this.needScrollToBottom = false;
       if (!data.messageArr.length) {
-        return this.isNoData = true;
+        return (this.isNoData = true);
       }
       this.set_group_messages([...data.messageArr, ...this.activeRoom.messages]);
       for (let user of data.userArr) {
@@ -180,15 +198,17 @@ export default class GenalMessage extends Vue {
     } else {
       let data: PagingResponse = processReturn(
         await api.getFriendMessage({
-          userId: this.activeRoom.userId,
+          userId: this.user.userId,
+          friendId: this.activeRoom.userId,
           current,
-          pageSize: 15,
+          pageSize: this.pageSize,
         })
       );
       this.spinning = false;
       this.needScrollToBottom = false;
+      this.set_friend_messages([...data.messageArr, ...this.activeRoom.messages]);
       if (!data.messageArr.length) {
-        return this.isNoData = true;
+        return (this.isNoData = true);
       }
     }
     this.$nextTick(() => {
@@ -392,5 +412,21 @@ export default class GenalMessage extends Vue {
       font-size: 25px;
     }
   }
+}
+
+// loading动画
+.loading-enter-active {
+  transition: all .3s ease;
+}
+.loading-leave-active {
+  transition: all 80s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.loading-enter {
+  transform: translateY(-15px);
+  opacity: 0;
+}
+.loading-leave-to {
+  transform: translateY(15px);
+  opacity: 0;
 }
 </style>
