@@ -424,7 +424,8 @@ export default class GenalMessage extends Vue {
 .loading-leave-active {
   transition: all 0.3s ease;
 }
-.loading-enter,.loading-leave-to {
+.loading-enter,
+.loading-leave-to {
   transform: translateY(-40px);
   opacity: 0;
 }
