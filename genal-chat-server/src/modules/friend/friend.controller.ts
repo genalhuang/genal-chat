@@ -12,8 +12,8 @@ export class FriendController {
     return this.friendService.getFriends(userId)
   }
 
-  @Get('/messages')
-  getFriendMessage(@Query('userId') userId: string, @Query('friendId')friendId: string) {
-    return this.friendService.getFriendMessages(userId, friendId)
+  @Get('/friendMessages')
+  getFriendMessage(@Query() query: any) {
+    return this.friendService.getFriendMessages(query.userId, query.friendId, query.current, query.pageSize)
   }
 }
