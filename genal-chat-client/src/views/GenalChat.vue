@@ -14,7 +14,7 @@
         <a-icon type="menu-fold" @click="toggleTool" v-if="visibleTool" />
         <a-icon type="menu-unfold" @click="toggleTool" v-else />
       </div>
-      <genal-message></genal-message>
+      <genal-message v-if="activeRoom"></genal-message>
     </div>
     <a-drawer placement="left" :closable="false" :visible="visibleDrawer" @close="toggleDrawer" style="height:100%">
       <div class="chat-drawer">

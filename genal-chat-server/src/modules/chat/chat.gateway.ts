@@ -197,7 +197,7 @@ export class ChatGateway {
           .orderBy("friendMessage.time", "DESC")
           .where("friendMessage.userId = :userId AND friendMessage.friendId = :friendId", { userId: data.userId, friendId: data.friendId })
           .orWhere("friendMessage.userId = :friendId AND friendMessage.friendId = :userId", { userId: data.userId, friendId: data.friendId })
-          .take(30)
+          .take(50)
           .getMany();
 
         if(messages.length) {
@@ -269,7 +269,7 @@ export class ChatGateway {
         .createQueryBuilder("groupMessage")
         .orderBy("groupMessage.time", "DESC")
         .where("groupMessage.groupId = :id", { id: item.groupId })
-        .take(30)
+        .take(50)
         .getMany();
         groupMessage = groupMessage.reverse();
         // 这里获取一下发消息的用户的用户信息
@@ -286,14 +286,14 @@ export class ChatGateway {
         return await this.userRepository.findOne({
           where:{userId: item.friendId}
         })
-      })
+      });
       const friendMessagePromise = friendMap.map(async (item) => {
         const messages = await getRepository(FriendMessage)
           .createQueryBuilder("friendMessage")
           .orderBy("friendMessage.time", "DESC")
           .where("friendMessage.userId = :userId AND friendMessage.friendId = :friendId", { userId: item.userId, friendId: item.friendId })
           .orWhere("friendMessage.userId = :friendId AND friendMessage.friendId = :userId", { userId: item.userId, friendId: item.friendId })
-          .take(30)
+          .take(50)
           .getMany();
         return messages.reverse();
       });
@@ -314,7 +314,7 @@ export class ChatGateway {
           friend.messages = friendsMessage[index]
         }
       });
-      friendArr = friends
+      friendArr = friends;
       userArr = [...Object.values(userGather), ...friendArr];
 
       this.server.to(user.userId).emit('chatData', {code:RCode.OK, msg: '获取聊天数据成功', data: {

@@ -1,42 +1,38 @@
 <template>
   <div class="message">
     <div class="message-header">
-      <div v-if="activeRoom">
-        <div v-if="groupGather[activeRoom.groupId]" class="message-header-box">
-          <span class="message-header-text">{{ groupGather[activeRoom.groupId].groupName }}</span>
-          <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
-          <genal-active type="group"></genal-active>
-        </div>
-        <div v-else class="message-header-box">
-          <span>{{ userGather[activeRoom.userId].username }}</span>
-          <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
-          <genal-active type="friend"></genal-active>
-        </div>
+      <div v-if="groupGather[activeRoom.groupId]" class="message-header-box">
+        <span class="message-header-text">{{ groupGather[activeRoom.groupId].groupName }}</span>
+        <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
+        <genal-active type="group"></genal-active>
+      </div>
+      <div v-else class="message-header-box">
+        <span>{{ userGather[activeRoom.userId].username }}</span>
+        <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
+        <genal-active type="friend"></genal-active>
       </div>
     </div>
+    <transition name="loading">
+      <div class="message-loading" v-if="spinning && !isNoData">
+        <a-icon type="sync" spin class="message-loading-icon" />
+      </div>
+    </transition>
     <div class="message-main" :style="{ opacity: messageOpacity }">
       <div class="message-content">
-        <div v-if="activeRoom">
-          <transition name="loading">
-            <div class="message-content-tips" v-if="spinning && !isNoData">
-              <a-icon type="sync" spin class="message-content-loading" />
-            </div>
-            <div class="message-content-tips" v-if="isNoData">没有更多消息了~</div>
-          </transition>
-          <template v-for="item in activeRoom.messages">
-            <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
-              <genal-avatar :data="item"></genal-avatar>
-              <div>
-                <div class="message-content-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
-                <div class="message-content-image" v-if="item.messageType === 'image'" :style="getImageStyle(item.content)">
-                  <viewer style="display:flex;align-items:center;">
-                    <img :src="'api/static/' + item.content" alt="" />
-                  </viewer>
-                </div>
+        <div class="message-content-noData" v-if="isNoData">没有更多消息了~</div>
+        <template v-for="item in activeRoom.messages">
+          <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
+            <genal-avatar :data="item"></genal-avatar>
+            <div>
+              <div class="message-content-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
+              <div class="message-content-image" v-if="item.messageType === 'image'" :style="getImageStyle(item.content)">
+                <viewer style="display:flex;align-items:center;">
+                  <img :src="'api/static/' + item.content" alt="" />
+                </viewer>
               </div>
             </div>
-          </template>
-        </div>
+          </div>
+        </template>
       </div>
     </div>
     <genal-input></genal-input>
@@ -84,7 +80,7 @@ export default class GenalMessage extends Vue {
   messageOpacity: number = 1;
   lastMessagePosition: number = 0;
   spinning: boolean = false;
-  pageSize: number = 30;
+  pageSize: number = 50;
   isNoData: boolean = false;
   lastTime: number = 0;
 
@@ -92,6 +88,7 @@ export default class GenalMessage extends Vue {
     this.messageDom = document.getElementsByClassName('message-main')[0] as HTMLElement;
     this.messageContentDom = document.getElementsByClassName('message-content')[0] as HTMLElement;
     this.messageDom.addEventListener('scroll', this.handleScroll);
+    this.scrollToBottom();
   }
 
   /**
@@ -146,8 +143,8 @@ export default class GenalMessage extends Vue {
       // 只有有消息且滚动到顶部时才进入
       if (this.messageDom.scrollTop === 0) {
         this.lastMessagePosition = this.messageContentDom.offsetHeight;
-        if (this.activeRoom.messages.length >= this.pageSize) {
-          this.throttle(this.getMoreMessage);
+        if (this.activeRoom.messages.length >= this.pageSize && !this.spinning) {
+          this.getMoreMessage();
         }
       }
     }
@@ -184,9 +181,8 @@ export default class GenalMessage extends Vue {
           pageSize: this.pageSize,
         })
       );
-      this.spinning = false;
-      this.needScrollToBottom = false;
       if (!data.messageArr.length) {
+        this.spinning = false;
         return (this.isNoData = true);
       }
       this.set_group_messages([...data.messageArr, ...this.activeRoom.messages]);
@@ -204,13 +200,14 @@ export default class GenalMessage extends Vue {
           pageSize: this.pageSize,
         })
       );
-      this.spinning = false;
-      this.needScrollToBottom = false;
       this.set_friend_messages([...data.messageArr, ...this.activeRoom.messages]);
       if (!data.messageArr.length) {
+        this.spinning = false;
         return (this.isNoData = true);
       }
     }
+    this.spinning = false;
+    this.needScrollToBottom = false;
     this.$nextTick(() => {
       this.messageDom.scrollTop = this.messageContentDom.offsetHeight - this.lastMessagePosition;
       this.messageOpacity = 1;
@@ -269,9 +266,25 @@ export default class GenalMessage extends Vue {
   .message-header {
     height: 60px;
     line-height: 60px;
+    z-index: 100;
     background-color: rgb(0, 0, 0, 0.5);
     .message-header-icon {
       margin-left: 5px;
+    }
+  }
+  .message-loading {
+    position: absolute;
+    left: calc(50% - 18px);
+    top: 60px;
+    color: #fff;
+    z-index: -1;
+    .message-loading-icon {
+      margin: 10px auto;
+      font-size: 20px;
+      padding: 8px;
+      border-radius: 50%;
+      color: #fff;
+      background-color: rgb(0, 0, 0, 0.8);
     }
   }
   .message-main {
@@ -279,17 +292,9 @@ export default class GenalMessage extends Vue {
     overflow: auto;
     position: relative;
     .message-content {
-      .message-content-tips {
+      .message-content-noData {
         color: #fff;
         line-height: 50px;
-      }
-      .message-content-loading {
-        margin: 10px auto;
-        font-size: 20px;
-        padding: 8px;
-        border-radius: 50%;
-        color: #fff;
-        background-color: rgb(0, 0, 0, 0.8);
       }
       .message-content-message {
         text-align: left;
@@ -413,20 +418,14 @@ export default class GenalMessage extends Vue {
     }
   }
 }
-
-// loading动画
 .loading-enter-active {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 .loading-leave-active {
-  transition: all 80s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  transition: all 0.3s ease;
 }
-.loading-enter {
-  transform: translateY(-15px);
-  opacity: 0;
-}
-.loading-leave-to {
-  transform: translateY(15px);
+.loading-enter,.loading-leave-to {
+  transform: translateY(-40px);
   opacity: 0;
 }
 </style>
