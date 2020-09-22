@@ -46,7 +46,7 @@ interface Friend {
   avatar: string;
   role?: string;
   tag?: string;
-  messages: FriendMessage[];
+  messages?: FriendMessage[];
   createTime: number;
 }
 

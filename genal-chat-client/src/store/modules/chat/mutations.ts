@@ -18,6 +18,7 @@ import {
 } from './mutation-types';
 import { ChatState } from './state';
 import { MutationTree } from 'vuex';
+import { DEFAULT_GROUP } from '@/const';
 
 const mutations: MutationTree<ChatState> = {
   // 保存socket
@@ -33,6 +34,14 @@ const mutations: MutationTree<ChatState> = {
   // 设置群在线人数
   [SET_ACTIVE_GROUP_USER](state, payload: ActiveGroupUser) {
     state.activeGroupUser = payload;
+    let userGather = state.userGather;
+    for (let user of Object.values(payload[DEFAULT_GROUP])) {
+      // 如果当前userGather没有该在线用户, 应该马上存储, 不然该在下雨用户发消息, 就看不见他的信息
+      if (!userGather[user.userId]) {
+        userGather[user.userId] = user;
+        console.log(state.userGather);
+      }
+    }
   },
 
   // 新增一条群消息

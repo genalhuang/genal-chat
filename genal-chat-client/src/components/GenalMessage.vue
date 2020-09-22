@@ -145,7 +145,8 @@ export default class GenalMessage extends Vue {
       // 只有有消息且滚动到顶部时才进入
       if (this.messageDom.scrollTop === 0) {
         this.lastMessagePosition = this.messageContentDom.offsetHeight;
-        if (this.activeRoom.messages.length >= this.pageSize && !this.spinning) {
+        let messages = this.activeRoom.messages;
+        if (messages && messages.length >= this.pageSize && !this.spinning) {
           this.getMoreMessage();
         }
       }
