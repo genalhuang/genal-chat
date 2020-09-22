@@ -374,23 +374,17 @@ export class ChatGateway {
     // 数组去重
     userIdArr = Array.from(new Set(userIdArr));
 
-    const userArr = [];
-    for(const userId of userIdArr) {
-      const user = await this.userRepository.findOne({userId: userId});
-      if(user) {
-        userArr.push(user);
-      } 
-    }
-
     const activeGroupUserGather = {};
-    const groupArr = await this.groupRepository.find();
-    for(const group of groupArr) {
-      activeGroupUserGather[group.groupId] = {};
-      for(const user of userArr) {
-        const userGroupMap = await this.groupUserRepository.findOne({userId: user.userId,groupId: group.groupId});
-        if(userGroupMap) {
-          activeGroupUserGather[group.groupId][user.userId] = user;
-        }
+    for(const userId of userIdArr) {
+      const userGroupArr = await this.groupUserRepository.find({userId: userId});
+      const user = await this.userRepository.findOne({userId: userId});
+      if(user && userGroupArr.length) {
+        userGroupArr.map(item => {
+          if(!activeGroupUserGather[item.groupId]) {
+            activeGroupUserGather[item.groupId] = {};
+          }
+          activeGroupUserGather[item.groupId][userId] = user;
+        });
       }
     }
 
