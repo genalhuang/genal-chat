@@ -67,8 +67,8 @@ export class GroupService {
     .where("groupMessage.groupId = :id", { id: groupId })
     .skip(current)
     .take(pageSize)
-    .getMany()
-    groupMessage = groupMessage.reverse()
+    .getMany();
+    groupMessage = groupMessage.reverse();
 
     const userGather: {[key: string]: User} = {};
     let userArr: FriendDto[] = [];
@@ -77,8 +77,8 @@ export class GroupService {
         const user = await getRepository(User)
         .createQueryBuilder("user")
         .where("user.userId = :id", { id: message.userId })
-        .getOne()
-        userGather[message.userId] = user
+        .getOne();
+        userGather[message.userId] = user;
       }
     }
     userArr = Object.values(userGather);
