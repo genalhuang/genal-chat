@@ -269,7 +269,7 @@ export class ChatGateway {
         .createQueryBuilder("groupMessage")
         .orderBy("groupMessage.time", "DESC")
         .where("groupMessage.groupId = :id", { id: item.groupId })
-        .take(50)
+        .take(30)
         .getMany();
         groupMessage = groupMessage.reverse();
         // 这里获取一下发消息的用户的用户信息
@@ -293,7 +293,7 @@ export class ChatGateway {
           .orderBy("friendMessage.time", "DESC")
           .where("friendMessage.userId = :userId AND friendMessage.friendId = :friendId", { userId: item.userId, friendId: item.friendId })
           .orWhere("friendMessage.userId = :friendId AND friendMessage.friendId = :userId", { userId: item.userId, friendId: item.friendId })
-          .take(50)
+          .take(30)
           .getMany();
         return messages.reverse();
       });

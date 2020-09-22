@@ -19,7 +19,9 @@
     </transition>
     <div class="message-main" :style="{ opacity: messageOpacity }">
       <div class="message-content">
-        <div class="message-content-noData" v-if="isNoData">没有更多消息了~</div>
+        <transition name="noData">
+          <div class="message-content-noData" v-if="isNoData">没有更多消息了~</div>
+        </transition>
         <template v-for="item in activeRoom.messages">
           <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
             <genal-avatar :data="item"></genal-avatar>
@@ -80,7 +82,7 @@ export default class GenalMessage extends Vue {
   messageOpacity: number = 1;
   lastMessagePosition: number = 0;
   spinning: boolean = false;
-  pageSize: number = 50;
+  pageSize: number = 30;
   isNoData: boolean = false;
   lastTime: number = 0;
 
@@ -143,7 +145,8 @@ export default class GenalMessage extends Vue {
       // 只有有消息且滚动到顶部时才进入
       if (this.messageDom.scrollTop === 0) {
         this.lastMessagePosition = this.messageContentDom.offsetHeight;
-        if (this.activeRoom.messages.length >= this.pageSize && !this.spinning) {
+        let messages = this.activeRoom.messages;
+        if (messages && messages.length >= this.pageSize && !this.spinning) {
           this.getMoreMessage();
         }
       }
@@ -172,38 +175,40 @@ export default class GenalMessage extends Vue {
     }
     this.spinning = true;
     let groupId = this.activeRoom.groupId;
-    let current = this.activeRoom.messages.length;
-    if (this.activeRoom.groupId) {
-      let data: PagingResponse = processReturn(
-        await api.getGroupMessages({
-          groupId,
-          current,
-          pageSize: this.pageSize,
-        })
-      );
-      if (!data.messageArr.length) {
-        this.spinning = false;
-        return (this.isNoData = true);
-      }
-      this.set_group_messages([...data.messageArr, ...this.activeRoom.messages]);
-      for (let user of data.userArr) {
-        if (!this.userGather[user.userId]) {
-          this.set_user_gather(user);
+    if (this.activeRoom.messages) {
+      let current = this.activeRoom.messages.length;
+      if (this.activeRoom.groupId) {
+        let data: PagingResponse = processReturn(
+          await api.getGroupMessages({
+            groupId,
+            current,
+            pageSize: this.pageSize,
+          })
+        );
+        if (!data.messageArr.length) {
+          this.spinning = false;
+          return (this.isNoData = true);
         }
-      }
-    } else {
-      let data: PagingResponse = processReturn(
-        await api.getFriendMessage({
-          userId: this.user.userId,
-          friendId: this.activeRoom.userId,
-          current,
-          pageSize: this.pageSize,
-        })
-      );
-      this.set_friend_messages([...data.messageArr, ...this.activeRoom.messages]);
-      if (!data.messageArr.length) {
-        this.spinning = false;
-        return (this.isNoData = true);
+        this.set_group_messages([...data.messageArr, ...this.activeRoom.messages]);
+        for (let user of data.userArr) {
+          if (!this.userGather[user.userId]) {
+            this.set_user_gather(user);
+          }
+        }
+      } else {
+        let data: PagingResponse = processReturn(
+          await api.getFriendMessage({
+            userId: this.user.userId,
+            friendId: this.activeRoom.userId,
+            current,
+            pageSize: this.pageSize,
+          })
+        );
+        this.set_friend_messages([...data.messageArr, ...this.activeRoom.messages]);
+        if (!data.messageArr.length) {
+          this.spinning = false;
+          return (this.isNoData = true);
+        }
       }
     }
     this.spinning = false;
@@ -277,7 +282,7 @@ export default class GenalMessage extends Vue {
     left: calc(50% - 18px);
     top: 60px;
     color: #fff;
-    z-index: -1;
+    z-index: 99;
     .message-loading-icon {
       margin: 10px auto;
       font-size: 20px;
@@ -422,11 +427,20 @@ export default class GenalMessage extends Vue {
   transition: all 0.3s ease;
 }
 .loading-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
 }
 .loading-enter,
 .loading-leave-to {
-  transform: translateY(-40px);
+  transform: translateY(-30px);
+  opacity: 0;
+}
+
+.noData-enter-active,
+.noData-leave-active {
+  transition: opacity 1s;
+}
+.noData-enter,
+.noData-leave-to {
   opacity: 0;
 }
 </style>

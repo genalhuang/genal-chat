@@ -18,6 +18,7 @@ import {
 } from './mutation-types';
 import { ChatState } from './state';
 import { MutationTree } from 'vuex';
+import { DEFAULT_GROUP } from '@/const';
 
 const mutations: MutationTree<ChatState> = {
   // 保存socket
@@ -33,12 +34,20 @@ const mutations: MutationTree<ChatState> = {
   // 设置群在线人数
   [SET_ACTIVE_GROUP_USER](state, payload: ActiveGroupUser) {
     state.activeGroupUser = payload;
+    let userGather = state.userGather;
+    for (let user of Object.values(payload[DEFAULT_GROUP])) {
+      // 如果当前userGather没有该在线用户, 应该马上存储, 不然该在下雨用户发消息, 就看不见他的信息
+      if (!userGather[user.userId]) {
+        userGather[user.userId] = user;
+        console.log(state.userGather);
+      }
+    }
   },
 
   // 新增一条群消息
   [ADD_GROUP_MESSAGE](state, payload: GroupMessage) {
     if (state.groupGather[payload.groupId].messages) {
-      state.groupGather[payload.groupId].messages.push(payload);
+      state.groupGather[payload.groupId].messages!.push(payload);
     } else {
       // vuex对象数组中对象改变不更新问题
       Vue.set(state.groupGather[payload.groupId], 'messages', [payload]);
@@ -58,13 +67,13 @@ const mutations: MutationTree<ChatState> = {
     let userId = this.getters['app/user'].userId;
     if (payload.friendId === userId) {
       if (state.friendGather[payload.userId].messages) {
-        state.friendGather[payload.userId].messages.push(payload);
+        state.friendGather[payload.userId].messages!.push(payload);
       } else {
         Vue.set(state.friendGather[payload.userId], 'messages', [payload]);
       }
     } else {
       if (state.friendGather[payload.friendId].messages) {
-        state.friendGather[payload.friendId].messages.push(payload);
+        state.friendGather[payload.friendId].messages!.push(payload);
       } else {
         Vue.set(state.friendGather[payload.friendId], 'messages', [payload]);
       }

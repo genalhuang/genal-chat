@@ -15,7 +15,7 @@ interface Group {
   userId: string; // 群主id
   groupName: string;
   notice: string;
-  messages: GroupMessage[];
+  messages?: GroupMessage[];
   createTime: number;
 }
 
@@ -46,7 +46,7 @@ interface Friend {
   avatar: string;
   role?: string;
   tag?: string;
-  messages: FriendMessage[];
+  messages?: FriendMessage[];
   createTime: number;
 }
 
