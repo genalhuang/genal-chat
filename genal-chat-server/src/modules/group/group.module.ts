@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GroupService } from './group.service'
-import { GroupController } from './group.controller'
-import { Group, GroupMap } from './entity/group.entity'
-import { GroupMessage } from './entity/groupMessage.entity'
+import { GroupService } from './group.service';
+import { GroupController } from './group.controller';
+import { Group, GroupMap } from './entity/group.entity';
+import { GroupMessage } from './entity/groupMessage.entity';
 
 @Module({
   imports: [

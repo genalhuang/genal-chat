@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/entity/user.entity';
 import { UserController } from './user.controller';
-import { UserService } from './user.service'
+import { UserService } from './user.service';
 import { Group, GroupMap } from '../group/entity/group.entity';
 import { GroupMessage } from '../group/entity/groupMessage.entity';
 import { UserMap } from '../friend/entity/friend.entity';

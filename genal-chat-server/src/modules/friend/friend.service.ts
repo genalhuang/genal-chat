@@ -17,12 +17,12 @@ export class FriendService {
   async getFriends(userId: string) {
     try {
       if(userId) {
-        return { msg:'获取用户好友成功', data: await this.friendRepository.find({userId: userId}) }
+        return { msg:'获取用户好友成功', data: await this.friendRepository.find({userId: userId}) };
       } else {
-        return { msg:'获取用户好友失败', data: await this.friendRepository.find() }
+        return { msg:'获取用户好友失败', data: await this.friendRepository.find() };
       }
     } catch(e) {
-      return { code:RCode.ERROR, msg:'获取用户好友失败', data:e }
+      return { code:RCode.ERROR, msg:'获取用户好友失败', data:e };
     }
   }
 
