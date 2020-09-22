@@ -23,7 +23,7 @@ export class ChatModule {
   async onModuleInit() {
     const defaultGroup = await this.groupRepository.find({groupName: '阿童木聊天室'});
     if(!defaultGroup.length) {
-      this.groupRepository.save({
+      await this.groupRepository.save({
         groupId: '阿童木聊天室',
         groupName: '阿童木聊天室',
         userId: 'admin',

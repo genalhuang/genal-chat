@@ -62,28 +62,6 @@ export class UserService {
     }
   }
 
-  async addUser(user: User) {
-    try {
-      const isHave = await this.userRepository.find({username: user.username});
-      if(isHave.length) {
-        return {code: 1, msg:'用户名重复', data: '' };
-      }
-
-      const index = Math.round(Math.random()*19 +1);
-      user.avatar = `api/avatar/avatar(${index}).png`;
-
-      const data = await this.userRepository.save(user);
-
-      await this.groupUserRepository.save({
-        userId: data.userId,
-        groupId: '阿童木聊天室',
-      });
-      return { msg:'注册成功', data };
-    } catch(e) {
-      return { code: RCode.ERROR, msg:'注册失败', data: e };
-    }
-  }
-
   async updateUserName(user: User) {
     try {
       const oldUser = await this.userRepository.findOne({userId: user.userId, password: user.password});
@@ -93,8 +71,7 @@ export class UserService {
           return {code: 1, msg:'用户名重复', data: ''};
         }
         await this.userRepository.update(oldUser,user);
-        const newUser = user;
-        return { msg:'更新用户名成功', data: newUser};
+        return { msg:'更新用户名成功', data: user};
       } 
       return {code: RCode.FAIL, msg:'密码错误', data: '' };
     } catch(e) {
@@ -172,8 +149,8 @@ export class UserService {
   async setUserAvatar(user: User, file) {
     try {
       const random = Date.now() + '&';
-      const writeSream = createWriteStream(join('public/avatar', random + file.originalname));
-      writeSream.write(file.buffer);
+      const stream = createWriteStream(join('public/avatar', random + file.originalname));
+      stream.write(file.buffer);
       const newUser = await this.userRepository.findOne({userId: user.userId, password: user.password});
       newUser.avatar = `api/avatar/${random}${file.originalname}`;
       newUser.password = user.password;
