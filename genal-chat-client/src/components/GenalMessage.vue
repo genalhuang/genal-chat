@@ -174,49 +174,68 @@ export default class GenalMessage extends Vue {
       return false;
     }
     this.spinning = true;
-    let groupId = this.activeRoom.groupId;
-    if (this.activeRoom.messages) {
-      let current = this.activeRoom.messages.length;
-      if (this.activeRoom.groupId) {
-        let data: PagingResponse = processReturn(
-          await api.getGroupMessages({
-            groupId,
-            current,
-            pageSize: this.pageSize,
-          })
-        );
-        if (!data.messageArr.length) {
-          this.spinning = false;
-          return (this.isNoData = true);
-        }
-        this.set_group_messages([...data.messageArr, ...this.activeRoom.messages]);
-        for (let user of data.userArr) {
-          if (!this.userGather[user.userId]) {
-            this.set_user_gather(user);
-          }
-        }
-      } else {
-        let data: PagingResponse = processReturn(
-          await api.getFriendMessage({
-            userId: this.user.userId,
-            friendId: this.activeRoom.userId,
-            current,
-            pageSize: this.pageSize,
-          })
-        );
-        this.set_friend_messages([...data.messageArr, ...this.activeRoom.messages]);
-        if (!data.messageArr.length) {
-          this.spinning = false;
-          return (this.isNoData = true);
-        }
-      }
+    if (this.activeRoom.groupId) {
+      await this.getGroupMessages();
+    } else {
+      await this.getFriendMessages();
     }
-    this.spinning = false;
     this.needScrollToBottom = false;
     this.$nextTick(() => {
       this.messageDom.scrollTop = this.messageContentDom.offsetHeight - this.lastMessagePosition;
+      this.spinning = false;
       this.messageOpacity = 1;
     });
+  }
+
+  /**
+   * 获取群聊消息
+   */
+  async getGroupMessages() {
+    let groupId = this.activeRoom.groupId;
+    let current = this.activeRoom.messages!.length;
+    let currentMessage = this.activeRoom.messages ? this.activeRoom.messages : [];
+    let data: PagingResponse = processReturn(
+      await api.getGroupMessages({
+        groupId,
+        current,
+        pageSize: this.pageSize,
+      })
+    );
+    if (data) {
+      if (!data.messageArr.length || data.messageArr.length < this.pageSize) {
+        this.isNoData = true;
+      }
+      this.set_group_messages([...data.messageArr, ...currentMessage]);
+      for (let user of data.userArr) {
+        if (!this.userGather[user.userId]) {
+          this.set_user_gather(user);
+        }
+      }
+    }
+  }
+
+  /**
+   * 获取私聊消息
+   */
+  async getFriendMessages() {
+    let userId = this.user.userId;
+    let friendId = this.activeRoom.userId;
+    let current = this.activeRoom.messages!.length;
+    let currentMessage = this.activeRoom.messages ? this.activeRoom.messages : [];
+    let data: PagingResponse = processReturn(
+      await api.getFriendMessage({
+        userId,
+        friendId,
+        current,
+        pageSize: this.pageSize,
+      })
+    );
+    if (data) {
+      if (!data.messageArr.length || data.messageArr.length < this.pageSize) {
+        this.isNoData = true;
+      }
+      this.set_friend_messages([...data.messageArr, ...currentMessage]);
+    }
   }
 
   /**
