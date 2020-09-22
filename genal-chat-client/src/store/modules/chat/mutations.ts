@@ -47,7 +47,7 @@ const mutations: MutationTree<ChatState> = {
   // 新增一条群消息
   [ADD_GROUP_MESSAGE](state, payload: GroupMessage) {
     if (state.groupGather[payload.groupId].messages) {
-      state.groupGather[payload.groupId].messages.push(payload);
+      state.groupGather[payload.groupId].messages!.push(payload);
     } else {
       // vuex对象数组中对象改变不更新问题
       Vue.set(state.groupGather[payload.groupId], 'messages', [payload]);
@@ -67,13 +67,13 @@ const mutations: MutationTree<ChatState> = {
     let userId = this.getters['app/user'].userId;
     if (payload.friendId === userId) {
       if (state.friendGather[payload.userId].messages) {
-        state.friendGather[payload.userId].messages.push(payload);
+        state.friendGather[payload.userId].messages!.push(payload);
       } else {
         Vue.set(state.friendGather[payload.userId], 'messages', [payload]);
       }
     } else {
       if (state.friendGather[payload.friendId].messages) {
-        state.friendGather[payload.friendId].messages.push(payload);
+        state.friendGather[payload.friendId].messages!.push(payload);
       } else {
         Vue.set(state.friendGather[payload.friendId], 'messages', [payload]);
       }

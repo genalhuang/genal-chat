@@ -175,38 +175,40 @@ export default class GenalMessage extends Vue {
     }
     this.spinning = true;
     let groupId = this.activeRoom.groupId;
-    let current = this.activeRoom.messages.length;
-    if (this.activeRoom.groupId) {
-      let data: PagingResponse = processReturn(
-        await api.getGroupMessages({
-          groupId,
-          current,
-          pageSize: this.pageSize,
-        })
-      );
-      if (!data.messageArr.length) {
-        this.spinning = false;
-        return (this.isNoData = true);
-      }
-      this.set_group_messages([...data.messageArr, ...this.activeRoom.messages]);
-      for (let user of data.userArr) {
-        if (!this.userGather[user.userId]) {
-          this.set_user_gather(user);
+    if (this.activeRoom.messages) {
+      let current = this.activeRoom.messages.length;
+      if (this.activeRoom.groupId) {
+        let data: PagingResponse = processReturn(
+          await api.getGroupMessages({
+            groupId,
+            current,
+            pageSize: this.pageSize,
+          })
+        );
+        if (!data.messageArr.length) {
+          this.spinning = false;
+          return (this.isNoData = true);
         }
-      }
-    } else {
-      let data: PagingResponse = processReturn(
-        await api.getFriendMessage({
-          userId: this.user.userId,
-          friendId: this.activeRoom.userId,
-          current,
-          pageSize: this.pageSize,
-        })
-      );
-      this.set_friend_messages([...data.messageArr, ...this.activeRoom.messages]);
-      if (!data.messageArr.length) {
-        this.spinning = false;
-        return (this.isNoData = true);
+        this.set_group_messages([...data.messageArr, ...this.activeRoom.messages]);
+        for (let user of data.userArr) {
+          if (!this.userGather[user.userId]) {
+            this.set_user_gather(user);
+          }
+        }
+      } else {
+        let data: PagingResponse = processReturn(
+          await api.getFriendMessage({
+            userId: this.user.userId,
+            friendId: this.activeRoom.userId,
+            current,
+            pageSize: this.pageSize,
+          })
+        );
+        this.set_friend_messages([...data.messageArr, ...this.activeRoom.messages]);
+        if (!data.messageArr.length) {
+          this.spinning = false;
+          return (this.isNoData = true);
+        }
       }
     }
     this.spinning = false;
