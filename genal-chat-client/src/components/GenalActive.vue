@@ -14,8 +14,8 @@
           <div class="actiev-content-title">群聊管理</div>
           <div class="active-content-sum">在线人数: {{ activeNum }}</div>
           <div class="active-content-users">
-            <div class="active-content-user" v-for="user in activeGroupUser[activeRoom.groupId]" :key="user.userId">
-              <genal-avatar :data="user" :showTime="false"></genal-avatar>
+            <div class="active-content-user" v-for="data in activeGroupUser[activeRoom.groupId]" :key="data.userId">
+              <genal-avatar :data="data" :showTime="false"></genal-avatar>
               {{ user.username }}
             </div>
           </div>

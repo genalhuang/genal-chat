@@ -19,7 +19,9 @@
     </transition>
     <div class="message-main" :style="{ opacity: messageOpacity }">
       <div class="message-content">
-        <div class="message-content-noData" v-if="isNoData">没有更多消息了~</div>
+        <transition name="noData">
+          <div class="message-content-noData" v-if="isNoData">没有更多消息了~</div>
+        </transition>
         <template v-for="item in activeRoom.messages">
           <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
             <genal-avatar :data="item"></genal-avatar>
@@ -80,7 +82,7 @@ export default class GenalMessage extends Vue {
   messageOpacity: number = 1;
   lastMessagePosition: number = 0;
   spinning: boolean = false;
-  pageSize: number = 50;
+  pageSize: number = 30;
   isNoData: boolean = false;
   lastTime: number = 0;
 
@@ -277,7 +279,7 @@ export default class GenalMessage extends Vue {
     left: calc(50% - 18px);
     top: 60px;
     color: #fff;
-    z-index: -1;
+    z-index: 99;
     .message-loading-icon {
       margin: 10px auto;
       font-size: 20px;
@@ -422,11 +424,20 @@ export default class GenalMessage extends Vue {
   transition: all 0.3s ease;
 }
 .loading-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
 }
 .loading-enter,
 .loading-leave-to {
-  transform: translateY(-40px);
+  transform: translateY(-30px);
+  opacity: 0;
+}
+
+.noData-enter-active,
+.noData-leave-active {
+  transition: opacity 1s;
+}
+.noData-enter,
+.noData-leave-to {
   opacity: 0;
 }
 </style>
