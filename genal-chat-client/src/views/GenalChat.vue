@@ -14,7 +14,7 @@
         <a-icon type="menu-fold" @click="toggleTool" v-if="visibleTool" />
         <a-icon type="menu-unfold" @click="toggleTool" v-else />
       </div>
-      <genal-message @sendMessage="sendMessage"></genal-message>
+      <genal-message v-if="activeRoom"></genal-message>
     </div>
     <a-drawer placement="left" :closable="false" :visible="visibleDrawer" @close="toggleDrawer" style="height:100%">
       <div class="chat-drawer">
@@ -95,32 +95,6 @@ export default class GenalChat extends Vue {
   async handleJoin() {
     this.showModal = false;
     this.connectSocket();
-  }
-
-  // 发消息
-  sendMessage(data: SendMessage) {
-    console.log('sendMessage', data);
-    if (data.type === 'group') {
-      this.socket.emit('groupMessage', {
-        userId: this.user.userId,
-        groupId: this.activeRoom.groupId,
-        content: data.message,
-        width: data.width,
-        height: data.height,
-        messageType: data.messageType,
-        time: new Date().valueOf(),
-      });
-    } else {
-      this.socket.emit('friendMessage', {
-        userId: this.user.userId,
-        friendId: this.activeRoom.userId,
-        content: data.message,
-        width: data.width,
-        height: data.height,
-        messageType: data.messageType,
-        time: new Date().valueOf(),
-      });
-    }
   }
 
   // 创建群组

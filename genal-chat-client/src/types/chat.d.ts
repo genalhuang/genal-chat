@@ -15,7 +15,7 @@ interface Group {
   userId: string; // 群主id
   groupName: string;
   notice: string;
-  messages: GroupMessage[];
+  messages?: GroupMessage[];
   createTime: number;
 }
 
@@ -46,7 +46,7 @@ interface Friend {
   avatar: string;
   role?: string;
   tag?: string;
-  messages: FriendMessage[];
+  messages?: FriendMessage[];
   createTime: number;
 }
 
@@ -68,15 +68,15 @@ interface FriendMessage {
 
 interface SendMessage {
   type: string;
-  message: string;
+  message: string | File;
   width?: number;
   height?: number;
-  messageType: MessageType;
+  messageType: MessageType[0] | MessageType[1];
 }
 
 // 消息类型
 declare enum MessageType {
-  string = 'string',
+  text = 'text',
   image = 'image',
 }
 
@@ -86,7 +86,7 @@ interface ImageSize {
   height: number;
 }
 
-// socket返回值格式
+// 服务端返回值格式
 interface ServerRes {
   code: number;
   msg: string;
@@ -101,4 +101,19 @@ interface ActiveGroupUser {
 // 未读消息对象
 interface UnReadGather {
   [key: string]: number;
+}
+
+// 获取群分页消息参数
+interface PagingParams {
+  groupId?: string;
+  userId?: string;
+  friendId?: string;
+  current: number;
+  pageSize: number;
+}
+
+// 群分页消息返回值
+interface PagingResponse {
+  messageArr: GroupMessage[];
+  userArr: User[];
 }

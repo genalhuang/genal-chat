@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { FriendModule } from './modules/friend/friend.module';
-import { GroupModule } from './modules/group/group.module'
+import { GroupModule } from './modules/group/group.module';
 import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
