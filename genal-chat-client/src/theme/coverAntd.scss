@@ -46,7 +46,7 @@
         }
         .active-content-users {
           max-height: calc(100% - 180px);
-          overflow: scroll;
+          overflow-y: scroll;
           .active-content-user {
             width: 230px;
             overflow: hidden; //超出的文本隐藏

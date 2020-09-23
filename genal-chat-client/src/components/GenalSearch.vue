@@ -56,7 +56,7 @@
             <div>{{ group.groupName }}</div>
           </a-select-option>
         </a-select>
-        <a-button @click="joinGroup" type="primary">确定</a-button>
+        <a-button @click="joinGroup" type="primary">加入群</a-button>
       </div>
     </a-modal>
     <a-modal v-model="visibleAddFriend" footer="" title="搜索用户">
@@ -76,7 +76,7 @@
             <div>{{ user.username }}</div>
           </a-select-option>
         </a-select>
-        <a-button @click="addFriend" type="primary">确定</a-button>
+        <a-button @click="addFriend" type="primary">添加好友</a-button>
       </div>
     </a-modal>
   </div>

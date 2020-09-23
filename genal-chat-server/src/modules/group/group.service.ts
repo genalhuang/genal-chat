@@ -74,11 +74,10 @@ export class GroupService {
     let userArr: FriendDto[] = [];
     for(const message of groupMessage) {
       if(!userGather[message.userId]) {
-        const user = await getRepository(User)
+        userGather[message.userId] = await getRepository(User)
         .createQueryBuilder("user")
         .where("user.userId = :id", { id: message.userId })
         .getOne();
-        userGather[message.userId] = user;
       }
     }
     userArr = Object.values(userGather);

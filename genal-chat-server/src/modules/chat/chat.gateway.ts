@@ -141,11 +141,11 @@ export class ChatGateway {
     if(data.groupId) {
       if(data.messageType === 'image') {
         const randomName = `${Date.now()}$${data.userId}$${data.width}$${data.height}`;
-        const writeSream = createWriteStream(join('public/static', randomName));
-        writeSream.write(data.content);
+        const stream = createWriteStream(join('public/static', randomName));
+        stream.write(data.content);
         data.content = randomName;
       }
-      this.groupMessageRepository.save(data);
+      await this.groupMessageRepository.save(data);
       this.server.to(data.groupId).emit('groupMessage', {code: RCode.OK, msg:'', data: data});
     }
   }
@@ -172,7 +172,6 @@ export class ChatGateway {
         const friend = await this.userRepository.findOne({
           where: { userId: Like(`%${data.friendId}%`) }
         });
-        ;
         const user = await this.userRepository.findOne({
           where: { userId: Like(`%${data.userId}%`) }
         });
@@ -237,8 +236,8 @@ export class ChatGateway {
         const roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId;
         if(data.messageType === 'image') {
           const randomName = `${Date.now()}$${roomId}$${data.width}$${data.height}`;
-          const writeSream = createWriteStream(join('public/static', randomName));
-          writeSream.write(data.content);
+          const stream = createWriteStream(join('public/static', randomName));
+          stream.write(data.content);
           data.content = randomName;
         }
         await this.friendMessageRepository.save(data);
@@ -275,8 +274,7 @@ export class ChatGateway {
         // 这里获取一下发消息的用户的用户信息
         for(const message of groupMessage) {
           if(!userGather[message.userId]) {
-            const user = await this.userRepository.findOne({userId: message.userId});
-            userGather[message.userId] = user;
+            userGather[message.userId] = await this.userRepository.findOne({userId: message.userId});
           }
         }
         return groupMessage;
