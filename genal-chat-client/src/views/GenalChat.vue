@@ -1,5 +1,13 @@
 <template>
-  <div class="chat">
+  <div
+    class="chat"
+    :style="{
+      '--bg-image':
+        background && background !== ' '
+          ? `url('${background}')`
+          : `url('https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85')`,
+    }"
+  >
     <genal-music></genal-music>
     <div class="chat-part1" v-if="visibleTool">
       <genal-tool @logout="logout"></genal-tool>
@@ -53,6 +61,7 @@ export default class GenalChat extends Vue {
   @appModule.Mutation('clear_user') clearUser: Function;
   @appModule.Action('login') login: Function;
   @appModule.Action('regist') regist: Function;
+  @appModule.Getter('background') background: string;
 
   @chatModule.Getter('socket') socket: SocketIOClient.Socket;
   @chatModule.Getter('userGather') userGather: FriendGather;
@@ -160,20 +169,21 @@ export default class GenalChat extends Vue {
   box-shadow: 10px 20px 80px rgba(0, 0, 0, 0.8);
   display: flex;
   border-radius: 5px;
+  overflow: hidden;
   .chat-part1 {
     width: 74px;
     height: 100%;
-    background-color: rgb(0, 0, 0, 0.8);
+    background-color: rgb(0, 0, 0, 0.7);
   }
   .chat-part2 {
     width: 230px;
     height: 100%;
-    background-color: rgb(0, 0, 0, 0.4);
+    background-color: rgb(0, 0, 0, 0.3);
   }
   .chat-part3 {
     flex: 1;
     height: 100%;
-    background-color: rgb(0, 0, 0, 0.3);
+    background-color: rgb(0, 0, 0, 0.2);
     overflow-y: hidden;
     position: relative;
     .chat-group {
@@ -220,5 +230,16 @@ export default class GenalChat extends Vue {
       }
     }
   }
+}
+
+.chat::after {
+  content: '';
+  background: var(--bg-image) 0 / cover fixed;
+  position: absolute;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  filter: blur(15px);
+  z-index: -1;
 }
 </style>
