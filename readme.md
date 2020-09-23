@@ -18,24 +18,26 @@
 
 ### 项目界面
 #### PC端
-<img src="./assets/v5_pc.png" alt="PC" style="max-width:800px" />
+<img src="./assets/v6_pc.png" alt="PC" style="max-width:800px" />
 
 #### 移动端
 <p align="center">
-  <img src="./assets/v5_m1.png" alt="Mobile" width="350"/><img src="./assets/v5_m2.png" alt="Mobile" width="350"  hspace="50"/>
+  <img src="./assets/v6_m1.png" alt="Mobile" width="350"/><img src="./assets/v6_m2.png" alt="Mobile" width="350"  hspace="50"/>
 </p>
 
 ### 功能介绍
-- 群聊/私聊
-- 创建群/加入群聊/退群/模糊搜索群
-- 添加好友/删好友/模糊搜索好友
-- 图片上传/粘贴发送图片/图片预览
-- 更改用户名/头像上传
-- 表情包
-- 消息分页
 - 移动端兼容
+- 用户信息的修改(头像/用户名/密码)
+- 群聊/私聊
+- 创建群/加入群/退群/模糊搜索群
+- 添加好友/删好友/模糊搜索用户
+- 消息分页
+- 表情包
+- 图片发送/图片预览
 - 在线人数统计
+- 自定义背景图
 - 重连提醒
+
 
 ### 技术概览
 - **Typescript**：JavaScript 的一个超集，它最大的优势是提供了类型系统和提高了代码的可读性和可维护性。
@@ -138,4 +140,4 @@ github： [edison](https://github.com/genaller)
 [阿童木聊天室部署说明](./阿童木聊天室部署说明.md)
 
 ### 更多细节
-[nestjs+vue+ts打造一个酷炫的星空聊天室](https://github.com/genaller/strong-frontend/blob/master/learnNode/nest/%E8%81%8A%E5%A4%A9%E5%AE%A4/genal%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0.md)
+[用typescript写一个性能强悍的web聊天室](https://github.com/genaller/strong-frontend/blob/master/learnNode/nest/%E8%81%8A%E5%A4%A9%E5%AE%A4/%E7%94%A8typescript%E5%86%99%E4%B8%80%E4%B8%AA%E6%80%A7%E8%83%BD%E5%BC%BA%E6%82%8D%E7%9A%84web%E8%81%8A%E5%A4%A9%E5%AE%A4.md)
