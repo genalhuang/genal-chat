@@ -239,7 +239,8 @@ export default class GenalChat extends Vue {
   object-fit: cover;
   width: 100%;
   height: 100%;
-  filter: blur(15px);
+  filter: blur(12px);
+  transform: scale(1.09);
   z-index: -1;
 }
 </style>
