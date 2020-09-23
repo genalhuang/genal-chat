@@ -200,6 +200,18 @@ export default class GenalChat extends Vue {
     display: none;
   }
 }
+.chat::after {
+  content: '';
+  background: var(--bg-image) 0 / cover fixed;
+  position: absolute;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  filter: blur(12px);
+  transform: scale(1.09);
+  z-index: -1;
+}
+
 @media screen and (max-width: 768px) {
   .chat {
     margin: 0;
@@ -230,17 +242,5 @@ export default class GenalChat extends Vue {
       }
     }
   }
-}
-
-.chat::after {
-  content: '';
-  background: var(--bg-image) 0 / cover fixed;
-  position: absolute;
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  filter: blur(12px);
-  transform: scale(1.09);
-  z-index: -1;
 }
 </style>
