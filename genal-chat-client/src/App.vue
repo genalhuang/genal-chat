@@ -43,7 +43,7 @@ export default class GenalChat extends Vue {
   background: url('https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85')
     0 / cover fixed;
   background-size: cover;
-  background-color: #fff;
+  color: rgba(255, 255, 255, 0.85);
   .background {
     position: absolute;
     object-fit: cover;

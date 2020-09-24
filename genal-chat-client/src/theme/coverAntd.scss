@@ -18,7 +18,7 @@
         background-color: rgba(0, 0, 0, 0.5);
       }
       .room-card-name {
-        color: #fff;
+        color: rgba(255, 255, 255, 0.85);
       }
       .text {
         color: rgb(238, 214, 214);
@@ -36,6 +36,7 @@
           line-height: 60px;
           padding: 0 12px;
           font-size: 16px;
+          color: #fff;
           border-bottom: 0.5px solid rgba(0, 0, 0, 1);
         }
         .active-content-sum {

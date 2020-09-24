@@ -231,7 +231,6 @@ export default class GenalSearch extends Vue {
     border-radius: 4px;
     &:hover {
       background-color: skyblue;
-      color: #fff;
     }
   }
 }
