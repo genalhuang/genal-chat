@@ -5,7 +5,7 @@
       '--bg-image':
         background && background !== ' '
           ? `url('${background}')`
-          : `url('https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85')`,
+          : `url('https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85')`,
     }"
   >
     <genal-music></genal-music>
