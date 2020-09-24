@@ -428,7 +428,7 @@ export default class GenalMessage extends Vue {
   .message-header-box {
     .message-header-text {
       display: block;
-      max-width: 110px;
+      width: 36%;
       margin: 0 auto;
       overflow: hidden;
       text-overflow: ellipsis;
