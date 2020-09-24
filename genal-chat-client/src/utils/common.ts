@@ -67,18 +67,17 @@ export function formatTime(time: number) {
  * @param name
  */
 export function nameVerify(name: string): boolean {
-  //名字正则，只含有汉字、数字、字母、下划线不能以下划线开头和结尾
   let nameReg = /^(?!_)(?!.*?_$)[a-zA-Z0-9_\u4e00-\u9fa5]+$/;
-  if (name.length > 9) {
-    Vue.prototype.$message.error('名字太长');
-    return false;
-  }
   if (name.length === 0) {
     Vue.prototype.$message.error('请输入名字');
     return false;
   }
   if (!nameReg.test(name)) {
-    Vue.prototype.$message.error('名字只含有汉字、数字、字母、下划线不能以下划线开头和结尾');
+    Vue.prototype.$message.error('名字只含有汉字、字母、数字和下划线 不能以下划线开头和结尾');
+    return false;
+  }
+  if (name.length > 9) {
+    Vue.prototype.$message.error('名字太长');
     return false;
   }
   return true;
@@ -89,12 +88,17 @@ export function nameVerify(name: string): boolean {
  * @param password
  */
 export function passwordVerify(password: string): boolean {
-  if (password.length > 9) {
-    Vue.prototype.$message.error('密码太长');
-    return false;
-  }
+  const passwordReg = /^\w+$/gis;
   if (password.length === 0) {
     Vue.prototype.$message.error('请输入密码');
+    return false;
+  }
+  if (!passwordReg.test(password)) {
+    Vue.prototype.$message.error('密码只含有字母、数字和下划线');
+    return false;
+  }
+  if (password.length > 9) {
+    Vue.prototype.$message.error('密码太长');
     return false;
   }
   return true;

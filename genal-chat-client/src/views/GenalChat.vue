@@ -178,12 +178,12 @@ export default class GenalChat extends Vue {
   .chat-part2 {
     width: 230px;
     height: 100%;
-    background-color: rgb(0, 0, 0, 0.3);
+    background-color: rgb(0, 0, 0, 0.2);
   }
   .chat-part3 {
     flex: 1;
     height: 100%;
-    background-color: rgb(0, 0, 0, 0.2);
+    background-color: rgb(0, 0, 0, 0.1);
     overflow-y: hidden;
     position: relative;
     .chat-group {

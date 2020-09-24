@@ -35,12 +35,12 @@
         </div>
         <div class="tool-user-info">
           <div class="tool-user-title">更改用户名</div>
-          <a-input v-model="username" placeholder="请输入用户名"></a-input>
+          <a-input class="tool-user-input" v-model="username" placeholder="请输入用户名"></a-input>
           <a-button type="primary" @click="changeUserName">确认</a-button>
         </div>
         <div class="tool-user-info">
           <div class="tool-user-title">更改密码</div>
-          <a-input v-model="password" placeholder="请输入密码"></a-input>
+          <a-input-password class="tool-user-input" v-model="password" placeholder="请输入密码"></a-input-password>
           <a-button type="primary" @click="changePassword">确认</a-button>
         </div>
       </div>
@@ -130,7 +130,7 @@ export default class GenalTool extends Vue {
   }
 
   async changePassword() {
-    if (!passwordVerify(this.username)) {
+    if (!passwordVerify(this.password)) {
       return;
     }
     let user: User = JSON.parse(JSON.stringify(this.user));
@@ -187,6 +187,7 @@ export default class GenalTool extends Vue {
   height: 98%;
   position: relative;
   .tool-avatar {
+    margin-top: 3px;
     .tool-avatar-img {
       margin: 0 auto;
       width: 55px;
@@ -274,14 +275,14 @@ export default class GenalTool extends Vue {
   display: flex;
   justify-content: left;
   align-items: center;
-  .ant-input {
-    width: 100%;
+  .tool-user-input {
+    flex: 1;
     margin-right: 5px;
   }
   .tool-user-title {
     display: flex;
     align-items: center;
-    width: 200px;
+    width: 90px;
     text-align: left;
     font-weight: bold;
     word-break: keep-all;
