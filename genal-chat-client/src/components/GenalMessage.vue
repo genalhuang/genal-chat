@@ -7,7 +7,7 @@
         <genal-active type="group"></genal-active>
       </div>
       <div v-else class="message-header-box">
-        <span>{{ userGather[activeRoom.userId].username }}</span>
+        <span class="message-header-text">{{ userGather[activeRoom.userId].username }}</span>
         <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
         <genal-active type="friend"></genal-active>
       </div>
@@ -291,7 +291,7 @@ export default class GenalMessage extends Vue {
     height: 60px;
     line-height: 60px;
     z-index: 100;
-    background-color: rgb(0, 0, 0, 0.5);
+    background-color: rgb(0, 0, 0, 0.6);
     .message-header-icon {
       margin-left: 5px;
     }
@@ -428,7 +428,7 @@ export default class GenalMessage extends Vue {
   .message-header-box {
     .message-header-text {
       display: block;
-      width: 110px;
+      width: 36%;
       margin: 0 auto;
       overflow: hidden;
       text-overflow: ellipsis;

@@ -121,7 +121,7 @@ export default class GenalRoom extends Vue {
       background-color: rgb(0, 0, 0, 0.4);
     }
     &.active {
-      background-color: rgb(0, 0, 0, 0.6);
+      background-color: rgb(0, 0, 0, 0.5);
     }
     .room-card-badge {
       position: absolute;
