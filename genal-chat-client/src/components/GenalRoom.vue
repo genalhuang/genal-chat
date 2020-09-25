@@ -109,7 +109,7 @@ export default class GenalRoom extends Vue {
   overflow: auto;
   .room-card {
     position: relative;
-    min-height: 60px;
+    min-height: 70px;
     display: flex;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.2);

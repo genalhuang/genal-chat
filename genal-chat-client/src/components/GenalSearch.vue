@@ -9,7 +9,6 @@
         :filter-option="false"
         :not-found-content="null"
         @search="handleSearch"
-        @change="handleChange"
       >
         <a-select-option v-for="(chat, index) in searchData" :key="index" @click="selectChat(chat)">
           <div v-if="chat.username">{{ chat.username }}</div>
@@ -126,6 +125,7 @@ export default class GenalSearch extends Vue {
 
   handleSearch(value: string) {
     let mySearchData = [];
+    this.searchData = [...Object.values(this.groupGather), ...Object.values(this.friendGather)];
     for (let chat of this.searchData) {
       // @ts-ignore
       if (chat.username) {
@@ -140,8 +140,6 @@ export default class GenalSearch extends Vue {
     }
     this.searchData = mySearchData;
   }
-
-  handleChange(value: string) {}
 
   async handleGroupSearch(value: string) {
     if (!value) {
@@ -231,7 +229,6 @@ export default class GenalSearch extends Vue {
     border-radius: 4px;
     &:hover {
       background-color: skyblue;
-      color: #fff;
     }
   }
 }

@@ -92,7 +92,6 @@ export default class GenalActive extends Vue {
 .active {
   position: absolute;
   width: 170px;
-  color: rgb(0, 0, 0, 0.85);
   right: 0;
   z-index: 100;
   border-radius: 0 0 5px 5px;
@@ -102,7 +101,6 @@ export default class GenalActive extends Vue {
     top: -43px;
     right: 20px;
     font-size: 25px;
-    color: #fff;
     cursor: pointer;
     &:active {
       color: skyblue;

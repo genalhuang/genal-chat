@@ -5,7 +5,7 @@
       '--bg-image':
         background && background !== ' '
           ? `url('${background}')`
-          : `url('https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85')`,
+          : `url('https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85')`,
     }"
   >
     <genal-music></genal-music>
@@ -156,7 +156,6 @@ export default class GenalChat extends Vue {
 <style lang="scss" scoped>
 .chat {
   font-size: 16px;
-  color: #fff;
   z-index: 999;
   max-width: 1000px;
   min-width: 300px;
@@ -178,12 +177,12 @@ export default class GenalChat extends Vue {
   .chat-part2 {
     width: 230px;
     height: 100%;
-    background-color: rgb(0, 0, 0, 0.2);
+    background-color: rgb(0, 0, 0, 0.3);
   }
   .chat-part3 {
     flex: 1;
     height: 100%;
-    background-color: rgb(0, 0, 0, 0.1);
+    background-color: rgb(0, 0, 0, 0.2);
     overflow-y: hidden;
     position: relative;
     .chat-group {

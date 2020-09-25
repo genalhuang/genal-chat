@@ -286,12 +286,14 @@ export default class GenalMessage extends Vue {
   overflow: hidden;
   height: 100%;
   position: relative;
-  color: #fff;
   .message-header {
     height: 60px;
     line-height: 60px;
     z-index: 100;
     background-color: rgb(0, 0, 0, 0.6);
+    .message-header-text {
+      color: #fff;
+    }
     .message-header-icon {
       margin-left: 5px;
     }
@@ -300,14 +302,12 @@ export default class GenalMessage extends Vue {
     position: absolute;
     left: calc(50% - 18px);
     top: 60px;
-    color: #fff;
     z-index: 99;
     .message-loading-icon {
       margin: 10px auto;
       font-size: 20px;
       padding: 8px;
       border-radius: 50%;
-      color: #fff;
       background-color: rgb(0, 0, 0, 0.8);
     }
   }
@@ -317,7 +317,6 @@ export default class GenalMessage extends Vue {
     position: relative;
     .message-content {
       .message-content-noData {
-        color: #fff;
         line-height: 50px;
       }
       .message-content-message {
@@ -330,7 +329,7 @@ export default class GenalMessage extends Vue {
           overflow: hidden;
           margin-top: 4px;
           padding: 6px;
-          background-color: rgb(0, 0, 0, 0.4);
+          background-color: rgba(0, 0, 0, 0.4);
           font-size: 16px;
           border-radius: 5px;
           text-align: left;

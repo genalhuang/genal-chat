@@ -182,7 +182,6 @@ export default class GenalTool extends Vue {
 </script>
 <style lang="scss" scoped>
 .tool {
-  color: #fff;
   padding: 10px 5px;
   height: 98%;
   position: relative;
@@ -202,6 +201,7 @@ export default class GenalTool extends Vue {
       }
     }
     .tool-avatar-name {
+      color: #fff;
       overflow: hidden; //超出的文本隐藏
       text-overflow: ellipsis; //溢出用省略号显示
       white-space: nowrap; //溢出不换行
@@ -215,7 +215,7 @@ export default class GenalTool extends Vue {
     bottom: 130px;
   }
   .tool-github {
-    color: #fff;
+    color: rgba(255, 255, 255, 0.85);
     bottom: 70px;
   }
   .tool-out {
@@ -259,7 +259,6 @@ export default class GenalTool extends Vue {
       top: 50%;
       left: 50%;
       margin: -18px 0 0 -18px;
-      color: #fff;
       font-size: 35px;
       font-weight: bold;
     }

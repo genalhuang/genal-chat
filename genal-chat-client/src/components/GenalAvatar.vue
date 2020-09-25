@@ -81,7 +81,7 @@ export default class GenalAvatar extends Vue {
   }
   .avatar-time {
     font-size: 12px;
-    color: rgb(255, 255, 255, 0.9);
+    color: rgb(255, 255, 255, 0.75);
     margin-left: 3px;
   }
 }
