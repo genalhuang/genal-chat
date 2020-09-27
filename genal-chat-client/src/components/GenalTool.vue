@@ -56,8 +56,31 @@
             <a-icon type="exclamation-circle" style="margin-left: 5px;" />
           </a-tooltip>
         </div>
-        <a-input v-model="background" placeholder="请输入背景图片网址"></a-input>
+        <a-input v-model="background" class="tool-user-input" placeholder="请输入背景图片网址"></a-input>
         <a-button type="primary" @click="changeBackground">确认</a-button>
+      </div>
+      <div
+        class="tool-recommend"
+        @click="
+          background =
+            'https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85';
+          changeBackground();
+        "
+      >
+        <b>阿童木背景：</b
+        ><img
+          src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85"
+          alt=""
+        />
+      </div>
+      <div
+        class="tool-recommend"
+        @click="
+          background = 'https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg';
+          changeBackground();
+        "
+      >
+        <b>VSCode摸鱼背景：</b><img src="https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg" alt="" />
       </div>
     </a-modal>
   </div>
@@ -290,5 +313,19 @@ export default class GenalTool extends Vue {
   &:nth-child(2) {
     margin-bottom: 15px;
   }
+}
+
+.tool-recommend {
+  margin: 10px 20px;
+  display: inline-block;
+  img {
+    width: 50px;
+    cursor: pointer;
+  }
+  /*&:nth-child(2) {*/
+  /*  img {*/
+  /*    margin-left: 38px;*/
+  /*  }*/
+  /*}*/
 }
 </style>
