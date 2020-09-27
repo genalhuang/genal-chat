@@ -15,7 +15,7 @@ import { GroupMap } from '../group/entity/group.entity';
     TypeOrmModule.forFeature([User, GroupMap]),
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '3days' },
+      signOptions: { expiresIn: '3d' },
     }),
     PassportModule,
   ],
