@@ -26,7 +26,8 @@
           <div class="message-content-message" :key="item.userId + item.time" :class="{ 'text-right': item.userId === user.userId }">
             <genal-avatar :data="item"></genal-avatar>
             <div>
-              <div class="message-content-text" v-html="_parseText(item.content)" v-if="item.messageType === 'text'"></div>
+              <a class="message-content-text" v-if="_isUrl(item.content)" :href="item.content" target="_blank">{{ item.content }}</a>
+              <div class="message-content-text" v-text="_parseText(item.content)" v-else-if="item.messageType === 'text'"></div>
               <div class="message-content-image" v-if="item.messageType === 'image'" :style="getImageStyle(item.content)">
                 <viewer style="display:flex;align-items:center;">
                   <img :src="'api/static/' + item.content" alt="" />
@@ -51,7 +52,7 @@ import * as api from '@/api/apis';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
 const appModule = namespace('app');
-import { parseText, processReturn } from '@/utils/common';
+import { isUrl, parseText, processReturn } from '@/utils/common';
 
 @Component({
   components: {
@@ -278,6 +279,14 @@ export default class GenalMessage extends Vue {
    */
   _parseText(text: string) {
     return parseText(text);
+  }
+
+  /**
+   * 是否URL
+   * @params text
+   */
+  _isUrl(text: string) {
+    return isUrl(text);
   }
 }
 </script>
