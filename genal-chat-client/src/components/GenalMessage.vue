@@ -180,7 +180,6 @@ export default class GenalMessage extends Vue {
     } else {
       await this.getFriendMessages();
     }
-    this.needScrollToBottom = false;
     this.$nextTick(() => {
       this.messageDom.scrollTop = this.messageContentDom.offsetHeight - this.lastMessagePosition;
       this.spinning = false;
@@ -206,6 +205,7 @@ export default class GenalMessage extends Vue {
       if (!data.messageArr.length || data.messageArr.length < this.pageSize) {
         this.isNoData = true;
       }
+      this.needScrollToBottom = false;
       this.set_group_messages([...data.messageArr, ...currentMessage]);
       for (let user of data.userArr) {
         if (!this.userGather[user.userId]) {
@@ -235,6 +235,7 @@ export default class GenalMessage extends Vue {
       if (!data.messageArr.length || data.messageArr.length < this.pageSize) {
         this.isNoData = true;
       }
+      this.needScrollToBottom = false;
       this.set_friend_messages([...data.messageArr, ...currentMessage]);
     }
   }
