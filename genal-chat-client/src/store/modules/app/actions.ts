@@ -6,8 +6,8 @@ import fetch from '@/api/fetch';
 import { processReturn } from '@/utils/common.ts';
 
 const actions: ActionTree<AppState, RootState> = {
-  async regist({ commit }, payload) {
-    let res = await fetch.post('/auth/regist', {
+  async register({ commit }, payload) {
+    let res = await fetch.post('/auth/register', {
       ...payload,
     });
     let data = processReturn(res);

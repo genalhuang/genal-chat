@@ -3,7 +3,7 @@
     <a-modal header="" footer="" :visible="showModal" :closable="false">
       <a-tabs @change="changeType">
         <a-tab-pane key="login" tab="登录"> </a-tab-pane>
-        <a-tab-pane key="regist" tab="注册" force-render> </a-tab-pane>
+        <a-tab-pane key="register" tab="注册" force-render> </a-tab-pane>
       </a-tabs>
       <a-form id="components-form-demo-normal-login" :form="form" class="login-form" @submit="handleSubmit">
         <a-form-item>
@@ -60,7 +60,7 @@ export default class GenalJoin extends Vue {
     this.type = type;
     if (this.type === 'login') {
       this.buttonText = '登录';
-    } else if (this.type === 'regist') {
+    } else if (this.type === 'register') {
       this.buttonText = '注册';
     }
   }
@@ -69,7 +69,7 @@ export default class GenalJoin extends Vue {
     e.preventDefault();
     this.form.validateFields((err: any, user: User) => {
       if (!err) {
-        if (this.type === 'regist') {
+        if (this.type === 'register') {
           user.createTime = new Date().valueOf();
         }
         // @ts-ignore
