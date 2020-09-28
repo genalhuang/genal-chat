@@ -76,7 +76,7 @@
       <div
         class="tool-recommend"
         @click="
-          background = 'https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg';
+          background = 'https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21d58238a711464abb8b84154b420a2f~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85';
           changeBackground();
         "
       >
