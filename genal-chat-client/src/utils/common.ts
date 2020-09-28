@@ -34,9 +34,8 @@ export function parseText(text: string) {
  */
 export function isUrl(text: string) {
   // 解析网址
-  const str = text;
   const UrlReg = new RegExp(/http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/);
-  return UrlReg.test(str);
+  return UrlReg.test(text);
 }
 
 /**

@@ -12,17 +12,10 @@
         <div class="room-card-message">
           <div class="room-card-name">{{ chat.groupName }}</div>
           <div class="room-card-new" v-if="chat.messages">
-            <a
-              class="text"
-              v-if="_isUrl(chat.messages[chat.messages.length - 1].content)"
-              :href="chat.messages[chat.messages.length - 1].content"
-              target="_blank"
-              >{{ chat.messages[chat.messages.length - 1].content }}</a
-            >
             <div
               class="text"
               v-text="_parseText(chat.messages[chat.messages.length - 1].content)"
-              v-else-if="chat.messages[chat.messages.length - 1].messageType === 'text'"
+              v-if="chat.messages[chat.messages.length - 1].messageType === 'text'"
             ></div>
             <div class="image" v-if="chat.messages[chat.messages.length - 1].messageType === 'image'">[图片]</div>
           </div>
@@ -39,17 +32,10 @@
         <div class="room-card-message">
           <div class="room-card-name">{{ chat.username }}</div>
           <div class="room-card-new" v-if="chat.messages">
-            <a
-              class="text"
-              v-if="_isUrl(chat.messages[chat.messages.length - 1].content)"
-              :href="chat.messages[chat.messages.length - 1].content"
-              target="_blank"
-              >{{ chat.messages[chat.messages.length - 1].content }}</a
-            >
             <div
               class="text"
               v-text="_parseText(chat.messages[chat.messages.length - 1].content)"
-              v-else-if="chat.messages[chat.messages.length - 1].messageType === 'text'"
+              v-if="chat.messages[chat.messages.length - 1].messageType === 'text'"
             ></div>
             <div class="image" v-if="chat.messages[chat.messages.length - 1].messageType === 'image'">[图片]</div>
           </div>
@@ -63,7 +49,7 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
 const chatModule = namespace('chat');
-import { isUrl, parseText } from '@/utils/common';
+import { parseText } from '@/utils/common';
 
 @Component
 export default class GenalRoom extends Vue {
@@ -114,10 +100,6 @@ export default class GenalRoom extends Vue {
 
   _parseText(text: string) {
     return parseText(text);
-  }
-
-  _isUrl(text: string) {
-    return isUrl(text);
   }
 }
 </script>
