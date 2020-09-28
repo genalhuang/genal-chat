@@ -191,13 +191,14 @@ export class ChatGateway {
         client.join(roomId);
 
         // 如果是删掉的好友重新加, 重新获取一遍私聊消息
-        const messages = await getRepository(FriendMessage)
+        let messages = await getRepository(FriendMessage)
           .createQueryBuilder("friendMessage")
           .orderBy("friendMessage.time", "DESC")
           .where("friendMessage.userId = :userId AND friendMessage.friendId = :friendId", { userId: data.userId, friendId: data.friendId })
           .orWhere("friendMessage.userId = :friendId AND friendMessage.friendId = :userId", { userId: data.userId, friendId: data.friendId })
           .take(30)
           .getMany();
+        messages = messages.reverse();
 
         if(messages.length) {
           // @ts-ignore
