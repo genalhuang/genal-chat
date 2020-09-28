@@ -23,7 +23,7 @@ const mutations: MutationTree<AppState> = {
 
   [SET_TOKEN](state, payload) {
     state.token = payload;
-    cookie.set('token', payload);
+    cookie.set('token', payload, { expires: 3 });
   },
 
   [SET_MOBILE](state, payload: boolean) {

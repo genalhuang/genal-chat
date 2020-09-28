@@ -23,7 +23,7 @@
       <span @click="addEmoji('😓')">😓</span>
     </div>
     <div class="emoji-content-item">
-      <span @click="addEmoji('😔')">😔</span>
+      <span @click="addEmoji('❓')">❓</span>
       <span @click="addEmoji('😕')">😕</span>
       <span @click="addEmoji('😖')">😖</span>
       <span @click="addEmoji('😗')">😗</span>

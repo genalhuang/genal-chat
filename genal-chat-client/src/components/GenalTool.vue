@@ -47,17 +47,65 @@
     </a-modal>
     <a-modal title="主题" :visible="showBackgroundModal" footer="" @cancel="showBackgroundModal = false">
       <div class="tool-user-info">
-        <div class="tool-user-title" style="width: 100px;">
+        <div class="tool-user-title" style="width: 65px;">
           <span>背景图</span>
           <a-tooltip placement="topLeft" arrow-point-at-center>
             <div slot="title">
-              <span>输入空格时为默认背景, 支持 jpg, png, gif等</span>
+              <span>输入空格时为默认背景, 支持 jpg, png, gif等格式</span>
             </div>
             <a-icon type="exclamation-circle" style="margin-left: 5px;" />
           </a-tooltip>
         </div>
-        <a-input v-model="background" placeholder="请输入背景图片网址"></a-input>
+        <a-input v-model="background" class="tool-user-input" placeholder="请输入背景图片网址"></a-input>
         <a-button type="primary" @click="changeBackground">确认</a-button>
+      </div>
+      <div class="tool-recommend">
+        <div
+          class="recommend"
+          @click="set_background('https://img.zcool.cn/community/0166e15f032107a801215aa06ad966.jpg@1280w_1l_0o_100sh.jpg')"
+        >
+          <img src="https://img.zcool.cn/community/0166e15f032107a801215aa06ad966.jpg@1280w_1l_0o_100sh.jpg" alt="" />
+          <span class="text">阿童木</span>
+        </div>
+        <div class="recommend" @click="set_background('https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg')">
+          <img src="https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg" alt="" />
+          <span class="text">VSCode摸鱼</span>
+        </div>
+        <div
+          class="recommend"
+          @click="set_background('https://img.zcool.cn/community/017b5156909c9e32f87574becc320a.jpg@1280w_1l_2o_100sh.jpg')"
+        >
+          <img src="https://img.zcool.cn/community/017b5156909c9e32f87574becc320a.jpg@1280w_1l_2o_100sh.jpg" alt="" />
+          <span class="text">亚索</span>
+        </div>
+        <div
+          class="recommend"
+          @click="set_background('https://img.zcool.cn/community/01a45b5f6ed3a611013e45845dca97.jpg@1280w_1l_2o_100sh.jpg')"
+        >
+          <img src="https://img.zcool.cn/community/01a45b5f6ed3a611013e45845dca97.jpg@1280w_1l_2o_100sh.jpg" alt="" />
+          <span class="text">颓废</span>
+        </div>
+        <div
+          class="recommend"
+          @click="
+            set_background(
+              'https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85'
+            )
+          "
+        >
+          <img
+            src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85"
+            alt=""
+          />
+          <span class="text">杀手</span>
+        </div>
+        <div
+          class="recommend"
+          @click="set_background('https://img.zcool.cn/community/017af75e69aa2da801216518325197.jpg@1280w_1l_2o_100sh.jpg')"
+        >
+          <img src="https://img.zcool.cn/community/017af75e69aa2da801216518325197.jpg@1280w_1l_2o_100sh.jpg" alt="" />
+          <span class="text">海滩插画</span>
+        </div>
       </div>
     </a-modal>
   </div>
@@ -234,6 +282,7 @@ export default class GenalTool extends Vue {
     }
   }
 }
+
 .tool-user {
   text-align: center;
   font-size: 16px;
@@ -269,7 +318,6 @@ export default class GenalTool extends Vue {
     }
   }
 }
-
 .tool-user-info {
   display: flex;
   justify-content: left;
@@ -289,6 +337,43 @@ export default class GenalTool extends Vue {
   }
   &:nth-child(2) {
     margin-bottom: 15px;
+  }
+}
+
+.tool-recommend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  .recommend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100px;
+    height: 100px;
+    margin: 15px 10px 0;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.3s all linear;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    span {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 600;
+      transition: 0.3s all linear;
+      opacity: 0;
+    }
+    &:hover {
+      box-shadow: 1px 5px 10px gray;
+      span {
+        opacity: 1;
+      }
+    }
   }
 }
 </style>

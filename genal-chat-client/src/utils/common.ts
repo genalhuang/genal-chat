@@ -21,20 +21,21 @@ export function isContainStr(str1: string, str2: string) {
 }
 
 /**
- * 防止网络攻击
+ * 屏蔽词
  * @param text 文本
  */
 export function parseText(text: string) {
-  let HTML = /<\/?.+?>/gi;
-  let COOKIE = /document\.cookie/gi;
-  if (HTML.test(text)) {
-    return '无效输入,别耍花样!';
-  }
-  if (COOKIE.test(text)) {
-    return '无效输入,你想干嘛!';
-  }
-  // 解析网址
   return text;
+}
+
+/**
+ * 判断是否URL
+ * @param text 文本
+ */
+export function isUrl(text: string) {
+  // 解析网址
+  const UrlReg = new RegExp(/http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/);
+  return UrlReg.test(text);
 }
 
 /**

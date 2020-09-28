@@ -115,7 +115,7 @@ export default class GenalInput extends Vue {
       this.$message.error('不能发送空消息!');
       return;
     }
-    if (this.text.length > 500) {
+    if (this.text.length > 220) {
       this.$message.error('消息太长!');
       return;
     }

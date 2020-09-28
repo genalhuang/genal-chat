@@ -14,7 +14,7 @@
           <div class="room-card-new" v-if="chat.messages">
             <div
               class="text"
-              v-html="_parseText(chat.messages[chat.messages.length - 1].content)"
+              v-text="_parseText(chat.messages[chat.messages.length - 1].content)"
               v-if="chat.messages[chat.messages.length - 1].messageType === 'text'"
             ></div>
             <div class="image" v-if="chat.messages[chat.messages.length - 1].messageType === 'image'">[图片]</div>
@@ -34,7 +34,7 @@
           <div class="room-card-new" v-if="chat.messages">
             <div
               class="text"
-              v-html="_parseText(chat.messages[chat.messages.length - 1].content)"
+              v-text="_parseText(chat.messages[chat.messages.length - 1].content)"
               v-if="chat.messages[chat.messages.length - 1].messageType === 'text'"
             ></div>
             <div class="image" v-if="chat.messages[chat.messages.length - 1].messageType === 'image'">[图片]</div>
@@ -150,6 +150,7 @@ export default class GenalRoom extends Vue {
       }
       .room-card-new {
         > * {
+          display: block;
           overflow: hidden; //超出的文本隐藏
           text-overflow: ellipsis; //溢出用省略号显示
           white-space: nowrap; //溢出不换行

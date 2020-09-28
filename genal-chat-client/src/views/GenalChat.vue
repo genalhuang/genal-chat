@@ -30,7 +30,7 @@
         <genal-room @setActiveRoom="setActiveRoom"></genal-room>
       </div>
     </a-drawer>
-    <genal-join @regist="handleregist" @login="handlelogin" :showModal="showModal"></genal-join>
+    <genal-join @register="handleRegister" @login="handleLogin" :showModal="showModal"></genal-join>
   </div>
 </template>
 
@@ -60,7 +60,7 @@ export default class GenalChat extends Vue {
   @appModule.Getter('user') user: User;
   @appModule.Mutation('clear_user') clearUser: Function;
   @appModule.Action('login') login: Function;
-  @appModule.Action('regist') regist: Function;
+  @appModule.Action('register') register: Function;
   @appModule.Getter('background') background: string;
 
   @chatModule.Getter('socket') socket: SocketIOClient.Socket;
@@ -83,7 +83,7 @@ export default class GenalChat extends Vue {
   }
 
   // 登录
-  async handlelogin(user: User) {
+  async handleLogin(user: User) {
     let res = await this.login(user);
     if (res) {
       // 进入系统事件
@@ -92,8 +92,8 @@ export default class GenalChat extends Vue {
   }
 
   // 注册
-  async handleregist(user: User) {
-    let res = await this.regist(user);
+  async handleRegister(user: User) {
+    let res = await this.register(user);
     if (res) {
       // 进入系统事件
       this.handleJoin();

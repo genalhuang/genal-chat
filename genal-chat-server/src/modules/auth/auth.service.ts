@@ -32,7 +32,7 @@ export class AuthService {
     };
   }
 
-  async regist(user: User): Promise<any> {
+  async register(user: User): Promise<any> {
     const isHave = await this.userRepository.find({username: user.username});
     if(isHave.length) {
       return {code: 1, msg:'用户名重复', data: '' };
