@@ -196,7 +196,7 @@ export class ChatGateway {
           .orderBy("friendMessage.time", "DESC")
           .where("friendMessage.userId = :userId AND friendMessage.friendId = :friendId", { userId: data.userId, friendId: data.friendId })
           .orWhere("friendMessage.userId = :friendId AND friendMessage.friendId = :userId", { userId: data.userId, friendId: data.friendId })
-          .take(50)
+          .take(30)
           .getMany();
 
         if(messages.length) {
