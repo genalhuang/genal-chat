@@ -67,8 +67,13 @@
           <img src="https://img.zcool.cn/community/0166e15f032107a801215aa06ad966.jpg@1280w_1l_0o_100sh.jpg" alt="" />
           <span class="text">阿童木</span>
         </div>
-        <div class="recommend" @click="set_background('https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg')">
-          <img src="https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg" alt="" />
+        <div
+          class="recommend"
+          @click="
+            set_background('https://images.weserv.nl/?url=https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg')
+          "
+        >
+          <img src="https://images.weserv.nl/?url=https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg" alt="" />
           <span class="text">VSCode摸鱼</span>
         </div>
         <div
@@ -289,6 +294,7 @@ export default class GenalTool extends Vue {
   .tool-user-avatar {
     position: relative;
     width: 120px;
+    overflow: hidden;
     margin: 0 auto 24px;
     border-radius: 50%;
     .tool-user-upload {
@@ -373,6 +379,16 @@ export default class GenalTool extends Vue {
       span {
         opacity: 1;
       }
+    }
+  }
+}
+
+@media screen and (max-width: 788px) {
+  .tool-recommend {
+    font-size: 12px;
+    .recommend {
+      width: 80px;
+      height: 80px;
     }
   }
 }
