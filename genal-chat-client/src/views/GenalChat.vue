@@ -162,7 +162,7 @@ export default class GenalChat extends Vue {
   width: 100%;
   height: 80%;
   max-height: 900px;
-  min-height: 300px;
+  min-height: 545px;
   position: relative;
   margin: auto 20px;
   box-shadow: 10px 20px 80px rgba(0, 0, 0, 0.8);
