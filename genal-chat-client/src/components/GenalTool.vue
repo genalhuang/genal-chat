@@ -62,9 +62,16 @@
       <div class="tool-recommend">
         <div
           class="recommend"
-          @click="set_background('https://img.zcool.cn/community/0166e15f032107a801215aa06ad966.jpg@1280w_1l_0o_100sh.jpg')"
+          @click="
+            set_background(
+              'https://images.weserv.nl/?url=https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85'
+            )
+          "
         >
-          <img src="https://img.zcool.cn/community/0166e15f032107a801215aa06ad966.jpg@1280w_1l_0o_100sh.jpg" alt="" />
+          <img
+            src="https://images.weserv.nl/?url=https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85"
+            alt=""
+          />
           <span class="text">阿童木</span>
         </div>
         <div
@@ -76,40 +83,31 @@
           <img src="https://images.weserv.nl/?url=https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg" alt="" />
           <span class="text">VSCode摸鱼</span>
         </div>
-        <div
-          class="recommend"
-          @click="set_background('https://img.zcool.cn/community/017b5156909c9e32f87574becc320a.jpg@1280w_1l_2o_100sh.jpg')"
-        >
-          <img src="https://img.zcool.cn/community/017b5156909c9e32f87574becc320a.jpg@1280w_1l_2o_100sh.jpg" alt="" />
-          <span class="text">亚索</span>
+        <div class="recommend" @click="set_background('https://pic1.zhimg.com/v2-eff6a7b6fd03e8dfe3caa3a566b5d572_r.jpg?source=1940ef5c')">
+          <img src="https://pic1.zhimg.com/v2-eff6a7b6fd03e8dfe3caa3a566b5d572_r.jpg?source=1940ef5c" alt="" />
+          <span class="text">山谷</span>
         </div>
-        <div
-          class="recommend"
-          @click="set_background('https://img.zcool.cn/community/01a45b5f6ed3a611013e45845dca97.jpg@1280w_1l_2o_100sh.jpg')"
-        >
-          <img src="https://img.zcool.cn/community/01a45b5f6ed3a611013e45845dca97.jpg@1280w_1l_2o_100sh.jpg" alt="" />
-          <span class="text">颓废</span>
+        <div class="recommend" @click="set_background('https://pic2.zhimg.com/v2-f76706d67343c66b08c937ec6bc42942_r.jpg?source=1940ef5c')">
+          <img src="https://pic2.zhimg.com/v2-f76706d67343c66b08c937ec6bc42942_r.jpg?source=1940ef5c" alt="" />
+          <span class="text">云朵</span>
         </div>
         <div
           class="recommend"
           @click="
             set_background(
-              'https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85'
+              'https://images.weserv.nl/?url=https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85'
             )
           "
         >
           <img
-            src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85"
+            src="https://images.weserv.nl/?url=https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85"
             alt=""
           />
-          <span class="text">杀手</span>
+          <span class="text">少女</span>
         </div>
-        <div
-          class="recommend"
-          @click="set_background('https://img.zcool.cn/community/017af75e69aa2da801216518325197.jpg@1280w_1l_2o_100sh.jpg')"
-        >
-          <img src="https://img.zcool.cn/community/017af75e69aa2da801216518325197.jpg@1280w_1l_2o_100sh.jpg" alt="" />
-          <span class="text">海滩插画</span>
+        <div class="recommend" @click="set_background('https://picb.zhimg.com/v2-263525f6c912d300abfa0eed3acbfd4b_r.jpg')">
+          <img src="https://picb.zhimg.com/v2-263525f6c912d300abfa0eed3acbfd4b_r.jpg" alt="" />
+          <span class="text">猫咪</span>
         </div>
       </div>
     </a-modal>
