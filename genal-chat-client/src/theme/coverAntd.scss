@@ -7,7 +7,7 @@
 .ant-drawer-content-wrapper {
   background-color: rgba(54, 50, 50, 0.4)!important;
   .ant-drawer-content {
-    background-color: rgba(0, 0, 0, .4)!important;
+    background-color: rgba(0, 0, 0, 0.4)!important;
     .ant-drawer-body {
       padding: 0!important;
       // 移动端群组部分
@@ -15,7 +15,7 @@
         background-color: rgba(115, 165, 200, 0.2);
       }
       .room-card.active {
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(115, 165, 200, 0.35);
       }
       .room-card-name {
         color: rgba(255, 255, 255, 0.85);
