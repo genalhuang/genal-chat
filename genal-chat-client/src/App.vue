@@ -7,6 +7,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
+import { DEFAULT_BACKGROUND } from '@/const';
 const appModule = namespace('app');
 
 @Component
@@ -19,7 +20,7 @@ export default class GenalChat extends Vue {
   mounted() {
     this.setMobile(this.isMobile());
     if (!this.background || !this.background.trim().length) {
-      this.set_background('https://picb.zhimg.com/v2-263525f6c912d300abfa0eed3acbfd4b_r.jpg');
+      this.set_background(DEFAULT_BACKGROUND);
     }
   }
 
