@@ -7,6 +7,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
+import { DEFAULT_BACKGROUND } from '@/const';
 const appModule = namespace('app');
 
 @Component
@@ -14,9 +15,13 @@ export default class GenalChat extends Vue {
   @appModule.Getter('user') user: User;
   @appModule.Getter('background') background: string;
   @appModule.Mutation('set_mobile') setMobile: Function;
+  @appModule.Mutation('set_background') set_background: Function;
 
   mounted() {
     this.setMobile(this.isMobile());
+    if (!this.background || !this.background.trim().length) {
+      this.set_background(DEFAULT_BACKGROUND);
+    }
   }
 
   isMobile() {
@@ -36,20 +41,17 @@ export default class GenalChat extends Vue {
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: #2c3e50;
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background: url('https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85')
-    0 / cover fixed;
   background-size: cover;
   color: rgba(255, 255, 255, 0.85);
+  background-color: #fff;
   .background {
     position: absolute;
     object-fit: cover;
     width: 100%;
     height: 100%;
-    object-fit: cover;
   }
 }
 </style>
