@@ -14,9 +14,13 @@ export default class GenalChat extends Vue {
   @appModule.Getter('user') user: User;
   @appModule.Getter('background') background: string;
   @appModule.Mutation('set_mobile') setMobile: Function;
+  @appModule.Mutation('set_background') set_background: Function;
 
   mounted() {
     this.setMobile(this.isMobile());
+    if (!this.background || !this.background.trim().length) {
+      this.set_background('https://picb.zhimg.com/v2-263525f6c912d300abfa0eed3acbfd4b_r.jpg');
+    }
   }
 
   isMobile() {
@@ -36,20 +40,17 @@ export default class GenalChat extends Vue {
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: #2c3e50;
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background: url('https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85')
-    0 / cover fixed;
   background-size: cover;
   color: rgba(255, 255, 255, 0.85);
+  background-color: rgba(115, 175, 210);
   .background {
     position: absolute;
     object-fit: cover;
     width: 100%;
     height: 100%;
-    object-fit: cover;
   }
 }
 </style>

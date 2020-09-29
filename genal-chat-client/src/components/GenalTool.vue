@@ -226,7 +226,11 @@ export default class GenalTool extends Vue {
   }
 
   changeBackground() {
-    this.set_background(this.background);
+    if (!this.background.trim().length) {
+      this.set_background('https://picb.zhimg.com/v2-263525f6c912d300abfa0eed3acbfd4b_r.jpg');
+    } else {
+      this.set_background(this.background);
+    }
     this.showBackgroundModal = false;
   }
 }

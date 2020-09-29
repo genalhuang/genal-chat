@@ -2,10 +2,7 @@
   <div
     class="chat"
     :style="{
-      '--bg-image':
-        background && background !== ' '
-          ? `url('${background}')`
-          : `url('https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85')`,
+      '--bg-image': `url('${background}')`,
     }"
   >
     <genal-music></genal-music>
@@ -162,7 +159,7 @@ export default class GenalChat extends Vue {
   width: 100%;
   height: 80%;
   max-height: 900px;
-  min-height: 545px;
+  min-height: 470px;
   position: relative;
   margin: auto 20px;
   box-shadow: 10px 20px 80px rgba(0, 0, 0, 0.8);

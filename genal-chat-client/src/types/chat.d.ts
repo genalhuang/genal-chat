@@ -1,9 +1,5 @@
 declare module 'socket.io-client';
 
-interface ChatGather {
-  [x: string]: Group | Friend;
-}
-
 // 所有群的群信息
 interface GroupGather {
   [groupId: string]: Group;

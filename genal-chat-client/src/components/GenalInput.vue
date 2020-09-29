@@ -21,6 +21,7 @@
       <div class="messagte-tool-icon">😃</div>
     </a-popover>
     <a-input
+      autocomplete="off"
       type="text"
       placeholder="say hello..."
       v-model="text"

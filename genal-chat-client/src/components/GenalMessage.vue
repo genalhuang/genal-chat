@@ -101,6 +101,10 @@ export default class GenalMessage extends Vue {
   changeActiveRoom() {
     this.messageOpacity = 0;
     this.isNoData = false;
+    if (this.activeRoom.messages && this.activeRoom.messages.length > 30) {
+      this.activeRoom.messages = this.activeRoom.messages.splice(this.activeRoom.messages.length - 30, 30) as GroupMessage[] &
+        FriendMessage[];
+    }
     this.scrollToBottom();
   }
 
