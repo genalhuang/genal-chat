@@ -45,7 +45,7 @@ export default class GenalChat extends Vue {
   overflow: hidden;
   background-size: cover;
   color: rgba(255, 255, 255, 0.85);
-  background-color: rgba(115, 175, 210);
+  background-color: #fff;
   .background {
     position: absolute;
     object-fit: cover;

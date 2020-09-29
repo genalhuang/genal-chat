@@ -83,8 +83,8 @@
           <img src="https://images.weserv.nl/?url=https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg" alt="" />
           <span class="text">VSCode摸鱼</span>
         </div>
-        <div class="recommend" @click="set_background('https://pic1.zhimg.com/v2-eff6a7b6fd03e8dfe3caa3a566b5d572_r.jpg?source=1940ef5c')">
-          <img src="https://pic1.zhimg.com/v2-eff6a7b6fd03e8dfe3caa3a566b5d572_r.jpg?source=1940ef5c" alt="" />
+        <div class="recommend" @click="set_background('https://c-ssl.duitang.com/uploads/item/202007/19/20200719235703_ficbs.jpg')">
+          <img src="https://c-ssl.duitang.com/uploads/item/202007/19/20200719235703_ficbs.jpg" alt="" />
           <span class="text">山谷</span>
         </div>
         <div class="recommend" @click="set_background('https://pic2.zhimg.com/v2-f76706d67343c66b08c937ec6bc42942_r.jpg?source=1940ef5c')">
