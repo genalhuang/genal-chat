@@ -147,17 +147,17 @@ export class UserService {
   }
 
   async setUserAvatar(user: User, file) {
-    try {
+    const newUser = await this.userRepository.findOne({userId: user.userId, password: user.password});
+    if(newUser) {
       const random = Date.now() + '&';
       const stream = createWriteStream(join('public/avatar', random + file.originalname));
       stream.write(file.buffer);
-      const newUser = await this.userRepository.findOne({userId: user.userId, password: user.password});
       newUser.avatar = `api/avatar/${random}${file.originalname}`;
       newUser.password = user.password;
       await this.userRepository.save(newUser);
       return { msg: '修改头像成功', data: newUser};
-    } catch (e) {
-      return {code: RCode.ERROR, msg: '修改头像失败', data: e};
+    } else {
+      return {code: RCode.FAIL, msg: '修改头像失败'};
     }
   }
 }
