@@ -116,6 +116,8 @@ const actions: ActionTree<ChatState, RootState> = {
         if (activeRoom && activeRoom.groupId !== res.data.groupId) {
           commit(ADD_UNREAD_GATHER, res.data.groupId);
         }
+      } else {
+        Vue.prototype.$message.error(res.msg);
       }
     });
 
@@ -152,6 +154,8 @@ const actions: ActionTree<ChatState, RootState> = {
             commit(ADD_UNREAD_GATHER, res.data.userId);
           }
         }
+      } else {
+        Vue.prototype.$message.error(res.msg);
       }
     });
 

@@ -140,7 +140,6 @@ export default class GenalInput extends Vue {
         width: data.width,
         height: data.height,
         messageType: data.messageType,
-        time: new Date().valueOf(),
       });
     } else {
       this.socket.emit('friendMessage', {
@@ -150,7 +149,6 @@ export default class GenalInput extends Vue {
         width: data.width,
         height: data.height,
         messageType: data.messageType,
-        time: new Date().valueOf(),
       });
     }
   }
