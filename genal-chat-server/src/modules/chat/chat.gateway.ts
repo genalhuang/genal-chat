@@ -7,7 +7,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, getRepository } from 'typeorm';
+import { Repository, getRepository } from 'typeorm';
 import { User } from '../user/entity/user.entity';
 import { Group, GroupMap } from '../group/entity/group.entity';
 import { GroupMessage } from '../group/entity/groupMessage.entity';
@@ -45,12 +45,10 @@ export class ChatGateway {
   // socket连接钩子
   async handleConnection(client: Socket): Promise<string> {
     const userRoom = client.handshake.query.userId;
-    
-    // 进来统计一下在线人数
-    this.getActiveGroupUser();
-
     // 连接默认加入"阿童木聊天室"房间
     client.join(this.defaultGroup);
+    // 进来统计一下在线人数
+    this.getActiveGroupUser();
     // 用户独有消息房间 根据userId
     if(userRoom) {
       client.join(userRoom);
@@ -90,10 +88,8 @@ export class ChatGateway {
     if(isUser) {
       const group = await this.groupRepository.findOne({ groupId: data.groupId });
       let userGroup = await this.groupUserRepository.findOne({ groupId: group.groupId, userId: data.userId });
-      const user = await this.userRepository.findOne({
-        where: { userId: Like(`%${data.userId}%`) }
-      });
-      if (group) {
+      const user = await this.userRepository.findOne({userId: data.userId});
+      if (group && user) {
         if (!userGroup) {
           data.groupId = group.groupId;
           userGroup = await this.groupUserRepository.save(data);
@@ -107,7 +103,7 @@ export class ChatGateway {
         });
         this.getActiveGroupUser();
       } else {
-        this.server.to(data.userId).emit('joinGroup', { code: RCode.FAIL, msg: '该群不存在', data: '' });
+        this.server.to(data.userId).emit('joinGroup', { code: RCode.FAIL, msg: '进群失败', data: '' });
       }
     } else {
       this.server.to(data.userId).emit('joinGroup', { code: RCode.FAIL, msg: '你没资格进群'});
@@ -118,35 +114,37 @@ export class ChatGateway {
   @SubscribeMessage('joinGroupSocket')
   async joinGroupSocket(@ConnectedSocket() client: Socket, @MessageBody() data: GroupMap):Promise<any> {
     const group = await this.groupRepository.findOne({groupId: data.groupId});
-    const user = await this.userRepository.findOne({
-      where:{userId: Like(`%${data.userId}%`)}
-    });
-    if(group) {
+    const user = await this.userRepository.findOne({userId: data.userId});
+    if(group && user) {
       client.join(group.groupId);
       const res = { group: group, user: user};
       this.server.to(group.groupId).emit('joinGroupSocket', {code: RCode.OK, msg:`${user.username}加入群${group.groupName}`, data: res});
     } else {
-      this.server.to(data.userId).emit('joinGroupSocket', {code:RCode.FAIL, msg:'该群不存在', data:''});
+      this.server.to(data.userId).emit('joinGroupSocket', {code:RCode.FAIL, msg:'进群失败', data:''});
     }
   }
 
   // 发送群消息
   @SubscribeMessage('groupMessage')
   async sendGroupMessage(@MessageBody() data: GroupMessageDto):Promise<any> {
-    const isUserInGroup = await this.groupUserRepository.findOne({userId: data.userId, groupId: data.groupId});
-    if(!isUserInGroup) {
-      this.server.to(data.userId).emit('groupMessage',{code:RCode.FAIL, msg:'群消息发送错误', data: ''});
-      return;
-    } 
-    if(data.groupId) {
+    const isUser = await this.userRepository.findOne({userId: data.userId});
+    if(isUser) {
+      const userGroupMap = await this.groupUserRepository.findOne({userId: data.userId, groupId: data.groupId});
+      if(!userGroupMap || !data.groupId) {
+        this.server.to(data.userId).emit('groupMessage',{code:RCode.FAIL, msg:'群消息发送错误', data: ''});
+        return;
+      } 
       if(data.messageType === 'image') {
         const randomName = `${Date.now()}$${data.userId}$${data.width}$${data.height}`;
         const stream = createWriteStream(join('public/static', randomName));
         stream.write(data.content);
         data.content = randomName;
       }
+      data.time = new Date().valueOf(); // 使用服务端时间
       await this.groupMessageRepository.save(data);
       this.server.to(data.groupId).emit('groupMessage', {code: RCode.OK, msg:'', data: data});
+    } else {
+      this.server.to(data.userId).emit('groupMessage', {code: RCode.FAIL, msg:'你没资格发消息' });
     }
   }
 
@@ -160,21 +158,17 @@ export class ChatGateway {
           this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '不能添加自己为好友', data: '' });
           return;
         }
-        const isHave1 = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId });
-        const isHave2 = await this.friendRepository.findOne({ userId: data.friendId, friendId: data.userId });
+        const relation1 = await this.friendRepository.findOne({ userId: data.userId, friendId: data.friendId });
+        const relation2 = await this.friendRepository.findOne({ userId: data.friendId, friendId: data.userId });
         const roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId;
 
-        if (isHave1 || isHave2) {
+        if (relation1 || relation2) {
           this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '已经有该好友', data: data });
           return;
         }
 
-        const friend = await this.userRepository.findOne({
-          where: { userId: Like(`%${data.friendId}%`) }
-        });
-        const user = await this.userRepository.findOne({
-          where: { userId: Like(`%${data.userId}%`) }
-        });
+        const friend = await this.userRepository.findOne({userId: data.friendId});
+        const user = await this.userRepository.findOne({userId: data.userId});
         if (!friend) {
           this.server.to(data.userId).emit('addFriend', { code: RCode.FAIL, msg: '该好友不存在', data: '' });
           return;
@@ -241,6 +235,7 @@ export class ChatGateway {
           stream.write(data.content);
           data.content = randomName;
         }
+        data.time = new Date().valueOf();
         await this.friendMessageRepository.save(data);
         this.server.to(roomId).emit('friendMessage', {code: RCode.OK, msg:'', data});
       }

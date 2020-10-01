@@ -15,18 +15,17 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(user: User): Promise<any> {
-    const payload = {username: user.username, password: user.password};
-    const data = await this.userRepository.findOne({username:user.username, password: user.password});
-    if(!data) {
+  async login(data: User): Promise<any> {
+    const user = await this.userRepository.findOne({username:data.username, password: data.password});
+    if(!user) {
       return {code: 1 , msg:'密码错误', data: ''};
     }
-    data.password = user.password;
-
+    user.password = data.password;
+    const payload = {userId: user.userId, password: data.password};
     return {
       msg:'登录成功',
       data: {
-        user: data,
+        user: user,
         token: this.jwtService.sign(payload)
       },
     };
@@ -39,7 +38,7 @@ export class AuthService {
     }
     user.avatar = `api/avatar/avatar(${Math.round(Math.random()*19 +1)}).png`;
     const newUser = await this.userRepository.save(user);
-    const payload = {username: newUser.username, password: newUser.password};
+    const payload = {userId: newUser.userId, password: newUser.password};
     await this.groupUserRepository.save({
       userId: newUser.userId,
       groupId: '阿童木聊天室',
