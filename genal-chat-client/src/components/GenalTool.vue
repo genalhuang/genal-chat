@@ -63,7 +63,7 @@
         <div
           class="recommend"
           @click="
-            set_background(
+            setBackground(
               'https://images.weserv.nl/?url=https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85'
             )
           "
@@ -77,7 +77,7 @@
         <div
           class="recommend"
           @click="
-            set_background('https://images.weserv.nl/?url=https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg')
+            setBackground('https://images.weserv.nl/?url=https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg')
           "
         >
           <img src="https://images.weserv.nl/?url=https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg" alt="" />
@@ -86,7 +86,7 @@
         <div
           class="recommend"
           @click="
-            set_background(
+            setBackground(
               'https://images.weserv.nl/?url=https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/453b8ebcdefa46a69c620da13f346ce2~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85'
             )
           "
@@ -97,14 +97,14 @@
           />
           <span class="text">山谷</span>
         </div>
-        <div class="recommend" @click="set_background('https://pic2.zhimg.com/v2-f76706d67343c66b08c937ec6bc42942_r.jpg?source=1940ef5c')">
+        <div class="recommend" @click="setBackground('https://pic2.zhimg.com/v2-f76706d67343c66b08c937ec6bc42942_r.jpg?source=1940ef5c')">
           <img src="https://pic2.zhimg.com/v2-f76706d67343c66b08c937ec6bc42942_r.jpg?source=1940ef5c" alt="" />
           <span class="text">云朵</span>
         </div>
         <div
           class="recommend"
           @click="
-            set_background(
+            setBackground(
               'https://images.weserv.nl/?url=https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc98cbc4ca284fc0aa509b12db0e325e~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85'
             )
           "
@@ -115,7 +115,7 @@
           />
           <span class="text">少女</span>
         </div>
-        <div class="recommend" @click="set_background('https://picb.zhimg.com/v2-263525f6c912d300abfa0eed3acbfd4b_r.jpg')">
+        <div class="recommend" @click="setBackground('https://picb.zhimg.com/v2-263525f6c912d300abfa0eed3acbfd4b_r.jpg')">
           <img src="https://picb.zhimg.com/v2-263525f6c912d300abfa0eed3acbfd4b_r.jpg" alt="" />
           <span class="text">猫咪</span>
         </div>
@@ -137,9 +137,11 @@ const chatModule = namespace('chat');
 @Component
 export default class GenalTool extends Vue {
   @appModule.Getter('user') user: User;
-  @appModule.Mutation('set_background') set_background: Function;
+  @appModule.Mutation('set_background') setBackground: Function;
   @appModule.Mutation('set_user') setUser: Function;
+
   @chatModule.Getter('socket') socket: SocketIOClient.Socket;
+  @chatModule.Mutation('set_user_gather') setUserGather: Function;
 
   showUpload: boolean = false;
   showUserModal: boolean = false;
@@ -182,6 +184,7 @@ export default class GenalTool extends Vue {
     if (data) {
       console.log(data);
       this.setUser(data);
+      this.setUserGather(data);
       // 通知其他用户个人信息改变
       this.socket.emit('joinGroupSocket', {
         groupId: DEFAULT_GROUP,
@@ -199,6 +202,7 @@ export default class GenalTool extends Vue {
     let data = processReturn(res);
     if (data) {
       this.setUser(data);
+      this.setUserGather(data);
     }
   }
 
@@ -225,6 +229,7 @@ export default class GenalTool extends Vue {
     let data = processReturn(await setUserAvatar(formData));
     if (data) {
       this.setUser(data);
+      this.setUserGather(data);
       this.uploading = false;
       this.showUpload = false;
       // 通知其他用户个人信息改变
@@ -237,9 +242,9 @@ export default class GenalTool extends Vue {
 
   changeBackground() {
     if (!this.background.trim().length) {
-      this.set_background(DEFAULT_BACKGROUND);
+      this.setBackground(DEFAULT_BACKGROUND);
     } else {
-      this.set_background(this.background);
+      this.setBackground(this.background);
     }
     this.showBackgroundModal = false;
   }

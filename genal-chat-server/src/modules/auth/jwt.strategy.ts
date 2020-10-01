@@ -3,10 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { jwtConstants } from './constants';
 import { User } from '../user/entity/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromHeader('token'),
       ignoreExpiration: false,
@@ -15,7 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: User) {
-    if(!payload.username || !payload.password) {
+    const user = this.userRepository.findOne({userId: payload.userId, password: payload.password})
+    if(!user) {
       return false;
     }
     return { username: payload.username, password: payload.password };
