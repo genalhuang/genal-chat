@@ -37,10 +37,7 @@ const mutations: MutationTree<ChatState> = {
     let userGather = state.userGather;
     for (let user of Object.values(payload[DEFAULT_GROUP])) {
       // 如果当前userGather没有该在线用户, 应该马上存储, 不然该在下雨用户发消息, 就看不见他的信息
-      if (!userGather[user.userId]) {
-        userGather[user.userId] = user;
-        console.log(state.userGather);
-      }
+      Vue.set(userGather, user.userId, user);
     }
   },
 
