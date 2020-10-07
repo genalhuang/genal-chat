@@ -247,7 +247,8 @@ export class ChatGateway {
   // 获取所有群和好友数据
   @SubscribeMessage('chatData') 
   async getAllData(@ConnectedSocket() client: Socket,  @MessageBody() user: User):Promise<any> {
-    try {
+    const isUser = await this.userRepository.findOne({userId: user.userId, password: user.password})
+    if(isUser) {
       let groupArr: GroupDto[] = [];
       let friendArr: FriendDto[] = [];
       const userGather: {[key: string]: User} = {};
@@ -315,12 +316,6 @@ export class ChatGateway {
         groupData: groupArr,
         friendData: friendArr,
         userData: userArr
-      }});
-    } catch (e) {
-      this.server.to(user.userId).emit('chatData', {code:RCode.ERROR, msg:'获取聊天数据失败', data: {
-        groupData: [],
-        friendData: [],
-        userData: []
       }});
     }
   }
