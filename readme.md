@@ -60,11 +60,13 @@
 前端项目
 ```js
 cd genal-chat-client 
+npm i
 npm run serve
 ```
 后端项目
 ```js
 cd genal-chat-server
+npm i
 npm run start:dev
 ```
 
