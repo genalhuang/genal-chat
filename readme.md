@@ -69,7 +69,7 @@ cd genal-chat-server
 npm i
 npm run start:dev
 ```
-如果mysql连不上并报错rror: ER_NOT_SUPPORTED_AUTH_MODE， 是mysql版本不兼容导致，参考这篇文章https://blog.csdn.net/qq_41831345/article/details/83150502
+如果mysql连不上并报错error: ER_NOT_SUPPORTED_AUTH_MODE， 是mysql版本不兼容导致，参考这篇文章https://blog.csdn.net/qq_41831345/article/details/83150502
 
 ### 系统迭代记录
 <details>
