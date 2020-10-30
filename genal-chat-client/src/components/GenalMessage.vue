@@ -1,15 +1,11 @@
 <template>
   <div class="message">
     <div class="message-header">
-      <div v-if="groupGather[activeRoom.groupId]" class="message-header-box">
-        <span class="message-header-text">{{ groupGather[activeRoom.groupId].groupName }}</span>
+      <div class="message-header-box">
+        <span class="message-header-text">{{ chatName }}</span>
         <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
-        <genal-active type="group"></genal-active>
-      </div>
-      <div v-else class="message-header-box">
-        <span class="message-header-text">{{ userGather[activeRoom.userId].username }}</span>
-        <a-icon type="sync" spin class="message-header-icon" v-if="dropped" />
-        <genal-active type="friend"></genal-active>
+        <genal-active v-if="groupGather[activeRoom.groupId]" type="group"></genal-active>
+        <genal-active v-else type="friend"></genal-active>
       </div>
     </div>
     <transition name="loading">
@@ -80,6 +76,7 @@ export default class GenalMessage extends Vue {
   needScrollToBottom: boolean = true;
   messageDom: HTMLElement;
   messageContentDom: HTMLElement;
+  headerDom: HTMLElement;
   messageOpacity: number = 1;
   lastMessagePosition: number = 0;
   spinning: boolean = false;
@@ -90,8 +87,17 @@ export default class GenalMessage extends Vue {
   mounted() {
     this.messageDom = document.getElementsByClassName('message-main')[0] as HTMLElement;
     this.messageContentDom = document.getElementsByClassName('message-content')[0] as HTMLElement;
+    this.headerDom = document.getElementsByClassName('message-header-text')[0] as HTMLElement;
     this.messageDom.addEventListener('scroll', this.handleScroll);
     this.scrollToBottom();
+  }
+
+  get chatName() {
+    if (this.groupGather[this.activeRoom.groupId]) {
+      return this.groupGather[this.activeRoom.groupId].groupName;
+    } else {
+      return this.userGather[this.activeRoom.userId].username;
+    }
   }
 
   /**
@@ -101,6 +107,14 @@ export default class GenalMessage extends Vue {
   changeActiveRoom() {
     this.messageOpacity = 0;
     this.isNoData = false;
+    // 聊天名过渡动画
+    if (this.headerDom) {
+      this.headerDom.classList.add('transition');
+      setTimeout(() => {
+        this.headerDom.classList.remove('transition');
+      }, 400);
+    }
+    // 大数据渲染优化
     if (this.activeRoom.messages && this.activeRoom.messages.length > 30) {
       this.activeRoom.messages = this.activeRoom.messages.splice(this.activeRoom.messages.length - 30, 30) as GroupMessage[] &
         FriendMessage[];
@@ -474,5 +488,24 @@ export default class GenalMessage extends Vue {
 .noData-enter,
 .noData-leave-to {
   opacity: 0;
+}
+
+.transition {
+  display: inline-block;
+  animation: transition 0.4s ease;
+}
+@keyframes transition {
+  0% {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(10px);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
 }
 </style>
