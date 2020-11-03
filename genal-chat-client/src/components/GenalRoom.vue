@@ -133,8 +133,8 @@ export default class GenalRoom extends Vue {
     &.active {
       background-color: rgb(0, 0, 0, 0.5);
       @include button(rgb(0, 0, 0, 0.5), '~@/assets/animate.png', 3000%, 100%, none, #fff);
-      -webkit-animation: ani 0.7s steps(29) forwards;
-      animation: ani 0.7s steps(29) forwards;
+      -webkit-animation: ani 0.5s steps(29) forwards;
+      animation: ani 0.5s steps(29) forwards;
     }
     .room-card-badge {
       position: absolute;
