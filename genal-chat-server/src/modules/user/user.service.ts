@@ -9,6 +9,7 @@ import { RCode } from 'src/common/constant/rcode';
 import { GroupMessage } from '../group/entity/groupMessage.entity';
 import { UserMap } from '../friend/entity/friend.entity';
 import { FriendMessage } from '../friend/entity/friendMessage.entity';
+import { nameVerify, passwordVerify } from 'src/common/tool/utils';
 
 @Injectable()
 export class UserService {
@@ -65,15 +66,18 @@ export class UserService {
   async updateUserName(user: User) {
     try {
       const oldUser = await this.userRepository.findOne({userId: user.userId, password: user.password});
-      if(oldUser) {
+      if(oldUser && nameVerify(user.username)) {
         const isHaveName = await this.userRepository.findOne({username: user.username});
         if(isHaveName) {
           return {code: 1, msg:'用户名重复', data: ''};
         }
-        await this.userRepository.update(oldUser,user);
-        return { msg:'更新用户名成功', data: user};
-      } 
-      return {code: RCode.FAIL, msg:'密码错误', data: '' };
+        const newUser = JSON.parse(JSON.stringify(oldUser));
+        newUser.username = user.username;
+        newUser.password = user.password;
+        await this.userRepository.update(oldUser,newUser);
+        return { msg:'更新用户名成功', data: newUser};
+      }
+      return {code: RCode.FAIL, msg:'更新失败', data: '' };
     } catch(e) {
       return {code: RCode.ERROR, msg: '更新用户名失败', data: e };
     }
@@ -82,13 +86,13 @@ export class UserService {
   async updatePassword(user: User, password: string) {
     try {
       const oldUser = await this.userRepository.findOne({userId: user.userId, username: user.username, password: user.password});
-      if(oldUser) {
+      if(oldUser && passwordVerify(password)) {
         const newUser = JSON.parse(JSON.stringify(oldUser));
         newUser.password = password;
         await this.userRepository.update(oldUser, newUser);
         return { msg:'更新用户密码成功', data: newUser};
       } 
-      return {code: RCode.FAIL, msg:'密码错误', data: '' };
+      return {code: RCode.FAIL, msg:'更新失败', data: '' };
     } catch(e) {
       return {code: RCode.ERROR, msg: '更新用户密码失败', data: e };
     }

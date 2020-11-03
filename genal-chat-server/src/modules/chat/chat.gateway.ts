@@ -16,6 +16,7 @@ import { FriendMessage } from '../friend/entity/friendMessage.entity';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
 import { RCode } from 'src/common/constant/rcode';
+import { nameVerify } from 'src/common/tool/utils';
 
 @WebSocketGateway()
 export class ChatGateway {
@@ -69,6 +70,9 @@ export class ChatGateway {
       const isHaveGroup = await this.groupRepository.findOne({ groupName: data.groupName });
       if (isHaveGroup) {
         this.server.to(data.userId).emit('addGroup', { code: RCode.FAIL, msg: '该群名字已存在', data: isHaveGroup });
+        return;
+      }
+      if(!nameVerify(data.groupName)) {
         return;
       }
       data = await this.groupRepository.save(data);
@@ -247,7 +251,7 @@ export class ChatGateway {
   // 获取所有群和好友数据
   @SubscribeMessage('chatData') 
   async getAllData(@ConnectedSocket() client: Socket,  @MessageBody() user: User):Promise<any> {
-    const isUser = await this.userRepository.findOne({userId: user.userId, password: user.password})
+    const isUser = await this.userRepository.findOne({userId: user.userId, password: user.password});
     if(isUser) {
       let groupArr: GroupDto[] = [];
       let friendArr: FriendDto[] = [];

@@ -4,6 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/entity/user.entity';
 import { GroupMap } from '../group/entity/group.entity'; 
+import { nameVerify, passwordVerify } from 'src/common/tool/utils';
+import { RCode } from 'src/common/constant/rcode';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +22,9 @@ export class AuthService {
     if(!user) {
       return {code: 1 , msg:'密码错误', data: ''};
     }
+    if(!passwordVerify(data.password) || !nameVerify(data.username)) {
+      return {code: RCode.FAIL, msg:'注册校验不通过！', data: '' };
+    }
     user.password = data.password;
     const payload = {userId: user.userId, password: data.password};
     return {
@@ -34,9 +39,13 @@ export class AuthService {
   async register(user: User): Promise<any> {
     const isHave = await this.userRepository.find({username: user.username});
     if(isHave.length) {
-      return {code: 1, msg:'用户名重复', data: '' };
+      return {code: RCode.FAIL, msg:'用户名重复', data: '' };
+    }
+    if(!passwordVerify(user.password) || !nameVerify(user.username)) {
+      return {code: RCode.FAIL, msg:'注册校验不通过！', data: '' };
     }
     user.avatar = `api/avatar/avatar(${Math.round(Math.random()*19 +1)}).png`;
+    user.role = 'user';
     const newUser = await this.userRepository.save(user);
     const payload = {userId: newUser.userId, password: newUser.password};
     await this.groupUserRepository.save({
