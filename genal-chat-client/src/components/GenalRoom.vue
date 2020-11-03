@@ -104,6 +104,16 @@ export default class GenalRoom extends Vue {
 }
 </script>
 <style lang="scss" scoped>
+@mixin button($bcolor, $url, $x1, $y1, $bor, $col) {
+  background: $bcolor;
+  -webkit-mask: url($url);
+  mask: url($url);
+  -webkit-mask-size: $x1 $y1;
+  mask-size: $x1 $y1;
+  border: $bor;
+  color: $col;
+}
+
 .room {
   height: calc(100% - 60px);
   overflow: auto;
@@ -122,6 +132,9 @@ export default class GenalRoom extends Vue {
     }
     &.active {
       background-color: rgb(0, 0, 0, 0.5);
+      @include button(rgb(0, 0, 0, 0.5), '~@/assets/animate.png', 3000%, 100%, none, #fff);
+      -webkit-animation: ani 0.5s steps(29) forwards;
+      animation: ani 0.5s steps(29) forwards;
     }
     .room-card-badge {
       position: absolute;
@@ -159,6 +172,18 @@ export default class GenalRoom extends Vue {
         font-size: 14px;
       }
     }
+  }
+}
+
+@keyframes ani {
+  from {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+
+  to {
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
   }
 }
 </style>

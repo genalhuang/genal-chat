@@ -150,7 +150,7 @@ const actions: ActionTree<ChatState, RootState> = {
           console.log('ADD_FRIEND_MESSAGE', res.data);
           commit(ADD_FRIEND_MESSAGE, res.data);
           let activeRoom = state.activeRoom;
-          if (activeRoom && activeRoom.userId !== res.data.userId) {
+          if (activeRoom && activeRoom.userId !== res.data.userId && activeRoom.userId !== res.data.friendId) {
             commit(ADD_UNREAD_GATHER, res.data.userId);
           }
         }

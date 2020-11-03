@@ -314,6 +314,7 @@ export default class GenalTool extends Vue {
     overflow: hidden;
     margin: 0 auto 24px;
     border-radius: 50%;
+    cursor: pointer;
     .tool-user-upload {
       .text {
         position: absolute;
@@ -333,6 +334,10 @@ export default class GenalTool extends Vue {
       margin: -18px 0 0 -18px;
       font-size: 35px;
       font-weight: bold;
+      color: #fff;
+    }
+    .img {
+      transition: 0.2s all linear;
     }
     &.active {
       .img {
