@@ -91,7 +91,9 @@ interface ServerRes {
 
 // 所有群的在线用户合集
 interface ActiveGroupUser {
-  [key: string]: User;
+  [key: string]: {
+    [key: string]: User;
+  };
 }
 
 // 未读消息对象
