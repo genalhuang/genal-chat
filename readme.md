@@ -53,7 +53,7 @@
 ![](./assets/database.png)
 
 ### 环境配置
-- 数据库mysql 以及 chat数据库
+- 数据库mysql 以及 chat数据库 (注意数据库格式为utf8mb4)
 - node v10.16.3
 
 ### 运行项目
