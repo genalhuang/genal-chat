@@ -21,15 +21,15 @@ export class ChatModule {
     private readonly groupRepository: Repository<Group>,
   ) {}
   async onModuleInit() {
-    const defaultGroup = await this.groupRepository.find({groupName: '阿童木聊天室'});
+    const defaultGroup = await this.groupRepository.find({groupName: 'DMAI前端群'});
     if(!defaultGroup.length) {
       await this.groupRepository.save({
-        groupId: '阿童木聊天室',
-        groupName: '阿童木聊天室',
+        groupId: 'DMAI前端群',
+        groupName: 'DMAI前端群',
         userId: 'admin',
         createTime: new Date().valueOf()
       });
-      console.log('create default group 阿童木聊天室');
+      console.log('create default group DMAI前端群');
     }
   }
 }

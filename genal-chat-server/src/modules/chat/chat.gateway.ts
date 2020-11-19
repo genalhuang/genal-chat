@@ -34,7 +34,7 @@ export class ChatGateway {
     @InjectRepository(FriendMessage)
     private readonly friendMessageRepository: Repository<FriendMessage>,
   ) {
-    this.defaultGroup = '阿童木聊天室';
+    this.defaultGroup = 'DMAI前端群';
   }
 
   @WebSocketServer()
@@ -46,7 +46,7 @@ export class ChatGateway {
   // socket连接钩子
   async handleConnection(client: Socket): Promise<string> {
     const userRoom = client.handshake.query.userId;
-    // 连接默认加入"阿童木聊天室"房间
+    // 连接默认加入"DMAI前端群"房间
     client.join(this.defaultGroup);
     // 进来统计一下在线人数
     this.getActiveGroupUser();
