@@ -14,7 +14,7 @@
       <a-icon type="bulb" class="tool-tip icon" />
     </a-tooltip>
     <a-icon type="skin" class="tool-skin icon" @click="showBackgroundModal = true" />
-    <a href="https://github.com/genaller/genal-chat" target="_blank" class="tool-github icon"><a-icon type="github"/></a>
+    <!-- <a href="https://github.com/genaller/genal-chat" target="_blank" class="tool-github icon"><a-icon type="github"/></a> -->
     <a-icon class="tool-out icon" type="poweroff" @click="logout" />
     <a-modal title="用户信息" :visible="showUserModal" footer="" @cancel="showUserModal = false">
       <div class="tool-user">
@@ -64,24 +64,24 @@
           class="recommend"
           @click="
             setBackground(
-              'https://images.weserv.nl/?url=https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85'
+              'https://img.zcool.cn/community/013c085fb381fe11013fdcc70cfed7.png'
             )
           "
         >
           <img
-            src="https://images.weserv.nl/?url=https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/23fa890c0c244db1b2d6e0927113475c~tplv-k3u1fbpfcp-zoom-1.image?imageView2/2/w/800/q/85"
+            src="https://img.zcool.cn/community/013c085fb381fe11013fdcc70cfed7.png"
             alt=""
           />
-          <span class="text">阿童木</span>
+          <span class="text">艺术</span>
         </div>
         <div
           class="recommend"
           @click="
-            setBackground('https://images.weserv.nl/?url=https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg')
+            setBackground('https://genal.fun/api/static/1605446712329$f0c7a206-cacd-4318-b3b0-a6dcd66e9ba5$335$188.49333333333334')
           "
         >
-          <img src="https://images.weserv.nl/?url=https://raw.githubusercontent.com/alexanderbast/vscode-snazzy/master/sample.jpg" alt="" />
-          <span class="text">VSCode摸鱼</span>
+          <img src="https://genal.fun/api/static/1605446712329$f0c7a206-cacd-4318-b3b0-a6dcd66e9ba5$335$188.49333333333334" alt="" />
+          <span class="text">酷</span>
         </div>
         <div
           class="recommend"
@@ -211,9 +211,9 @@ export default class GenalTool extends Vue {
     if (!isJpgOrPng) {
       return this.$message.error('请上传jpeg/jpg/png/gif格式的图片!');
     }
-    const isLt1M = file.size / 1024 / 1024 < 0.5;
+    const isLt1M = file.size / 1024 / 1024 < 1;
     if (!isLt1M) {
-      return this.$message.error('图片必须小于500K!');
+      return this.$message.error('图片必须小于1M!');
     }
     this.avatar = file;
     this.handleUpload();
@@ -279,17 +279,17 @@ export default class GenalTool extends Vue {
     }
   }
   .tool-tip {
-    bottom: 190px;
+    bottom: 160px;
   }
   .tool-skin {
-    bottom: 130px;
+    bottom: 95px;
   }
   .tool-github {
     color: rgba(255, 255, 255, 0.85);
     bottom: 70px;
   }
   .tool-out {
-    bottom: 10px;
+    bottom: 30px;
   }
   .icon {
     display: flex;

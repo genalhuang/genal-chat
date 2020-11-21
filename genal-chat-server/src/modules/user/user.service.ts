@@ -101,7 +101,7 @@ export class UserService {
   async jurisdiction(userId: string) {
     const user = await this.userRepository.findOne({userId: userId});
     const newUser = JSON.parse(JSON.stringify(user));
-    if(user.username === '陈冠希') {
+    if(user.username === '小黄同学') {
       newUser.role = 'admin';
       await this.userRepository.update(user,newUser);
       return { msg:'更新用户信息成功', data: newUser};
@@ -111,7 +111,7 @@ export class UserService {
   async delUser(uid: string, psw: string, did: string) {
     try {
       const user = await this.userRepository.findOne({userId: uid, password: psw});
-      if(user.role === 'admin' && user.username === '陈冠希') {
+      if(user.role === 'admin' && user.username === '小黄同学') {
         // 被删用户自己创建的群
         const groups = await this.groupRepository.find({userId: did});
         for(const group of groups) {
