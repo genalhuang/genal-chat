@@ -69,7 +69,7 @@ export default class GenalChat extends Vue {
 
   showModal: boolean = false;
   visibleDrawer: boolean = false;
-  visibleTool: boolean = false;
+  visibleTool: boolean = true;
 
   created() {
     if (!this.user.userId) {
@@ -77,6 +77,18 @@ export default class GenalChat extends Vue {
     } else {
       this.handleJoin();
     }
+    if(this.isMobile) {
+      this.visibleTool = false;
+    } else {
+      this.visibleTool = true;
+    }
+  }
+
+  get isMobile() {
+    let flag = navigator.userAgent.match(
+        /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+    );
+    return flag && flag.length;
   }
 
   // 登录
