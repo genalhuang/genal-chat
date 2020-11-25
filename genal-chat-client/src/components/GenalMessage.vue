@@ -41,7 +41,6 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import GenalAvatar from './GenalAvatar.vue';
-import GenalEmoji from './GenalEmoji.vue';
 import GenalActive from './GenalActive.vue';
 import GenalInput from './GenalInput.vue';
 import * as api from '@/api/apis';
@@ -54,7 +53,6 @@ import { isUrl, parseText, processReturn } from '@/utils/common';
   components: {
     GenalActive,
     GenalAvatar,
-    GenalEmoji,
     GenalInput,
   },
 })
