@@ -1,5 +1,5 @@
 <template>
-  <div class="room">
+  <div class="room" v-if='chatArr.length'>
     <div v-for="(chat, index) in chatArr" :key="(chat.userId || chat.groupId) + index">
       <div
         v-if="chat.groupId"
