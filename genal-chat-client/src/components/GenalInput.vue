@@ -157,8 +157,40 @@ export default class GenalInput extends Vue {
    * 添加emoji到input
    */
   addEmoji(emoji: string) {
-    this.text += emoji;
-    this.focusInput();
+    const inputDom = (this.$refs.input as Vue).$el as HTMLFormElement;
+    if (inputDom.selectionStart || inputDom.selectionStart === '0') {
+      // 得到光标前的位置
+      const startPos = inputDom.selectionStart;
+      // 得到光标后的位置
+      const endPos = inputDom.selectionEnd;
+      // 在加入数据之前获得滚动条的高度
+      const restoreTop = inputDom.scrollTop;
+      // emoji表情插入至当前光标指定位置
+      this.text = this.text.substring(0, startPos) + emoji + this.text.substring(endPos, this.text.length);
+      // 如果滚动条高度大于0
+      if (restoreTop > 0) {
+        // 返回
+        inputDom.scrollTop = restoreTop;
+      }
+      inputDom.focus();
+      // 设置光标位置至emoji表情后一位
+      const position = startPos + emoji.length;
+      if (inputDom.setSelectionRange) {
+        inputDom.focus();
+        setTimeout(() => {
+          inputDom.setSelectionRange(position, position);
+        }, 10);
+      } else if (inputDom.createTextRange) {
+        const range = inputDom.createTextRange();
+        range.collapse(true);
+        range.moveEnd('character', position);
+        range.moveStart('character', position);
+        range.select();
+      }
+    } else {
+      this.text += emoji;
+      inputDom.focus();
+    }
   }
 
   /**

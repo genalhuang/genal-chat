@@ -1,5 +1,5 @@
 <template>
-  <div class="room">
+  <div class="room" v-if='chatArr.length'>
     <div v-for="(chat, index) in chatArr" :key="(chat.userId || chat.groupId) + index">
       <div
         v-if="chat.groupId"
@@ -28,7 +28,7 @@
         @click="changeActiveRoom(chat)"
       >
         <a-badge class="room-card-badge" :count="unReadGather[chat.userId]" />
-        <img class="room-card-type" :src="friendGather[chat.userId].avatar" :class="{ offLine: !activeUserGather[chat.userId] }" alt="" />
+        <img class="room-card-type" :src="friendGather[chat.userId].avatar" :class="{ offLine: !activeUserGather.hasOwnProperty(chat.userId) }" alt="" />
         <div class="room-card-message">
           <div class="room-card-name">{{ chat.username }}</div>
           <div class="room-card-new" v-if="chat.messages">
@@ -78,7 +78,7 @@ export default class GenalRoom extends Vue {
   }
 
   get activeUserGather() {
-    return this.activeGroupUser[DEFAULT_GROUP];
+    return this.activeGroupUser[DEFAULT_GROUP] || {};
   }
 
   sortChat() {

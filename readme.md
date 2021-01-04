@@ -53,22 +53,27 @@
 ![](./assets/database.png)
 
 ### 环境配置
-- 数据库mysql 以及 chat数据库
+- 数据库mysql 以及 chat数据库 (注意数据库格式为utf8mb4)
 - node v10.16.3
 
 ### 运行项目
-前端项目
+1. 前端项目
 ```js
 cd genal-chat-client 
 npm i
 npm run serve
 ```
-后端项目
+2. mysql配置<br>
+如果mysql连不上并报错error: ER_NOT_SUPPORTED_AUTH_MODE， 是mysql版本不兼容导致，参考这篇文章https://blog.csdn.net/qq_41831345/article/details/83150502<br>
+数据库没有sql脚本，直接改后端`app.module.ts`中的数据库密码，新建个`chat`数据库了就行
+
+3. 后端项目
 ```js
 cd genal-chat-server
 npm i
 npm run start:dev
 ```
+
 
 ### 系统迭代记录
 <details>
