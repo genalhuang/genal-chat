@@ -1,13 +1,7 @@
-import {
-    MessageBody,
-    SubscribeMessage,
-    WebSocketGateway,
-    WebSocketServer,
-    ConnectedSocket
-} from '@nestjs/websockets';
+import {ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer} from '@nestjs/websockets';
 import {Server, Socket} from 'socket.io';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository, getRepository} from 'typeorm';
+import {getRepository, Repository} from 'typeorm';
 import {User} from '../user/entity/user.entity';
 import {Group, GroupMap} from '../group/entity/group.entity';
 import {GroupMessage} from '../group/entity/groupMessage.entity';
@@ -17,6 +11,7 @@ import {createWriteStream} from 'fs';
 import {join} from 'path';
 import {RCode} from 'src/common/constant/rcode';
 import {nameVerify} from 'src/common/tool/utils';
+import {JwtService} from "@nestjs/jwt";
 
 @WebSocketGateway()
 export class ChatGateway {
@@ -33,6 +28,7 @@ export class ChatGateway {
         private readonly friendRepository: Repository<UserMap>,
         @InjectRepository(FriendMessage)
         private readonly friendMessageRepository: Repository<FriendMessage>,
+        private readonly jwtService: JwtService
     ) {
         this.defaultGroup = 1;
     }
@@ -281,6 +277,10 @@ export class ChatGateway {
     // 获取所有群和好友数据
     @SubscribeMessage('chatData')
     async getAllData(@ConnectedSocket() client: Socket, @MessageBody() user: User): Promise<any> {
+        let payload = this.jwtService.decode(user.token)
+        if (typeof payload !== 'string' && payload.userId !== user.userId) {
+            return
+        }
         const isUser = await this.userRepository.findOne({userId: user.userId});
         if (isUser) {
             let groupArr: GroupDto[] = [];

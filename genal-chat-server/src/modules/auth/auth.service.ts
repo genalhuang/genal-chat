@@ -30,11 +30,12 @@ export class AuthService {
             return {code: RCode.FAIL, msg: '注册校验不通过！', data: ''};
         }
         const payload = {userId: user.userId};
+        let token = this.jwtService.sign(payload)
         return {
             msg: '登录成功',
             data: {
-                user: user,
-                token: this.jwtService.sign(payload)
+                user: {...user, token},
+                token: token
             },
         };
     }

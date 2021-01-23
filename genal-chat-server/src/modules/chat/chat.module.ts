@@ -8,9 +8,15 @@ import {UserMap} from '../friend/entity/friend.entity';
 import {FriendMessage} from '../friend/entity/friendMessage.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
+import {JwtModule} from "@nestjs/jwt";
+import {jwtConstants} from "../auth/constants";
 
 @Module({
     imports: [
+        JwtModule.register({
+            secret: jwtConstants.secret,
+            signOptions: { expiresIn: '3d' },
+        }),
         TypeOrmModule.forFeature([User, Group, GroupMap, GroupMessage, UserMap, FriendMessage])
     ],
     providers: [ChatGateway],
