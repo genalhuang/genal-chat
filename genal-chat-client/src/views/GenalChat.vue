@@ -122,7 +122,6 @@ export default class GenalChat extends Vue {
 
   // 添加好友
   addFriend(friendId: string) {
-    console.log(this.user);
     this.socket.emit('addFriend', {
       userId: this.user.userId,
       friendId: friendId,

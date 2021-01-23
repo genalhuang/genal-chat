@@ -244,7 +244,7 @@ export class ChatGateway {
     async joinFriend(@ConnectedSocket() client: Socket, @MessageBody() data: UserMap): Promise<any> {
         if (data.friendId && data.userId) {
             const relation = await this.friendRepository.findOne({userId: data.userId, friendId: data.friendId});
-            const roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId;
+            const roomId = data.userId > data.friendId ? data.userId + '-' + data.friendId : data.friendId + '-' + data.userId;
             if (relation) {
                 client.join(roomId + '');
                 this.server.to(data.userId + '').emit('joinFriendSocket', {
@@ -262,8 +262,7 @@ export class ChatGateway {
         const isUser = await this.userRepository.findOne({userId: data.userId});
         if (isUser) {
             if (data.userId && data.friendId) {
-                //TODO 要加分割
-                const roomId = data.userId > data.friendId ? data.userId + data.friendId : data.friendId + data.userId;
+                const roomId = data.userId > data.friendId ? data.userId + '-' + data.friendId : data.friendId + '-' + data.userId;
                 if (data.messageType === 'image') {
                     const randomName = `${Date.now()}$${roomId}$${data.width}$${data.height}`;
                     const stream = createWriteStream(join('public/static', randomName));
@@ -272,7 +271,7 @@ export class ChatGateway {
                 }
                 data.time = new Date().valueOf();
                 await this.friendMessageRepository.save(data);
-                this.server.to(roomId + '').emit('friendMessage', {code: RCode.OK, msg: '', data});
+                this.server.to(roomId).emit('friendMessage', {code: RCode.OK, msg: '', data});
             }
         } else {
             this.server.to(data.userId + '').emit('friendMessage', {code: RCode.FAIL, msg: '你没资格发消息', data});
@@ -282,7 +281,7 @@ export class ChatGateway {
     // 获取所有群和好友数据
     @SubscribeMessage('chatData')
     async getAllData(@ConnectedSocket() client: Socket, @MessageBody() user: User): Promise<any> {
-        const isUser = await this.userRepository.findOne({userId: user.userId, password: user.password});
+        const isUser = await this.userRepository.findOne({userId: user.userId});
         if (isUser) {
             let groupArr: GroupDto[] = [];
             let friendArr: FriendDto[] = [];
