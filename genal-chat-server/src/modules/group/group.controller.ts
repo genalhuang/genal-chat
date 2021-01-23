@@ -12,14 +12,14 @@ export class GroupController {
   postGroups(@Body('groupIds') groupIds: string) {
     return this.groupService.postGroups(groupIds);
   }
-  
+
   @Get('/userGroup')
-  getUserGroups(@Query('userId') userId: string) {
+  getUserGroups(@Query('userId') userId: number) {
     return this.groupService.getUserGroups(userId);
   }
 
   @Get('/groupUser')
-  getGroupUsers(@Query('groupId') groupId: string) {
+  getGroupUsers(@Query('groupId') groupId: number) {
     return this.groupService.getGroupUsers(groupId);
   }
 

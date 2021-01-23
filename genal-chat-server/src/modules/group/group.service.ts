@@ -23,7 +23,7 @@ export class GroupService {
         const groupIdArr = groupIds.split(',');
         const groupArr = [];
         for(const groupId of groupIdArr) {
-          const data = await this.groupRepository.findOne({groupId: groupId});
+          const data = await this.groupRepository.findOne({groupId: parseInt(groupId)});
           groupArr.push(data);
         }
         return { msg:'获取群信息成功', data: groupArr};
@@ -34,7 +34,7 @@ export class GroupService {
     }
   }
 
-  async getUserGroups(userId: string) {
+  async getUserGroups(userId: number) {
     try {
       let data;
       if(userId) {
@@ -48,7 +48,7 @@ export class GroupService {
     }
   }
 
-  async getGroupUsers(groupId: string) {
+  async getGroupUsers(groupId: number) {
     try {
       let data;
       if(groupId) {

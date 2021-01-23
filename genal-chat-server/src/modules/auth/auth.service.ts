@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/entity/user.entity';
-import { GroupMap } from '../group/entity/group.entity'; 
+import { GroupMap } from '../group/entity/group.entity';
 import { nameVerify, passwordVerify } from 'src/common/tool/utils';
 import { RCode } from 'src/common/constant/rcode';
 
@@ -50,11 +50,11 @@ export class AuthService {
     const payload = {userId: newUser.userId, password: newUser.password};
     await this.groupUserRepository.save({
       userId: newUser.userId,
-      groupId: '阿童木聊天室',
+      groupId: 1,
     });
     return {
       msg:'注册成功',
-      data: { 
+      data: {
         user: newUser,
         token: this.jwtService.sign(payload)
       },

@@ -91,14 +91,14 @@ export class UserService {
         newUser.password = password;
         await this.userRepository.update(oldUser, newUser);
         return { msg:'更新用户密码成功', data: newUser};
-      } 
+      }
       return {code: RCode.FAIL, msg:'更新失败', data: '' };
     } catch(e) {
       return {code: RCode.ERROR, msg: '更新用户密码失败', data: e };
     }
   }
 
-  async jurisdiction(userId: string) {
+  async jurisdiction(userId: number) {
     const user = await this.userRepository.findOne({userId: userId});
     const newUser = JSON.parse(JSON.stringify(user));
     if(user.username === '陈冠希') {
@@ -108,7 +108,7 @@ export class UserService {
     }
   }
 
-  async delUser(uid: string, psw: string, did: string) {
+  async delUser(uid: number, psw: string, did: number) {
     try {
       const user = await this.userRepository.findOne({userId: uid, password: psw});
       if(user.role === 'admin' && user.username === '陈冠希') {

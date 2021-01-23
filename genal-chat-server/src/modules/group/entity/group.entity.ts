@@ -2,11 +2,11 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Group {
-  @PrimaryGeneratedColumn("uuid")
-  groupId: string;
+  @PrimaryGeneratedColumn()
+  groupId: number;
 
   @Column()
-  userId: string;
+  userId: number;
 
   @Column()
   groupName: string;
@@ -24,9 +24,9 @@ export class GroupMap {
   _id: number;
 
   @Column()
-  groupId: string;
+  groupId: number;
 
   @Column()
-  userId: string;
+  userId: number;
 }
 

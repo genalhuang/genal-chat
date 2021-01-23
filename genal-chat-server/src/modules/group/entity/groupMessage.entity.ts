@@ -6,10 +6,10 @@ export class GroupMessage {
   _id: number;
 
   @Column()
-  userId: string;
+  userId: number;
 
   @Column()
-  groupId: string;
+  groupId: number;
 
   @Column()
   content: string;

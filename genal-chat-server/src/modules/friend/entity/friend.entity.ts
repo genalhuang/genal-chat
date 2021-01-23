@@ -6,8 +6,8 @@ export class UserMap {
   _id: number;
 
   @Column()
-  friendId: string;
+  friendId: number;
 
   @Column()
-  userId: string;
+  userId: number;
 }

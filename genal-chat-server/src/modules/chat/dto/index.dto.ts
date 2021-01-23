@@ -1,7 +1,7 @@
 // 群组
 interface GroupDto {
-  groupId: string;
-  userId: string; // 群主id
+  groupId: number;
+  userId: number; // 群主id
   groupName: string;
   notice: string;
   messages?: GroupMessageDto[];
@@ -10,8 +10,8 @@ interface GroupDto {
 
 // 群消息
 interface GroupMessageDto {
-  userId: string;
-  groupId: string;
+  userId: number;
+  groupId: number;
   content: string;
   width?: number;
   height?: number;
@@ -21,7 +21,7 @@ interface GroupMessageDto {
 
 // 好友
 interface FriendDto {
-  userId: string;
+  userId: number;
   username: string;
   avatar: string;
   role?: string;
@@ -32,8 +32,8 @@ interface FriendDto {
 
 // 好友消息
 interface FriendMessageDto {
-  userId: string;
-  friendId: string;
+  userId: number;
+  friendId: number;
   content: string;
   width?: number;
   height?: number;

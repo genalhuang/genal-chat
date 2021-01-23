@@ -8,7 +8,7 @@ export class FriendController {
   constructor(private readonly friendService: FriendService) {}
 
   @Get()
-  getFriends(@Query('userId') userId: string) {
+  getFriends(@Query('userId') userId: number) {
     return this.friendService.getFriends(userId);
   }
 
