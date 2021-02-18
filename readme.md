@@ -159,6 +159,9 @@ npm run start:dev
 ### 作者
 github： [edison](https://github.com/genaller)
 
+### 贡献者列表
+[mtnbgx](https://github.com/mtnbgx)、[BoBoooooo](https://github.com/BoBoooooo)、[Nyaasu66](https://github.com/Nyaasu66)、[BeanCookie](https://github.com/BeanCookie)（排名不分先后）
+
 ### 如何部署
 [阿童木聊天室部署说明](./阿童木聊天室部署说明.md)
 
