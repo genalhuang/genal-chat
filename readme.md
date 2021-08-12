@@ -7,7 +7,7 @@
 
 > [码云](https://gitee.com/edison_dec/genal-chat)<br>
 >
-> 在线地址[www.genal.fun](http://www.genal.fun)<br>
+> ~~在线地址[www.genal.fun](http://www.genal.fun)~~（已失效，不打算部署了）<br>
 >
 > 有建议请到issues区
 
